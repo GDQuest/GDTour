@@ -72,7 +72,6 @@ func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Over
 
 	_update_spinbox_step_count()
 
-	populate_tours_item_list(Utils.get_tour_paths(plugin_path))
 	refresh()
 
 

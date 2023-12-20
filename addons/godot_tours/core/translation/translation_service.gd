@@ -10,9 +10,9 @@ var translations := {}
 var translation_remaps := {}
 
 
-func _init(plugin_path: String, editor_settings: EditorSettings) -> void:
+func _init(tour_paths: Array[String], editor_settings: EditorSettings) -> void:
 	locale = editor_settings.get_setting("interface/editor/editor_language")
-	load_translations(plugin_path)
+	load_translations(tour_paths)
 	update_translation_remaps()
 
 
@@ -53,12 +53,12 @@ func get_resource_path(path: String) -> String:
 	return path
 
 
-func load_translations(tours_path: String) -> void:
+func load_translations(tours_path: Array[String]) -> void:
 	translations.clear()
 	var locale_dir_path: String = get_script().resource_path.get_base_dir().get_base_dir().path_join(BUBBLE_DIR).path_join(LOCALE_DIR)
 	load_translations_dir(locale_dir_path)
 
-	for tour_path in Utils.get_tour_paths(tours_path):
+	for tour_path in tours_path:
 		locale_dir_path = tour_path.get_base_dir().path_join(LOCALE_DIR)
 		load_translations_dir(locale_dir_path)
 

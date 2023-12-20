@@ -4,7 +4,6 @@ class Helper:
 
 
 const SEP := "/"
-const TOURS_DIR := "tours"
 
 
 static func find_child(node: Node, type: String, pattern := "", predicate := Helper.noop) -> Node:
@@ -106,17 +105,5 @@ static func get_child_by_type(parent_node: Control, type: String) -> Control:
 	return null
 
 
-static func get_tour_paths(plugin_path: String) -> Array[String]:
-	var tour_directory := plugin_path.path_join(TOURS_DIR)
-	var dirnames := DirAccess.get_directories_at(tour_directory)
-	var tour_paths: Array[String] = []
-	for dirname in dirnames:
-		tour_paths += find_files_in_directory(tour_directory.path_join(dirname), "gd")
-	return tour_paths
-
-
 static func unlines(lines: Array[String]) -> String:
 	return "\n".join(lines)
-
-
-
