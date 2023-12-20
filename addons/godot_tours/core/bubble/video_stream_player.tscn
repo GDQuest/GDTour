@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://k06o7kl8hyk5"]
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer"]
+size_flags_horizontal = 4
+size_flags_vertical = 4

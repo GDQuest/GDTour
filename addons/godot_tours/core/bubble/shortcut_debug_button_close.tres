@@ -1,0 +1,10 @@
+[gd_resource type="Shortcut" load_steps=2 format=3 uid="uid://dyp2e28d4ig"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_kwatf"]
+device = -1
+alt_pressed = true
+keycode = 81
+unicode = 113
+
+[resource]
+events = [SubResource("InputEventKey_kwatf")]

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c72o4d1oo88yv"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_rqaeo"]
+blend_mode = 2
+
+[node name="DimmerMask" type="ColorRect"]
+material = SubResource("CanvasItemMaterial_rqaeo")
+mouse_filter = 2

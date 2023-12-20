@@ -1,0 +1,20 @@
+[gd_scene load_steps=2 format=3 uid="uid://8fblvvdp7jpo"]
+
+[sub_resource type="CodeHighlighter" id="CodeHighlighter_y4s8f"]
+number_color = Color(1, 0.835294, 0, 1)
+symbol_color = Color(1, 0.92549, 0.788235, 1)
+function_color = Color(0.623529, 0.866667, 0.317647, 1)
+member_variable_color = Color(0.0627451, 0.698039, 0.937255, 1)
+
+[node name="CodeEdit" type="CodeEdit"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+editable = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+draw_tabs = true
+syntax_highlighter = SubResource("CodeHighlighter_y4s8f")
+scroll_fit_content_height = true

@@ -1,0 +1,120 @@
+[gd_scene load_steps=4 format=3 uid="uid://bathb6akenga5"]
+
+[ext_resource type="Theme" uid="uid://7hcgepakmhxl" path="res://addons/godot_tours/theme_welcome_menu.tres" id="1_4yn7l"]
+[ext_resource type="Script" path="res://addons/godot_tours/ui_welcome_menu.gd" id="1_kfmbk"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1q4hb"]
+
+[node name="UIWelcomeMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_4yn7l")
+script = ExtResource("1_kfmbk")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.290196)
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(520, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -272.0
+offset_top = -219.0
+offset_right = 248.0
+offset_bottom = -7.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="LabelTitle" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Welcome to Godot Tour!"
+
+[node name="ToursColumn" type="VBoxContainer" parent="PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ButtonStartLearning" type="Button" parent="PanelContainer/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"NextButton"
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.619608, 0.262745, 0.00392157, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_font_sizes/font_size = 22
+text = "START LEARNING"
+
+[node name="ButtonClose" type="Button" parent="PanelContainer/MarginContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+mouse_default_cursor_shape = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_1q4hb")
+flat = true
+
+[node name="ColorRect" type="ColorRect" parent="PanelContainer/MarginContainer/ButtonClose"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -4.0
+offset_right = 20.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.785398
+pivot_offset = Vector2(20, 3)
+mouse_filter = 2
+
+[node name="ColorRect2" type="ColorRect" parent="PanelContainer/MarginContainer/ButtonClose"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -4.0
+offset_right = 20.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 2.35619
+pivot_offset = Vector2(20, 3)
+mouse_filter = 2
