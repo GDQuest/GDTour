@@ -29,16 +29,6 @@ var tour: Tour = null
 ## This button only shows when there's no tour active and the welcome menu is hidden.
 var button_top_bar: Button = null
 
-## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of
-## TourMetadata. Finds and loads the tours.
-func get_tours():
-	const TOUR_LIST_FILE_PATH := "res://godot_tours.tres"
-	if not FileAccess.file_exists(TOUR_LIST_FILE_PATH):
-		push_warning("Godot Tours: no tours found. Create a GodotTourList resource file named '%s' to list and register tours.")
-		return
-
-	return load(TOUR_LIST_FILE_PATH)
-
 
 func _enter_tree() -> void:
 	await get_tree().physics_frame
@@ -57,12 +47,9 @@ func _enter_tree() -> void:
 	EditorInterface.get_base_control().add_child(overlays)
 
 	# Add button to the editor top bar, right before the run buttons
-	button_top_bar = UI_BUTTON_GODOT_TOURS.instantiate()
-	button_top_bar.setup()
-	editor_interface_access.run_bar.add_sibling(button_top_bar)
-	button_top_bar.get_parent().move_child(button_top_bar, editor_interface_access.run_bar.get_index())
-	button_top_bar.pressed.connect(_show_welcome_menu)
-	_show_welcome_menu()
+	if tour_list != null:
+		_add_top_bar_button()
+		_show_welcome_menu()
 
 	ensure_pot_generation(plugin_path)
 
@@ -70,7 +57,21 @@ func _enter_tree() -> void:
 		toggle_debugger()
 
 
+## Adds a button labeled Godot Tours to the editor top bar, right before the run buttons.
+## This button only shows when there are tours in the project, there's no tour active, and the welcome menu is hidden.
+func _add_top_bar_button() -> void:
+	button_top_bar = UI_BUTTON_GODOT_TOURS.instantiate()
+	button_top_bar.setup()
+	editor_interface_access.run_bar.add_sibling(button_top_bar)
+	button_top_bar.get_parent().move_child(button_top_bar, editor_interface_access.run_bar.get_index())
+	button_top_bar.pressed.connect(_show_welcome_menu)
+
+
+## Shows the welcome menu, which lists all the tours in the file res://godot_tours.tres.
 func _show_welcome_menu() -> void:
+	if tour_list == null:
+		return
+
 	button_top_bar.hide()
 	var welcome_menu := UI_WELCOME_MENU_SCENE.instantiate()
 	EditorInterface.get_base_control().add_child(welcome_menu)
@@ -127,3 +128,16 @@ func toggle_debugger() -> void:
 		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
 	else:
 		remove_control_from_docks(debugger)
+
+
+## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of
+## TourMetadata. Finds and loads the tours.
+func get_tours():
+	const TOUR_LIST_FILE_PATH := "res://godot_tours.tres"
+	if not FileAccess.file_exists(TOUR_LIST_FILE_PATH):
+		push_warning("Godot Tours: no tours found. Create a GodotTourList resource file named '%s' to list and register tours." % TOUR_LIST_FILE_PATH)
+		return null
+
+	return load(TOUR_LIST_FILE_PATH)
+
+
