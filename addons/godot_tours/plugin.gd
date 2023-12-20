@@ -43,10 +43,10 @@ func _enter_tree() -> void:
 		push_warning("Godot Tours: no tours found. The user interface will not be modified.")
 		return
 
-	_tour_paths =  tour_list.tours.map(
+	_tour_paths.assign(tour_list.tours.map(
 		func get_tour_path(tour_entry) -> String:
 			return tour_entry.tour_path
-	)
+	))
 	
 	await get_tree().physics_frame
 	get_viewport().mode = Window.MODE_MAXIMIZED
