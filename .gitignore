@@ -1,0 +1,26 @@
+# Mac
+.DS_Store
+
+# Emacs
+*~
+*#
+
+# Godot 4+ ignores
+.godot/
+
+# Godot 3 ignores
+.import/
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+
+# Glam-specific ignores
+.glam.d/
+
+# Other
+gdquest_welcome_tour.log
+.plugged/
