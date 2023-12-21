@@ -311,15 +311,6 @@ func update_step_count_display(current_step_index: int) -> void:
 
 
 func _add_debug_shortcuts() -> void:
-	var key_next := InputEventKey.new()
-	key_next.keycode = KEY_N
-	key_next.ctrl_pressed = true
-
-	var key_previous := InputEventKey.new()
-	key_previous.keycode = KEY_B
-	key_previous.ctrl_pressed = true
-
-	next_button.shortcut = Shortcut.new()
-	next_button.shortcut.events.append(key_next)
-	back_button.shortcut = Shortcut.new()
-	back_button.shortcut.events.append(key_previous)
+	next_button.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_next.tres")
+	back_button.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_back.tres")
+	button_close_yes.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_close.tres")
