@@ -31,6 +31,7 @@ static var group := ButtonGroup.new()
 		button.disabled = is_locked
 		icon_lock.visible = is_locked
 		label_symbol.visible = not is_locked
+		button.mouse_default_cursor_shape = Control.CURSOR_FORBIDDEN if is_locked else Control.CURSOR_POINTING_HAND
 		if is_locked:
 			label_title.add_theme_color_override("font_color", COLOR_DISABLED_TEXT)
 		else:
