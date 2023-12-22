@@ -6,7 +6,7 @@ Godot Tours is a framework to create interactive, step-by-step tutorials in the 
 
 It is a technology we use at GDQuest to create guided tours. This technology is free and open-source so you are welcome to study and use it.
 
-**Minimum required Godot version: Godot 4.2**
+**Minimum required Godot version: Godot 4.2 standard** (*not* the .NET edition)
 
 ## Support and contributions
 
