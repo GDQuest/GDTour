@@ -505,34 +505,34 @@ func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> v
 	queue_command(overlays.highlight_tab_title, [tabs, title, play_flash])
 
 
-func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
-	queue_command(func() -> void:
-		var rect_getter := func() -> Rect2:
-			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
-		var overlay := overlays.find_overlay_for(interface.canvas_item_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
-	)
+# func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
+# 	queue_command(func() -> void:
+# 		var rect_getter := func() -> Rect2:
+# 			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
+# 		var overlay := overlays.find_overlay_for(interface.canvas_item_editor)
+# 		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+# 	)
 
 
 func highlight_tilemap_list_item(item_list: ItemList, item_index: int, play_flash := true) -> void:
 	queue_command(overlays.highlight_tilemap_list_item.bind(item_list, item_index, play_flash))
 
 
-func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index := 0, play_flash := false) -> void:
-	if index < 0 or index > interface.spatial_editor_cameras.size():
-		warn("[b]'index(=%d)'[/b] not in [b]'range(0, interface.spatial_editor_cameras.size()(=%d))'[/b]." % [index, interface.spatial_editor_cameras.size()], "higlight_spatial_editor_camera_region")
-		return
-	var camera := interface.spatial_editor_cameras[index]
-	queue_command(func() -> void:
-		if camera.is_position_behind(start) or camera.is_position_behind(end):
-			return
-		var rect_getter := func() -> Rect2:
-			var s := camera.unproject_position(start)
-			var e := camera.unproject_position(end)
-			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
-		var overlay := overlays.find_overlay_for(interface.spatial_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
-	)
+# func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index := 0, play_flash := false) -> void:
+# 	if index < 0 or index > interface.spatial_editor_cameras.size():
+# 		warn("[b]'index(=%d)'[/b] not in [b]'range(0, interface.spatial_editor_cameras.size()(=%d))'[/b]." % [index, interface.spatial_editor_cameras.size()], "higlight_spatial_editor_camera_region")
+# 		return
+# 	var camera := interface.spatial_editor_cameras[index]
+# 	queue_command(func() -> void:
+# 		if camera.is_position_behind(start) or camera.is_position_behind(end):
+# 			return
+# 		var rect_getter := func() -> Rect2:
+# 			var s := camera.unproject_position(start)
+# 			var e := camera.unproject_position(end)
+# 			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
+# 		var overlay := overlays.find_overlay_for(interface.spatial_editor)
+# 		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+# 	)
 
 
 func mouse_move_by_position(from: Vector2, to: Vector2) -> void:
@@ -650,11 +650,11 @@ func get_tree_item_center_by_name(tree: Tree, name: String) -> Vector2:
 	return result
 
 
-func get_highlight_center_by_index(control: Control, index := 0) -> Vector2:
-	var highlights := overlays.find_highlights_for(control)
-	if index < 0 or index >= highlights.size():
-		return Vector2.ZERO
-	return highlights[index].get_global_rect().get_center()
+# func get_highlight_center_by_index(control: Control, index := 0) -> Vector2:
+# 	var highlights := overlays.find_highlights_for(control)
+# 	if index < 0 or index >= highlights.size():
+# 		return Vector2.ZERO
+# 	return highlights[index].get_global_rect().get_center()
 
 
 func node_find_path(node_name: String) -> String:

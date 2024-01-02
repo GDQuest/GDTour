@@ -13,8 +13,9 @@ const HighlightPackedScene := preload("highlight/highlight.tscn")
 const DimmerPackedScene := preload("dimmer/dimmer.tscn")
 const OverlayPackedScene := preload("overlay.tscn")
 
-const OVERLAY := "overlay"
-const HIGHLIGHT := "highlight"
+const DIMMER := "Dimmer"
+const OVERLAY: StringName = "overlay"
+const HIGHLIGHT: StringName = "highlight"
 const RECT_GROW := 5
 
 var dimmer_map := {}
@@ -36,22 +37,25 @@ var _highlight_style_scaled: StyleBoxFlat = null
 
 func _init(interface: EditorInterfaceAccess, editor_scale := 1.0) -> void:
 	self.interface = interface
-
-	for control: Control in [interface.base_control, interface.signals_dialog, interface.node_create_panel]:
+	for viewport: Viewport in interface.viewports:
 		var dimmer := DimmerPackedScene.instantiate()
-		var viewport: Viewport = control.get_viewport()
 		viewport.add_child(dimmer)
-		dimmer.visible = false
-		dimmer_map[viewport] = dimmer
-	interface.distraction_free_button.pressed.connect(refresh_all)
-	for map: Dictionary in interface.controls_maps:
-		for control: Control in map.controls:
-			if control is Control:
-				var tabs := map.get("tabs", null)
-				add_overlay_to_control(control, tabs)
 
-	for control: Control in interface.extra_draw:
-		control.draw.connect(refresh_all)
+	# for control: Control in [interface.base_control, interface.signals_dialog, interface.node_create_panel]:
+	# 	var dimmer := DimmerPackedScene.instantiate()
+	# 	var viewport: Viewport = control.get_viewport()
+	# 	viewport.add_child(dimmer)
+	# 	dimmer.visible = false
+	# 	dimmer_map[viewport] = dimmer
+	# interface.distraction_free_button.pressed.connect(refresh_all)
+	# for map: Dictionary in interface.controls_maps:
+	# 	for control: Control in map.controls:
+	# 		if control is Control:
+	# 			var tabs := map.get("tabs", null)
+	# 			add_overlay_to_control(control, tabs)
+
+	# for control: Control in interface.extra_draw:
+	# 	control.draw.connect(refresh_all)
 
 	# Scale highlight stylebox based on editor scale.
 	# TODO: use theme utils instead.
@@ -73,45 +77,98 @@ func _init(interface: EditorInterfaceAccess, editor_scale := 1.0) -> void:
 	_highlight_style_scaled.expand_margin_bottom *= editor_scale
 
 
-func _process(_delta: float) -> void:
-	for current_overlay: ColorRect in _highlights_map:
-		current_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
-		var highlights: Array = _highlights_map[current_overlay]
-		for current_highlight: Highlight in highlights:
-			if current_highlight.get_global_rect().has_point(current_overlay.get_global_mouse_position()):
-				current_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-				break
+func _ready() -> void:
+	add_highlight_to_control(interface.context_switcher)
+	highlight_tab_title(interface.scene_tabs, "Import")
+	highlight_tab_index(interface.main_screen_tabs)
+	highlight_scene_node("Dimmer/FilmColorRect")
 
 
-func _on_overlay_visibility_changed(control: Control, overlay: ColorRect) -> void:
-	refresh(control, overlay)
+# func _process(_delta: float) -> void:
+# 	for viewport: Viewport in interface.viewports:
+# 		var overlay: Dimmer = viewport.get_node_or_null(DIMMER)
+# 		if overlay == null:
+# 			continue
+
+# 		overlay.film_color_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+# 		for highlight: Node in overlay.get_children():
+# 			if highlight is Highlight and highlight.get_global_rect().has_point(overlay.get_global_mouse_position()):
+# 				overlay.film_color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 
-func add_overlay_to_control(control: Control, tabs: Control = null) -> void:
-	var overlay := OverlayPackedScene.instantiate()
-	control.add_child(overlay)
-	overlay_map[control] = {overlay = overlay, tabs = tabs}
-	if tabs is TabContainer or tabs is TabBar:
-		tabs.drag_to_rearrange_enabled = false
-		if tabs is TabContainer:
-			var popup: Popup = tabs.get_popup()
-			if popup != null:
-				popups[tabs] = popup
-				tabs.set_popup(null)
-
-	overlay.visible = false
-	overlay.visibility_changed.connect(_on_overlay_visibility_changed.bind(control, overlay))
-	control.draw.connect(refresh_all)
-	_on_overlay_visibility_changed(control, overlay)
-	refresh_all()
+# func _on_overlay_visibility_changed(control: Control, overlay: ColorRect) -> void:
+# 	refresh(control, overlay)
 
 
-func add_highlight_to_overlay(overlay: ColorRect, rect_getter: Callable, play_flash := false) -> void:
+# func add_overlay_to_control(control: Control, tabs: Control = null) -> void:
+# 	var overlay := OverlayPackedScene.instantiate()
+# 	control.add_child(overlay)
+# 	overlay_map[control] = {overlay = overlay, tabs = tabs}
+# 	if tabs is TabContainer or tabs is TabBar:
+# 		tabs.drag_to_rearrange_enabled = false
+# 		if tabs is TabContainer:
+# 			var popup: Popup = tabs.get_popup()
+# 			if popup != null:
+# 				popups[tabs] = popup
+# 				tabs.set_popup(null)
+
+# 	overlay.visible = false
+# 	overlay.visibility_changed.connect(_on_overlay_visibility_changed.bind(control, overlay))
+# 	control.draw.connect(refresh_all)
+# 	_on_overlay_visibility_changed(control, overlay)
+# 	refresh_all()
+
+
+# func add_highlight_to_overlay(overlay: ColorRect, rect_getter: Callable, play_flash := false) -> void:
+# func add_highlight_to_overlay(overlay: Dimmer, rect_getter: Callable, play_flash := false) -> Panel:
+# 	if overlay == null:
+# 		return
+
+# 	# Calculate overlapping highlights to avoid stacking highlights and outlines.
+# 	var overlaps := []
+# 	var rect := rect_getter.call()
+# 	for child in overlay.get_children():
+# 		if child.is_in_group(HIGHLIGHT):
+# 			var child_rect := Rect2(child.global_position, child.custom_minimum_size)
+# 			if rect.grow(RECT_GROW).intersects(child_rect):
+# 				overlaps.push_back(child)
+
+# 	var highlight := HighlightPackedScene.instantiate()
+# 	if not overlay in _highlights_map:
+# 		_highlights_map[overlay] = []
+# 	_highlights_map[overlay].push_back(highlight)
+# 	highlight.tree_exiting.connect(func erase_highlight() -> void: _highlights_map[overlay].erase(highlight))
+
+# 	overlay.add_child(highlight)
+# 	if play_flash:
+# 		highlight.flash()
+
+# 	# highlight.setup(rect_getter, get_dimmer_for(overlay), _highlight_style_scaled)
+# 	highlight.setup(rect_getter, overlay, _highlight_style_scaled)
+# 	if overlaps.is_empty():
+# 		var overlay_parent := overlay.get_parent()
+# 		if overlay_parent is TabBar:
+# 			overlay_parent.tab_changed.connect(highlight.refresh_tabs.bind(overlay_parent))
+# 			if not overlay_parent in highlight_parents:
+# 				highlight_parents.push_back(overlay_parent)
+# 	else:
+# 		for other_highlight: Highlight in overlaps:
+# 			highlight.rect_getters.append_array(other_highlight.rect_getters)
+# 			other_highlight.free()
+# 	return highlight
+
+
+## Highlights a control, allowing the end user to interact with it using the mouse, and carving into the dimmers.
+func add_highlight_to_control(control: Control, rect_getter := Callable(), play_flash := false) -> void:
+	var overlay := get_overlay_for(control)
 	if overlay == null:
 		return
 
 	# Calculate overlapping highlights to avoid stacking highlights and outlines.
 	var overlaps := []
+	if rect_getter.is_null():
+		rect_getter = control.get_global_rect
+
 	var rect := rect_getter.call()
 	for child in overlay.get_children():
 		if child.is_in_group(HIGHLIGHT):
@@ -123,79 +180,53 @@ func add_highlight_to_overlay(overlay: ColorRect, rect_getter: Callable, play_fl
 	if not overlay in _highlights_map:
 		_highlights_map[overlay] = []
 	_highlights_map[overlay].push_back(highlight)
-	highlight.tree_exiting.connect(func erase_highlight():
-		_highlights_map[overlay].erase(highlight))
+	# highlight.tree_exiting.connect(func erase_highlight() -> void: _highlights_map[overlay].erase(highlight))
 
 	overlay.add_child(highlight)
 	if play_flash:
 		highlight.flash()
 
-	highlight.setup(rect_getter, get_dimmer_for(overlay), _highlight_style_scaled)
+	highlight.setup(rect_getter, overlay, _highlight_style_scaled)
 	if overlaps.is_empty():
-		var overlay_parent := overlay.get_parent()
-		if overlay_parent is TabBar:
-			overlay_parent.tab_changed.connect(highlight.refresh_tabs.bind(overlay_parent))
-			if not overlay_parent in highlight_parents:
-				highlight_parents.push_back(overlay_parent)
+		if control is TabBar:
+			control.tab_changed.connect(highlight.refresh_tabs)
+			if not control in highlight_parents:
+				highlight_parents.push_back(control)
 	else:
 		for other_highlight: Highlight in overlaps:
 			highlight.rect_getters.append_array(other_highlight.rect_getters)
 			other_highlight.free()
-	highlight.refresh()
-
-
-## Highlights a control, allowing the end user to interact with it using the mouse, and carving into the dimmers.
-func add_highlight_to_control(control: Control, play_flash := false) -> void:
-	var overlay := find_overlay_for(control)
-	if control.is_in_group(HIGHLIGHT):
-		overlay = control
-
-	var rect_getter := func() -> Rect2: return control.get_global_rect()
-
-	# A tour may highlight a node that doesn't have an overlay by default, because it's not part of the Godot editor,
-	# such as an addon's panel, for example. In that case, we create an overlay for this node on the fly.
-	if overlay == null:
-		var highlight := HighlightPackedScene.instantiate()
-		control.add_child(highlight)
-		if play_flash:
-			highlight.flash()
-
-		if not control.draw.is_connected(refresh_all):
-			control.draw.connect(refresh_all)
-		highlight.setup(rect_getter, get_dimmer_for(control), _highlight_style_scaled)
-		# Otherwise refresh gets into an infinite loop
-		highlight.top_level = true
-		highlight.refresh()
-		if not control in highlight_parents:
-			highlight_parents.push_back(control)
-	else:
-		add_highlight_to_overlay(overlay, rect_getter, play_flash)
 
 
 func clean_up() -> void:
-	interface.distraction_free_button.pressed.disconnect(refresh_all)
-	var code_editors := interface.script_editor.get_open_script_editors().map(func(s: ScriptEditorBase) -> Control: return s.get_base_editor())
-	for control: Control in highlight_parents + interface.extra_draw + code_editors:
-		if control.draw.is_connected(refresh_all):
-			control.draw.disconnect(refresh_all)
+	for viewport: Viewport in interface.viewports:
+		var overlay := viewport.get_node_or_null("Dimmer")
+		if overlay != null:
+			overlay.queue_free()
+	
+	# interface.distraction_free_button.pressed.disconnect(refresh_all)
+	# var code_editors := interface.script_editor.get_open_script_editors().map(func(s: ScriptEditorBase) -> Control: return s.get_base_editor())
+	# for control: Control in highlight_parents + interface.extra_draw + code_editors:
+	# 	if control.draw.is_connected(refresh_all):
+	# 		control.draw.disconnect(refresh_all)
 
-		_highlights_map.clear()
-		for node: Node in control.get_children():
-			if node.is_in_group(HIGHLIGHT):
-				node.queue_free()
+	# 	_highlights_map.clear()
+	# 	for node: Node in control.get_children():
+	# 		if node.is_in_group(HIGHLIGHT):
+	# 			node.queue_free()
 
-	for tabs in popups:
-		tabs.drag_to_rearrange_enabled = true
-		tabs.set_popup(popups[tabs])
+	# for tabs in popups:
+	# 	tabs.drag_to_rearrange_enabled = true
+	# 	tabs.set_popup(popups[tabs])
 
-	for control in overlay_map:
-		for connection in control.draw.get_connections():
-			control.draw.disconnect(connection.callable)
-		overlay_map[control].overlay.queue_free()
+	# for control in overlay_map:
+	# 	for connection in control.draw.get_connections():
+	# 		control.draw.disconnect(connection.callable)
+	# 	overlay_map[control].overlay.queue_free()
 
-	for dimmer in dimmer_map.values():
-		dimmer.clean_up()
-		dimmer.queue_free()
+	# for dimmer in dimmer_map.values():
+	# 	dimmer.clean_up()
+	# 	dimmer.queue_free()
 
 
 func clear_highlights(control: Control) -> void:
@@ -226,25 +257,25 @@ func clear() -> void:
 		clear_highlights(control)
 
 
-func refresh(control: Control, overlay: ColorRect = null) -> void:
-	var rect := control.get_global_rect()
-	var children := control.get_children()
-	if overlay != null:
-		overlay.global_position = rect.position
-		overlay.size = rect.size
-		children += overlay.get_children()
+# func refresh(control: Control, overlay: ColorRect = null) -> void:
+# 	var rect := control.get_global_rect()
+# 	var children := control.get_children()
+# 	if overlay != null:
+# 		overlay.global_position = rect.position
+# 		overlay.size = rect.size
+# 		children += overlay.get_children()
 
-	for child: Node in children:
-		if child.is_in_group(HIGHLIGHT):
-			child.refresh()
+# 	for child: Node in children:
+# 		if child.is_in_group(HIGHLIGHT):
+# 			child.refresh()
 
 
-func refresh_all() -> void:
-	for control: Control in overlay_map:
-		refresh.call_deferred(control, overlay_map[control].overlay)
+# func refresh_all() -> void:
+# 	for control: Control in overlay_map:
+# 		refresh.call_deferred(control, overlay_map[control].overlay)
 
-	for control: Control in highlight_parents:
-		refresh.call_deferred(control)
+# 	for control: Control in highlight_parents:
+# 		refresh.call_deferred(control)
 
 
 func toggle_overlays(is_on: bool) -> void:
@@ -260,43 +291,44 @@ func toggle_dimmers(is_on: bool) -> void:
 		dimmer.visible = is_on
 
 
-func get_overlay_for(control: Node) -> ColorRect:
-	return overlay_map.get(control, {}).get("overlay", null)
+func get_overlay_for(control: Node) -> Dimmer:
+	return control.get_viewport().get_node_or_null(DIMMER)
+	# return overlay_map.get(control, {}).get("overlay", null)
 
 
-func get_dimmer_for(control: Node) -> Dimmer:
-	return dimmer_map.get(control.get_viewport(), null) if control != null else null
+# func get_dimmer_for(control: Node) -> Dimmer:
+# 	return dimmer_map.get(control.get_viewport(), null) if control != null else null
 
 
-func find_overlay_for(control: Node) -> ColorRect:
-	var result: Node = get_overlay_for(control)
-	if control == null:
-		return result
+# func find_overlay_for(control: Node) -> ColorRect:
+# 	var result: Node = get_overlay_for(control)
+# 	if control == null:
+# 		return result
 
-	var viewport := control.get_viewport()
-	while result == null and control != viewport:
-		control = control.get_parent()
-		result = get_overlay_for(control)
-	return result
-
-
-func find_highlights_for(control: Control) -> Array[Highlight]:
-	var result: Array[Highlight] = []
-	var overlay: ColorRect = null
-	if control == null:
-		return result
-	elif control.is_in_group(OVERLAY):
-		control = overlay
-	else:
-		overlay = find_overlay_for(control)
-	var children := control.get_children()
-	if overlay != null:
-		children += overlay.get_children()
-	result.assign(children.filter(func(c: Node) -> bool: return c.is_in_group(HIGHLIGHT)))
-	return result
+# 	var viewport := control.get_viewport()
+# 	while result == null and control != viewport:
+# 		control = control.get_parent()
+# 		result = get_overlay_for(control)
+# 	return result
 
 
-func highlight_tree_items(tree: Tree, overlay: ColorRect, predicate: Callable, play_flash := false, button_index := -1) -> void:
+# func find_highlights_for(control: Control) -> Array[Highlight]:
+# 	var result: Array[Highlight] = []
+# 	var overlay: ColorRect = null
+# 	if control == null:
+# 		return result
+# 	elif control.is_in_group(OVERLAY):
+# 		control = overlay
+# 	else:
+# 		overlay = find_overlay_for(control)
+# 	var children := control.get_children()
+# 	if overlay != null:
+# 		children += overlay.get_children()
+# 	result.assign(children.filter(func(c: Node) -> bool: return c.is_in_group(HIGHLIGHT)))
+# 	return result
+
+
+func highlight_tree_items(tree: Tree, overlay: Dimmer, predicate: Callable, play_flash := false, button_index := -1) -> void:
 	var root := tree.get_root()
 	if root == null:
 		return
@@ -315,7 +347,8 @@ func highlight_tree_items(tree: Tree, overlay: ColorRect, predicate: Callable, p
 				rect.position.y += height_fix - tree.get_scroll().y
 				return rect.intersection(tree.get_global_rect())
 			return Rect2()
-		add_highlight_to_overlay.call_deferred(overlay, rect_getter, play_flash)
+		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash)
+		# add_highlight_to_overlay.call_deferred(overlay, rect_getter, play_flash)
 
 
 func highlight_scene_node(path: String, play_flash := false, button_index := -1) -> void:
@@ -333,33 +366,33 @@ func highlight_scene_nodes(paths: Array[String], play_flash := false, button_ind
 		highlight_scene_node(path, play_flash, button_index)
 
 
-func highlight_scene_all_nodes(play_flash := false) -> void:
-	highlight_tree_items(
-		interface.scene_tree,
-		get_overlay_for(interface.scene_dock),
-		func(item: TreeItem) -> bool: return true,
-		play_flash,
-	)
+# func highlight_scene_all_nodes(play_flash := false) -> void:
+# 	highlight_tree_items(
+# 		interface.scene_tree,
+# 		get_overlay_for(interface.scene_dock),
+# 		func(item: TreeItem) -> bool: return true,
+# 		play_flash,
+# 	)
 
 
-func clear_scene_node_highlights() -> void:
-	clear_highlights(get_overlay_for(interface.scene_dock))
+# func clear_scene_node_highlights() -> void:
+# 	clear_highlights(get_overlay_for(interface.scene_dock))
 
 
-func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
-	for path in paths:
-		if path.is_empty():
-			return
-		highlight_tree_items(
-			interface.filesystem_tree,
-			get_overlay_for(interface.filesystem_dock),
-			func(item: TreeItem) -> bool: return path == Utils.get_tree_item_path(item),
-			play_flash,
-		)
+# func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
+# 	for path in paths:
+# 		if path.is_empty():
+# 			return
+# 		highlight_tree_items(
+# 			interface.filesystem_tree,
+# 			get_overlay_for(interface.filesystem_dock),
+# 			func(item: TreeItem) -> bool: return path == Utils.get_tree_item_path(item),
+# 			play_flash,
+# 		)
 
 
-func clear_filesystem_highlights() -> void:
-	clear_highlights(get_overlay_for(interface.filesystem_dock))
+# func clear_filesystem_highlights() -> void:
+# 	clear_highlights(get_overlay_for(interface.filesystem_dock))
 
 
 func highlight_inspector_properties(names: Array[StringName], play_flash := false) -> void:
@@ -392,28 +425,29 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 				rect.position.x = overlay.global_position.x
 				rect.size.x = overlay.size.x
 				return rect
-			add_highlight_to_overlay.call_deferred(overlay, rect_getter, play_flash)
+			# add_highlight_to_overlay.call_deferred(overlay, rect_getter, play_flash)
+			add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
 
 
-func clear_inspector_highlights() -> void:
-	clear_highlights(get_overlay_for(interface.inspector_dock))
+# func clear_inspector_highlights() -> void:
+# 	clear_highlights(get_overlay_for(interface.inspector_dock))
 
 
-func highlight_signals(signal_names: Array[String], play_flash := false) -> void:
-	for signal_name in signal_names:
-		if signal_name.is_empty():
-			continue
+# func highlight_signals(signal_names: Array[String], play_flash := false) -> void:
+# 	for signal_name in signal_names:
+# 		if signal_name.is_empty():
+# 			continue
 
-		highlight_tree_items(
-			interface.node_dock_signals_tree,
-			get_overlay_for(interface.node_dock_signals_editor),
-			func(item: TreeItem) -> bool: return item.get_text(0).begins_with(signal_name),
-			play_flash,
-		)
+# 		highlight_tree_items(
+# 			interface.node_dock_signals_tree,
+# 			get_overlay_for(interface.node_dock_signals_editor),
+# 			func(item: TreeItem) -> bool: return item.get_text(0).begins_with(signal_name),
+# 			play_flash,
+# 		)
 
 
-func clear_signal_highlights() -> void:
-	clear_highlights(get_overlay_for(interface.signals_dock))
+# func clear_signal_highlights() -> void:
+# 	clear_highlights(get_overlay_for(interface.signals_dock))
 
 
 # TODO: add flash if play_flash is true.
@@ -427,8 +461,8 @@ func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_ce
 	if start < 0 or end > code_editor.get_line_count() or start > end:
 		return
 
-	if not code_editor.draw.is_connected(refresh_all):
-		code_editor.draw.connect(refresh_all)
+	# if not code_editor.draw.is_connected(refresh_all):
+	# 	code_editor.draw.connect(refresh_all)
 	script_editor.goto_line(start)
 	code_editor.grab_focus()
 	if do_center:
@@ -446,18 +480,19 @@ func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_ce
 			rect.position.x = code_editor.global_position.x
 			rect.size.x = code_editor.size.x
 		return rect
-	add_highlight_to_overlay.call_deferred(overlay, rect_getter)
+	# add_highlight_to_overlay.call_deferred(overlay, rect_getter)
+	add_highlight_to_control.call_deferred(code_editor, rect_getter)
 
 
-func clear_code_highlights() -> void:
-	clear_highlights(get_overlay_for(interface.script_editor_code_panel))
+# func clear_code_highlights() -> void:
+# 	clear_highlights(get_overlay_for(interface.script_editor_code_panel))
 
 
 func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 	for control in controls:
 		if control == null:
 			continue
-		add_highlight_to_control(control, play_flash)
+		add_highlight_to_control(control, control.get_global_rect, play_flash)
 
 
 func highlight_tab_index(tabs: Control, index := -1) -> void:
@@ -468,7 +503,8 @@ func highlight_tab_index(tabs: Control, index := -1) -> void:
 
 	var rect_getter := func() -> Rect2:
 		return tab_bar.get_global_rect() if index == -1 else tab_bar.get_global_transform() * tab_bar.get_tab_rect(index)
-	add_highlight_to_overlay(overlay, rect_getter)
+	add_highlight_to_control(tabs, rect_getter)
+
 
 
 func highlight_tab_title(tabs: Control, title: String) -> void:
@@ -492,4 +528,5 @@ func highlight_tilemap_list_item(item_list: ItemList, item_index: int) -> void:
 			var rect := item_list.get_item_rect(item_index)
 			rect.position += item_list.global_position
 			return rect
-	add_highlight_to_overlay(overlay, rect_getter)
+	add_highlight_to_control(interface.tilemap, rect_getter)
+	# add_highlight_to_overlay(overlay, rect_getter)

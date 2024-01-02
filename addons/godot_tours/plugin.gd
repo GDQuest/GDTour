@@ -39,6 +39,11 @@ var _button_top_bar: Button = null
 
 
 func _enter_tree() -> void:
+	# WIP
+	editor_interface_access = EditorInterfaceAccess.new()
+	overlays = Overlays.new(editor_interface_access, EditorInterface.get_editor_scale())
+	EditorInterface.get_base_control().add_child(overlays)
+
 	if tour_list == null:
 		push_warning("Godot Tours: no tours found. The user interface will not be modified.")
 		return
@@ -101,6 +106,10 @@ func _show_welcome_menu() -> void:
 
 
 func _exit_tree() -> void:
+	# WIP
+	overlays.clean_up()
+	overlays.queue_free()
+
 	if tour_list == null:
 		return
 

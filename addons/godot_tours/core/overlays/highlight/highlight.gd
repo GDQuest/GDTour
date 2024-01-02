@@ -34,7 +34,11 @@ func refresh() -> void:
 	for index in range(rect_getters.size()):
 		var new_rect := rect_getters[index].call()
 		if not new_rect.position.is_zero_approx() and not new_rect.size.is_zero_approx():
-			rect = new_rect if rect.position.is_zero_approx() and rect.size.is_zero_approx() else rect.merge(new_rect)
+			rect = (
+				new_rect
+				if rect.position.is_zero_approx() and rect.size.is_zero_approx()
+				else rect.merge(new_rect)
+			)
 	global_position = rect.position
 	custom_minimum_size = rect.size
 	visible = rect != Rect2()
@@ -44,8 +48,5 @@ func refresh() -> void:
 	reset_size.call_deferred()
 
 
-func refresh_tabs(index: int, tabs: TabBar) -> void:
-	var rect := tabs.get_tab_rect(index)
-	set_position.call_deferred(rect.position)
-	set_custom_minimum_size.call_deferred(rect.size)
-	reset_size.call_deferred()
+func refresh_tabs(_index: int) -> void:
+	refresh()

@@ -27,7 +27,7 @@ static var group := ButtonGroup.new()
 		is_locked = value
 		if not label_title:
 			await ready
-		
+
 		button.disabled = is_locked
 		icon_lock.visible = is_locked
 		label_symbol.visible = not is_locked
@@ -57,7 +57,7 @@ func setup() -> void:
 		for label: Label in [label_free, label_title, label_symbol]:
 			var title_font_size: int = label.get_theme_font_size("font_size")
 			label.add_theme_font_size_override("font_size", title_font_size * editor_scale)
-		
+
 		icon_lock.custom_minimum_size *= editor_scale
 		label_symbol.custom_minimum_size *= editor_scale
 
