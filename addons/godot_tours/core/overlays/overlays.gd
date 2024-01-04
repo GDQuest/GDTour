@@ -333,15 +333,6 @@ func highlight_scene_nodes(paths: Array[String], play_flash := false, button_ind
 		highlight_scene_node(path, play_flash, button_index)
 
 
-func highlight_scene_all_nodes(play_flash := false) -> void:
-	highlight_tree_items(
-		interface.scene_tree,
-		get_overlay_for(interface.scene_dock),
-		func(item: TreeItem) -> bool: return true,
-		play_flash,
-	)
-
-
 func clear_scene_node_highlights() -> void:
 	clear_highlights(get_overlay_for(interface.scene_dock))
 

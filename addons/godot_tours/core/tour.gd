@@ -472,11 +472,6 @@ func highlight_scene_nodes(paths: Array[String], play_flash := true, button_inde
 	queue_command(overlays.highlight_scene_nodes, [paths, play_flash, button_index])
 
 
-#TODO: consider if keeping this? You can highlight the inspector dock instead
-func highlight_scene_all_nodes(play_flash := false) -> void:
-	queue_command(overlays.highlight_scene_all_nodes, [play_flash])
-
-
 func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:
 	queue_command(overlays.highlight_filesystem_paths, [paths, play_flash])
 
