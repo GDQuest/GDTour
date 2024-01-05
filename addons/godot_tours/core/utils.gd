@@ -47,7 +47,6 @@ static func find_tree_item_by_name(tree: Tree, name: String) -> TreeItem:
 	var stack: Array[TreeItem] = []
 	while not stack.is_empty():
 		var item: TreeItem = stack.pop_back()
-		print(item.get_text(0))
 		if item.get_text(0) == name:
 			result = item
 			break

@@ -106,7 +106,6 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	interface.restore_default_layout()
 	_build()
 	bubble.set_step_count(_steps.size())
-	bubble.set_custom_minimum_size(bubble.custom_minimum_size * EditorInterface.get_editor_scale())
 	overlays.toggle_dimmers(true)
 	step_changed.connect(bubble.update_step_count_display)
 
@@ -163,6 +162,7 @@ func complete_step() -> void:
 	var step_start: Array[Command] = [
 		Command.new(bubble.clear),
 		Command.new(overlays.clean_up),
+		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
 		Command.new(_clear_game_world_overlays)
 	]

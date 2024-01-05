@@ -12,9 +12,6 @@ const Utils := preload("../utils.gd")
 const HighlightPackedScene := preload("highlight/highlight.tscn")
 const DimmerPackedScene := preload("dimmer/dimmer.tscn")
 
-const DIMMER_NAME := "Dimmer"
-const DIMMER_GROUP: StringName = "dimmer"
-const HIGHLIGHT_GROUP: StringName = "highlight"
 const RECT_GROW := 5
 
 var interface: EditorInterfaceAccess = null
@@ -25,13 +22,14 @@ var dimmers: Array[Dimmer] = []
 var _highlight_style_scaled: StyleBoxFlat = null
 
 
-func _init(interface: EditorInterfaceAccess, editor_scale := 1.0) -> void:
+func _init(interface: EditorInterfaceAccess) -> void:
 	self.interface = interface
 
 	# Scale highlight stylebox based on editor scale.
 	# TODO: use theme utils instead.
 	_highlight_style_scaled = load("res://addons/godot_tours/core/overlays/highlight/highlight.tres").duplicate(true)
 
+	var editor_scale := EditorInterface.get_editor_scale()
 	_highlight_style_scaled.border_width_bottom *= editor_scale
 	_highlight_style_scaled.border_width_left *= editor_scale
 	_highlight_style_scaled.border_width_right *= editor_scale
@@ -67,7 +65,8 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 
 	var rect := rect_getter.call()
 	for child in dimmer.get_children():
-		if child.is_in_group(HIGHLIGHT_GROUP):
+		if child is Highlight:
+			child.refresh()
 			var child_rect := Rect2(child.global_position, child.custom_minimum_size)
 			if rect.grow(RECT_GROW).intersects(child_rect):
 				overlaps.push_back(child)
@@ -83,14 +82,14 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 	elif not overlaps.is_empty():
 		for other_highlight: Highlight in overlaps:
 			highlight.rect_getters.append_array(other_highlight.rect_getters)
-			other_highlight.free()
+			other_highlight.queue_free()
 	control.draw.connect(highlight.refresh)
 	control.visibility_changed.connect(highlight.refresh)
 
 
 func clean_up() -> void:
 	for dimmer: Dimmer in dimmers:
-		dimmer.queue_free()
+		dimmer.free()
 	dimmers = []
 
 
@@ -101,7 +100,7 @@ func toggle_dimmers(is_on: bool) -> void:
 
 func ensure_get_dimmer_for(control: Control) -> Dimmer:
 	var viewport := control.get_viewport()
-	var result: Dimmer = viewport.get_node_or_null(DIMMER_NAME)
+	var result: Dimmer = viewport.get_node_or_null("Dimmer")
 	if result == null:
 		result = DimmerPackedScene.instantiate()
 		viewport.add_child(result)
@@ -176,10 +175,10 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 				current_parent = current_parent.get_parent()
 				if current_parent == interface.inspector_editor:
 					break
-	
+
 			if last_section:
 				await last_section.draw
-	
+
 			interface.inspector_editor.ensure_control_visible(property)
 			var dimmer := ensure_get_dimmer_for(interface.inspector_dock)
 			var rect_getter := func() -> Rect2:

@@ -389,6 +389,6 @@ func is_in_scripting_context() -> bool:
 
 func _get_bottom_button(buttons: Array[Node], text: String) -> Button:
 	for button in buttons:
-		if button.get("text") == text:
+		if button.get("text").begins_with(text):
 			return button
 	return null

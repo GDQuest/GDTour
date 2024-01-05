@@ -1,6 +1,6 @@
 ## Text bubble used to display instructions to the user.
 @tool
-extends PanelContainer
+extends CanvasLayer
 
 ## Emitted when the user confirms wanting to quit the tour
 signal close_requested
@@ -43,11 +43,12 @@ enum AvatarAt {LEFT, CENTER, RIGHT}
 var at := At.CENTER
 var avatar_at := AvatarAt.LEFT
 var margin := 16.0
-var offset := Vector2.ZERO
+var offset_vector := Vector2.ZERO
 var control: Control = null
 var interface: EditorInterfaceAccess = null
 var translation_service: TranslationService = null
 
+@onready var panel_container: PanelContainer = %PanelContainer
 @onready var background_texture_rect: TextureRect = %BackgroundTextureRect
 @onready var title_label: Label = %TitleLabel
 @onready var header_rich_text_label: RichTextLabel = %HeaderRichTextLabel
@@ -81,19 +82,19 @@ func setup(interface: EditorInterfaceAccess, translation_service: TranslationSer
 	self.interface = interface
 	self.translation_service = translation_service
 
-	var editor_scale := EditorInterface.get_editor_scale()
-	paragraph_separation *= editor_scale
-	
-	var _theme_utils := ThemeUtils.new()
-	theme = _theme_utils.generate_scaled_theme(theme)
-
 	# Add itself as a child of the editor interface. Done after scaling to avoid UI refreshes with
 	# every theme property change.
 	control = interface.base_control
 	control.add_child(self)
 
-	avatar.scale = avatar.scale_start * editor_scale
+	var editor_scale := EditorInterface.get_editor_scale()
+	paragraph_separation *= editor_scale
 
+	var _theme_utils := ThemeUtils.new()
+	panel_container.theme = _theme_utils.generate_scaled_theme(panel_container.theme)
+
+	avatar.scale = avatar.scale_start * editor_scale
+	panel_container.custom_minimum_size *= editor_scale
 
 	refresh.call_deferred()
 	update_locale()
@@ -216,11 +217,11 @@ func set_background(texture: Texture2D) -> void:
 
 
 ## Moves and anchors the bubble relative to the given control node.
-func move_and_anchor(control: Control, at := At.CENTER, margin := 16.0, offset := Vector2.ZERO) -> void:
+func move_and_anchor(control: Control, at := At.CENTER, margin := 16.0, offset_vector := Vector2.ZERO) -> void:
 	self.control = control
 	self.at = at
 	self.margin = margin
-	self.offset = offset
+	self.offset_vector = offset_vector
 	refresh.call_deferred()
 
 func set_avatar_at(at := AvatarAt.LEFT) -> void:
@@ -228,8 +229,8 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	var editor_scale := EditorInterface.get_editor_scale()
 	var at_offset := {
 		AvatarAt.LEFT: Vector2(-8.0, -6.0) * editor_scale,
-		AvatarAt.CENTER: Vector2(size.x / 2.0, -8.0 * editor_scale),
-		AvatarAt.RIGHT: Vector2(size.x + 3.0 * editor_scale, -8.0 * editor_scale),
+		AvatarAt.CENTER: Vector2(panel_container.size.x / 2.0, -8.0 * editor_scale),
+		AvatarAt.RIGHT: Vector2(panel_container.size.x + 3.0 * editor_scale, -8.0 * editor_scale),
 	}
 	var new_avatar_position: Vector2 = at_offset[at]
 
@@ -239,12 +240,12 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 		AvatarAt.RIGHT: 7.5,
 	}
 	var new_avatar_rotation: float = target_rotation_degrees[at]
-	
+
 	if not avatar.position.is_equal_approx(new_avatar_position):
 		avatar_tween_position.kill()
 		avatar_tween_position = create_tween().set_ease(Tween.EASE_IN)
 		avatar_tween_position.tween_property(avatar, "position", new_avatar_position, TWEEN_DURATION)
-	
+
 	if not avatar.position.is_equal_approx(new_avatar_position):
 		avatar_tween_rotation.kill()
 		avatar_tween_rotation = create_tween().set_ease(Tween.EASE_IN)
@@ -259,23 +260,23 @@ func refresh() -> void:
 	# Without this, the bubble can end up being too tall.
 	await get_tree().process_frame
 
-	reset_size()
+	panel_container.reset_size()
 	var at_offset := {
 		At.TOP_LEFT: margin * Vector2.ONE,
-		At.TOP_CENTER: Vector2((control.size.x - size.x) / 2.0, 0.0) + margin * Vector2.DOWN,
-		At.TOP_RIGHT: Vector2(control.size.x - size.x, 0.0) + margin * Vector2(-1.0, 1.0),
-		At.BOTTOM_RIGHT: control.size - size - margin * Vector2.ONE,
-		At.BOTTOM_CENTER: Vector2(0.5, 1.0) * (control.size - size) + margin * Vector2.UP,
-		At.BOTTOM_LEFT: Vector2(0.0, control.size.y - size.y) + margin * Vector2(1.0, -1.0),
-		At.CENTER_LEFT: Vector2(0.0, (control.size.y - size.y) / 2.0) + margin * Vector2.RIGHT,
-		At.CENTER_RIGHT: Vector2(1.0, 0.5) * (control.size - size) + margin * Vector2.LEFT,
-		At.CENTER: (control.size - size) / 2.0,
+		At.TOP_CENTER: Vector2((control.size.x - panel_container.size.x) / 2.0, 0.0) + margin * Vector2.DOWN,
+		At.TOP_RIGHT: Vector2(control.size.x - panel_container.size.x, 0.0) + margin * Vector2(-1.0, 1.0),
+		At.BOTTOM_RIGHT: control.size - panel_container.size - margin * Vector2.ONE,
+		At.BOTTOM_CENTER: Vector2(0.5, 1.0) * (control.size - panel_container.size) + margin * Vector2.UP,
+		At.BOTTOM_LEFT: Vector2(0.0, control.size.y - panel_container.size.y) + margin * Vector2(1.0, -1.0),
+		At.CENTER_LEFT: Vector2(0.0, (control.size.y - panel_container.size.y) / 2.0) + margin * Vector2.RIGHT,
+		At.CENTER_RIGHT: Vector2(1.0, 0.5) * (control.size - panel_container.size) + margin * Vector2.LEFT,
+		At.CENTER: (control.size - panel_container.size) / 2.0,
 	}
-	var new_global_position: Vector2 = control.global_position + at_offset[at] + offset
-	if not global_position.is_equal_approx(new_global_position):
+	var new_global_position: Vector2 = control.global_position + at_offset[at] + offset_vector
+	if not panel_container.global_position.is_equal_approx(new_global_position):
 		tween.kill()
 		tween = create_tween().set_ease(Tween.EASE_IN)
-		tween.tween_property(self, "global_position", new_global_position, TWEEN_DURATION)
+		tween.tween_property(panel_container, "global_position", new_global_position, TWEEN_DURATION)
 	set_avatar_at(avatar_at)
 
 
