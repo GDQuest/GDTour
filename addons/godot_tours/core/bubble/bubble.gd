@@ -224,6 +224,7 @@ func set_footer(text: String) -> void:
 
 func set_background(texture: Texture2D) -> void:
 	background_texture_rect.texture = texture
+	background_texture_rect.visible = texture != null
 
 
 ## Moves and anchors the bubble relative to the given control node.
