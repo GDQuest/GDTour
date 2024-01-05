@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://csp1wgpwsmqdo" path="res://addons/godot_tours/core/bubble/gobot/assets/horns.png" id="4_03njk"]
 [ext_resource type="Texture2D" uid="uid://ds6soldasib2v" path="res://addons/godot_tours/core/bubble/gobot/assets/face.png" id="5_pcg2e"]
 [ext_resource type="Texture2D" uid="uid://yibw16nyfxgu" path="res://addons/godot_tours/core/bubble/gobot/assets/Jaw.png" id="6_selbd"]
-[ext_resource type="Texture2D" uid="uid://dug4juhbynu3v" path="res://addons/godot_tours/core/bubble/gobot/assets/eye_default.png" id="7_4dwtu"]
+[ext_resource type="Texture2D" uid="uid://dug4juhbynu3v" path="res://addons/godot_tours/core/bubble/gobot/assets/eue_default.png" id="7_4dwtu"]
 [ext_resource type="Texture2D" uid="uid://bpe5ej02trd4w" path="res://addons/godot_tours/core/bubble/gobot/assets/eyebrow_default.png" id="8_pjvjr"]
 [ext_resource type="Texture2D" uid="uid://hair7u2wrsxx" path="res://addons/godot_tours/core/bubble/gobot/assets/nose.png" id="9_2wekc"]
 [ext_resource type="Texture2D" uid="uid://ddhgq5h4l8us3" path="res://addons/godot_tours/core/bubble/gobot/assets/eye_closed.png" id="10_bclg8"]
@@ -101,7 +101,7 @@ tracks/6/loop_wrap = true
 tracks/6/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
+"update": 1,
 "values": [ExtResource("8_pjvjr")]
 }
 tracks/7/type = "value"
@@ -443,7 +443,7 @@ tracks/6/loop_wrap = true
 tracks/6/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
+"update": 1,
 "values": [ExtResource("8_pjvjr")]
 }
 tracks/7/type = "value"
@@ -792,7 +792,6 @@ input_2/reset = true
 animation = &"reaction_wink"
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_n4c0l"]
-graph_offset = Vector2(-213, -155)
 nodes/Add2/node = SubResource("AnimationNodeAdd2_7ne4x")
 nodes/Add2/position = Vector2(180, -140)
 nodes/Animation/node = SubResource("AnimationNodeAnimation_ps3b2")
@@ -810,7 +809,7 @@ nodes/Transition/position = Vector2(20, 20)
 nodes/WinkOneShot/node = SubResource("AnimationNodeAnimation_638r0")
 nodes/WinkOneShot/position = Vector2(180, 60)
 nodes/output/position = Vector2(600, -140)
-node_connections = [&"output", 0, &"OneShot", &"Add2", 0, &"Animation", &"Add2", 1, &"Transition", &"OneShot", 0, &"Add2", &"OneShot", 1, &"WinkOneShot", &"Transition", 0, &"Animation 2", &"Transition", 1, &"Animation 3", &"Transition", 2, &"Animation 4"]
+node_connections = [&"Add2", 0, &"Animation", &"Add2", 1, &"Transition", &"OneShot", 0, &"Add2", &"OneShot", 1, &"WinkOneShot", &"Transition", 0, &"Animation 2", &"Transition", 1, &"Animation 3", &"Transition", 2, &"Animation 4", &"output", 0, &"OneShot"]
 
 [node name="Gobot" type="Node2D"]
 script = ExtResource("1_0v1f1")
@@ -920,9 +919,12 @@ libraries = {
 
 [node name="AnimationTree" type="AnimationTree" parent="SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
+libraries = {
+"": SubResource("AnimationLibrary_axgnh")
+}
 tree_root = SubResource("AnimationNodeBlendTree_n4c0l")
 anim_player = NodePath("../AnimationPlayer")
-active = true
 parameters/Add2/add_amount = 1.0
 parameters/OneShot/active = false
 parameters/OneShot/internal_active = false
