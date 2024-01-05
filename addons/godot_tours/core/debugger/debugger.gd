@@ -14,7 +14,7 @@ var ResourceInvalidator := preload("resource_invalidator.gd")
 
 ## If Godot is run with this flag, the tour will be run in debug mode, displaying this debugger panel.
 const CLI_OPTION_DEBUG := "--tour-debug"
-const OVERLAY := "overlay"
+const DIMMER_GROUP: StringName = "dimmer"
 
 ## Reference to the currently active tour running in debug mode.
 var tour: Tour = null:
@@ -25,14 +25,12 @@ var tour: Tour = null:
 			button_toggle_tour_visible.toggled.connect(tour.toggle_visible)
 
 var plugin_path := ""
-var dimmer_mask: ColorRect = null
 var interface: EditorInterfaceAccess = null
 var overlays: Overlays = null
 var translation_service: TranslationService = null
 
-@onready var toggle_overlays_check_button: Button = %ToggleOverlaysCheckButton
 @onready var toggle_dimmers_check_button: Button = %ToggleDimmersCheckButton
-@onready var overlays_alpha_h_slider: HSlider = %OverlaysAlphaHSlider
+@onready var dimmers_alpha_h_slider: HSlider = %OverlaysAlphaHSlider
 @onready var tours_item_list: ItemList = %ToursItemList
 @onready var jump_button: Button = %JumpButton
 @onready var jump_spin_box: SpinBox = %JumpSpinBox
@@ -41,7 +39,6 @@ var translation_service: TranslationService = null
 
 
 func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Overlays, translation_service: TranslationService, tour: Tour) -> void:
-
 	if not is_inside_tree():
 		await ready
 
@@ -51,39 +48,24 @@ func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Over
 	self.translation_service = translation_service
 	self.tour = tour
 
-	draw.connect(refresh)
-	toggle_overlays_check_button.toggled.connect(func(is_active: bool) -> void:
-		overlays.toggle_overlays(is_active)
-		overlays_alpha_h_slider.editable = is_active
-		dimmer_mask.visible = true
+	toggle_dimmers_check_button.button_pressed = not overlays.dimmers.is_empty()
+	toggle_dimmers_check_button.toggled.connect(func(is_active: bool) -> void:
+		overlays.toggle_dimmers(is_active)
+		dimmers_alpha_h_slider.editable = is_active
 	)
-	toggle_dimmers_check_button.toggled.connect(overlays.toggle_dimmers)
 	tours_item_list.item_selected.connect(_on_tours_item_list_item_selected)
 	button_start_tour.pressed.connect(_start_selected_tour)
-	overlays_alpha_h_slider.value_changed.connect(_on_overlay_alpha_h_slider_value_changed)
-	overlays_alpha_h_slider.value_changed.emit(overlays_alpha_h_slider.value)
+	dimmers_alpha_h_slider.value_changed.connect(_on_overlay_alpha_h_slider_value_changed)
+	dimmers_alpha_h_slider.value_changed.emit(dimmers_alpha_h_slider.value)
 	jump_button.pressed.connect(_jump_to_step)
 
-	dimmer_mask = overlays.get_dimmer_for(interface.base_control).add_mask()
-
-	dimmer_mask.visible = false
-	toggle_dimmers_check_button.button_pressed = dimmer_mask.visible
-	overlays_alpha_h_slider.editable = toggle_overlays_check_button.button_pressed
-
+	overlays.add_highlight_to_control(self)
+	dimmers_alpha_h_slider.editable = toggle_dimmers_check_button.button_pressed
 	_update_spinbox_step_count()
-
-	refresh()
-
-
-func _enter_tree() -> void:
-	if dimmer_mask != null:
-		dimmer_mask.visible = true
 
 
 func _exit_tree() -> void:
 	_on_overlay_alpha_h_slider_value_changed(0.0)
-	if dimmer_mask != null:
-		dimmer_mask.visible = false
 
 
 func _start_selected_tour() -> void:
@@ -96,7 +78,6 @@ func _start_selected_tour() -> void:
 		tour.clean_up()
 	var tour_path := tours_item_list.get_item_metadata(index)
 	tour = ResourceInvalidator.resource_force_editor_reload(tour_path).new(interface, overlays, translation_service)
-	toggle_overlays_check_button.button_pressed = true
 	toggle_dimmers_check_button.button_pressed = true
 	tour.toggle_visible(true)
 	_update_spinbox_step_count()
@@ -107,7 +88,8 @@ func _on_tours_item_list_item_selected(index: int) -> void:
 
 
 func _on_overlay_alpha_h_slider_value_changed(value: float) -> void:
-	get_tree().set_group(OVERLAY, "color", Color(1, 1, 1, value))
+	get_tree().set_group(DIMMER_GROUP, "modulate", Color(1, 1, 1, value))
+	toggle_dimmers_check_button.set_pressed_no_signal(not is_zero_approx(value))
 
 
 func populate_tours_item_list(tours: Array[String]) -> void:
@@ -115,14 +97,6 @@ func populate_tours_item_list(tours: Array[String]) -> void:
 	for index in range(tours.size()):
 		tours_item_list.add_item(tours[index].get_file())
 		tours_item_list.set_item_metadata(index, tours[index])
-
-
-func refresh() -> void:
-	if dimmer_mask != null:
-		dimmer_mask.global_position = global_position
-		dimmer_mask.size = size
-	if overlays != null:
-		overlays.refresh_all()
 
 
 func _update_spinbox_step_count() -> void:

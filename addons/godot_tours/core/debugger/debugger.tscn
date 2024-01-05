@@ -23,21 +23,13 @@ uppercase = true
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-tooltip_text = "Toggle the visibility of darkening areas."
-button_pressed = true
-text = "Dimmers"
-
-[node name="ToggleOverlaysCheckButton" type="CheckButton" parent="VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
 tooltip_text = "Toggle the visibility of overlays.
 Overlays allow or block mouse input, and outline clickable areas."
-text = "Overlays"
+text = "Dimmers"
 
-[node name="OverlaysAlphaLabel" type="Label" parent="VBoxContainer"]
+[node name="DimmersAlphaLabel" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "Overlays Alpha"
+text = "Dimmers Alpha"
 
 [node name="OverlaysAlphaHSlider" type="HSlider" parent="VBoxContainer"]
 unique_name_in_owner = true

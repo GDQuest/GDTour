@@ -92,10 +92,6 @@ func setup(interface: EditorInterfaceAccess, translation_service: TranslationSer
 	control = interface.base_control
 	control.add_child(self)
 
-	for map in interface.controls_maps:
-		for node in map.controls:
-			node.draw.connect(refresh)
-
 	avatar.scale = avatar.scale_start * editor_scale
 
 
@@ -134,13 +130,6 @@ func _ready() -> void:
 	)
 	for node in [header_rich_text_label, main_v_box_container, tasks_v_box_container, footer_rich_text_label, footer_spacer]:
 		node.visible = false
-
-
-func clean_up() -> void:
-	for map in interface.controls_maps:
-		for node in map.controls:
-			if node.draw.is_connected(refresh):
-				node.draw.disconnect(refresh)
 
 
 func clear() -> void:

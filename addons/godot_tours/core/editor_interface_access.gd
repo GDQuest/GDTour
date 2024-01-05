@@ -2,14 +2,6 @@
 ## Extend this script to add support for more areas of the Godot editor or Godot plugins.
 const Utils := preload("utils.gd")
 
-var viewports: Array[Viewport] = []
-
-## Keeps track of the pieces of the editor interface we need to access and block or highlight.
-## Used by Overlays to know which controls to block or highlight.
-## Also used by the Bubble to know when and how to move, for example, when resizing a panel in the editor.
-var controls_maps: Array[Dictionary] = []
-var extra_draw: Array[Control] = []
-
 ## This is the base control of the Godot editor, the parent to all UI nodes in the entire
 ## application.
 var base_control: Control = null
@@ -149,7 +141,6 @@ var bottom_button_debugger: Button = null
 var bottom_button_tilemap: Button = null
 var bottom_button_tileset: Button = null
 
-var tabs: Array[TabBar] = []
 var tabs_text := {}
 
 
@@ -343,74 +334,12 @@ func _init() -> void:
 	for window in [signals_dialog_window, node_create_window]:
 		window_toggle_tour_mode(window, true)
 
-	tabs = [main_screen_tabs, scene_tabs, filesystem_tabs, inspector_tabs]
-	controls_maps = [
-		{
-			controls =
-			[
-				main_screen_tabs,
-				canvas_item_editor,
-				spatial_editor,
-				script_editor_top_bar,
-				script_editor_items_panel,
-				script_editor_functions_panel,
-				script_editor_code_panel,
-				asset_lib
-			],
-			tabs = main_screen_tabs,
-		},
-		{
-			controls = [scene_tabs, scene_dock, import_dock],
-			tabs = scene_dock.get_parent(),
-		},
-		{
-			controls = [filesystem_tabs, filesystem_dock],
-			tabs = filesystem_dock.get_parent(),
-		},
-		{
-			controls =
-			[
-				inspector_tabs,
-				inspector_dock,
-				node_dock_buttons_box,
-				node_dock_signals_editor,
-				node_dock_groups_editor,
-				history_dock
-			],
-			tabs = inspector_dock.get_parent(),
-		},
-		{
-			controls =
-			[
-				menu_bar,
-				context_switcher,
-				run_bar,
-				rendering_options,
-				logger,
-				debugger,
-				find_in_files,
-				audio_buses,
-				animation_player,
-				shader,
-				bottom_buttons,
-				signals_dialog,
-				signals_dialog_cancel_button,
-				signals_dialog_ok_button,
-				tileset,
-				tilemap,
-				node_create_panel,
-			],
-			tabs = null,
-		},
-	]
 	tabs_text = {
 		scene_tabs: "Scene Tree",
 		inspector_tabs: "Inspector",
 		main_screen_tabs: "Main Screen",
 		filesystem_tabs: "FileSystem",
 	}
-	extra_draw = [scene_tree, filesystem_tree, node_dock_signals_tree]
-	viewports = [base_control.get_viewport()]
 
 
 func clean_up() -> void:
