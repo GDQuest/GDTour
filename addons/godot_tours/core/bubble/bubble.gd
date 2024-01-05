@@ -60,9 +60,9 @@ var translation_service: TranslationService = null
 @onready var finish_button: Button = %FinishButton
 
 @onready var avatar: Node2D = %Avatar
-@onready var tween := create_tween()
-@onready var avatar_tween_position := create_tween()
-@onready var avatar_tween_rotation := create_tween()
+@onready var tween: Tween
+@onready var avatar_tween_position: Tween
+@onready var avatar_tween_rotation: Tween
 @onready var locale_nodes: Array[Node] = [back_button, next_button]
 
 @onready var view_content: VBoxContainer = %ViewContent
@@ -116,8 +116,6 @@ func _ready() -> void:
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		_add_debug_shortcuts()
 
-	tween.kill()
-	avatar_tween_position.kill()
 	button_close.pressed.connect(func():
 		view_content.hide()
 		view_close.show()
@@ -253,12 +251,14 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	var new_avatar_rotation: float = target_rotation_degrees[at]
 	
 	if not avatar.position.is_equal_approx(new_avatar_position):
-		avatar_tween_position.kill()
+		if avatar_tween_position:
+			avatar_tween_position.kill()
 		avatar_tween_position = create_tween().set_ease(Tween.EASE_IN)
 		avatar_tween_position.tween_property(avatar, "position", new_avatar_position, TWEEN_DURATION)
 	
 	if not avatar.position.is_equal_approx(new_avatar_position):
-		avatar_tween_rotation.kill()
+		if avatar_tween_rotation:
+			avatar_tween_rotation.kill()
 		avatar_tween_rotation = create_tween().set_ease(Tween.EASE_IN)
 		avatar_tween_rotation.tween_property(avatar, "rotation_degrees", new_avatar_rotation, TWEEN_DURATION)
 
@@ -285,7 +285,8 @@ func refresh() -> void:
 	}
 	var new_global_position: Vector2 = control.global_position + at_offset[at] + offset
 	if not global_position.is_equal_approx(new_global_position):
-		tween.kill()
+		if tween:
+			tween.kill()
 		tween = create_tween().set_ease(Tween.EASE_IN)
 		tween.tween_property(self, "global_position", new_global_position, TWEEN_DURATION)
 	set_avatar_at(avatar_at)
