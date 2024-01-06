@@ -43,7 +43,6 @@ static func find_tree_item_by_name(tree: Tree, name: String) -> TreeItem:
 		return root
 
 	var result: TreeItem = null
-
 	var stack: Array[TreeItem] = []
 	while not stack.is_empty():
 		var item: TreeItem = stack.pop_back()
@@ -53,7 +52,6 @@ static func find_tree_item_by_name(tree: Tree, name: String) -> TreeItem:
 
 		if item.get_child_count() > 0:
 			stack += item.get_children()
-
 	return result
 
 

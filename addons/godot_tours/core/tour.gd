@@ -464,8 +464,12 @@ func bubble_set_avatar_surprised() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
 
 
-func highlight_scene_nodes(paths: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes, [paths, play_flash, button_index])
+func highlight_scene_nodes_by_name(names: Array[String], play_flash := true, button_index := -1) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_name, [names, play_flash, button_index])
+
+
+func highlight_scene_nodes_by_path(paths: Array[String], play_flash := true, button_index := -1) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_path, [paths, play_flash, button_index])
 
 
 func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:

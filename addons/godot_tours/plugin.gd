@@ -51,7 +51,7 @@ func _enter_tree() -> void:
 		func get_tour_path(tour_entry) -> String:
 			return tour_entry.tour_path
 	))
-	
+
 	await get_tree().physics_frame
 	get_viewport().mode = Window.MODE_MAXIMIZED
 

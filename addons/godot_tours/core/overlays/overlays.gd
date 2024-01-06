@@ -131,7 +131,21 @@ func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, 
 		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash)
 
 
-func highlight_scene_node(path: String, play_flash := false, button_index := -1) -> void:
+func highlight_scene_node_by_name(n: String, play_flash := false, button_index := -1) -> void:
+	highlight_tree_items(
+		interface.scene_tree,
+		func(item: TreeItem) -> bool: return n == item.get_text(0),
+		play_flash,
+		button_index,
+	)
+
+
+func highlight_scene_nodes_by_name(names: Array[String], play_flash := false, button_index := -1) -> void:
+	for n in names:
+		highlight_scene_node_by_name(n, play_flash, button_index)
+
+
+func highlight_scene_node_by_path(path: String, play_flash := false, button_index := -1) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
 		func(item: TreeItem) -> bool: return path == Utils.get_tree_item_path(item),
@@ -140,9 +154,9 @@ func highlight_scene_node(path: String, play_flash := false, button_index := -1)
 	)
 
 
-func highlight_scene_nodes(paths: Array[String], play_flash := false, button_index := -1) -> void:
+func highlight_scene_nodes_by_path(paths: Array[String], play_flash := false, button_index := -1) -> void:
 	for path in paths:
-		highlight_scene_node(path, play_flash, button_index)
+		highlight_scene_node_by_path(path, play_flash, button_index)
 
 
 func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
