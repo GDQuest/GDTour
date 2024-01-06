@@ -90,7 +90,7 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 ## Removes all dimmers and consequently highlights from the editor.
 func clean_up() -> void:
 	for dimmer: Dimmer in dimmers:
-		dimmer.free()
+		dimmer.queue_free()
 	dimmers = []
 
 
@@ -105,7 +105,12 @@ func toggle_dimmers(is_on: bool) -> void:
 func ensure_get_dimmer_for(control: Control) -> Dimmer:
 	var viewport := control.get_viewport()
 	var result: Dimmer = viewport.get_node_or_null("Dimmer")
-	if result == null:
+
+	# Ensure that when we create a new Dimmer, the name Dimmer won't be taken.
+	if result != null and result.is_queued_for_deletion():
+		result.name = "Deleted"
+
+	if result == null or result.is_queued_for_deletion():
 		result = DimmerPackedScene.instantiate()
 		viewport.add_child(result)
 		dimmers.push_back(result)
