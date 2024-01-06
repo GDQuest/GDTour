@@ -8,6 +8,8 @@ It is a technology we use at GDQuest to create guided tours. This technology is 
 
 **Minimum required Godot version: Godot 4.2 standard** (*not* the .NET edition)
 
+**Warning: Godot Tours is an experimental project.** While it appears to work fairly reliably in Godot 4.2 stable, we are still refining the API as we're producing interactive tours. Please note that we may make breaking changes to the tour API with new releases to polish it.
+
 ## Support and contributions
 
 Given our limited resources, and the amount of work that this project represents, it is currently provided as-is: we do not offer individual or community support on this.
