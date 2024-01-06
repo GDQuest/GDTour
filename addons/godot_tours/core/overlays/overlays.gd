@@ -1,7 +1,5 @@
 ## Displays and controls dimmers.
 ## Can dim areas of the editor and block mouse clicks, or allow mouse clicks within a restricted area.
-## Dimmers and dimmers start hidden by default. See toggle_dimmers() to make
-## them visible.
 extends Node
 
 const Highlight := preload("highlight/highlight.gd")
@@ -12,6 +10,7 @@ const Utils := preload("../utils.gd")
 const HighlightPackedScene := preload("highlight/highlight.tscn")
 const DimmerPackedScene := preload("dimmer/dimmer.tscn")
 
+## Used to grow the [TreeItem] rectangle to calculate overlaps for highlights.
 const RECT_GROW := 5
 
 var interface: EditorInterfaceAccess = null
@@ -63,12 +62,13 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 	if rect_getter.is_null():
 		rect_getter = control.get_global_rect
 
+	var editor_scale := EditorInterface.get_editor_scale()
 	var rect := rect_getter.call()
 	for child in dimmer.get_children():
 		if child is Highlight:
 			child.refresh()
 			var child_rect := Rect2(child.global_position, child.custom_minimum_size)
-			if rect.grow(RECT_GROW).intersects(child_rect):
+			if rect.grow(RECT_GROW * editor_scale).intersects(child_rect):
 				overlaps.push_back(child)
 
 	var highlight := HighlightPackedScene.instantiate()
@@ -87,17 +87,21 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 	control.visibility_changed.connect(highlight.refresh)
 
 
+## Removes all dimmers and consequently highlights from the editor.
 func clean_up() -> void:
 	for dimmer: Dimmer in dimmers:
 		dimmer.free()
 	dimmers = []
 
 
+## Toggle dimmers visibility on/off.
 func toggle_dimmers(is_on: bool) -> void:
 	for dimmer: Dimmer in dimmers:
 		dimmer.visible = is_on
 
 
+## Get the dimmer associated with a [Control]. There is only one dimmer per [Viewport] so the dimmer is really
+## associated with the Control's Viewport. If there is no such dimmer, create one on the fly and return it.
 func ensure_get_dimmer_for(control: Control) -> Dimmer:
 	var viewport := control.get_viewport()
 	var result: Dimmer = viewport.get_node_or_null("Dimmer")
@@ -108,6 +112,9 @@ func ensure_get_dimmer_for(control: Control) -> Dimmer:
 	return result
 
 
+## Highlight [TreeItem]s from the given [code]tree[/code] that match the [code]predicate[/code]. The highlight can
+## also play a flash animation if [code]play_flash[/code] is [code]true[/code]. [code]button_index[/code] specifies
+## which button to highlight from the [TreeItem] instead of the whole item.
 func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, button_index := -1) -> void:
 	var root := tree.get_root()
 	if root == null:
@@ -131,20 +138,26 @@ func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, 
 		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash)
 
 
-func highlight_scene_node_by_name(n: String, play_flash := false, button_index := -1) -> void:
+## Higlights a Scene dock [TreeItem] by [code]node_name[/code]. See [method highlight_tree_items] for details
+## on the other parameters.
+func highlight_scene_node_by_name(node_name: String, play_flash := false, button_index := -1) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
-		func(item: TreeItem) -> bool: return n == item.get_text(0),
+		func(item: TreeItem) -> bool: return node_name == item.get_text(0),
 		play_flash,
 		button_index,
 	)
 
 
+## Highlights multiple Scene dock [TreeItem]s by [code]names[/code]. See [method highlight_tree_items]
+## for details on the other parameters.
 func highlight_scene_nodes_by_name(names: Array[String], play_flash := false, button_index := -1) -> void:
-	for n in names:
-		highlight_scene_node_by_name(n, play_flash, button_index)
+	for node_name in names:
+		highlight_scene_node_by_name(node_name, play_flash, button_index)
 
 
+## Highlights a Scene dock [TreeItem] by [code]path[/code]. See [method highlight_tree_items] for details on the
+## other parameters.
 func highlight_scene_node_by_path(path: String, play_flash := false, button_index := -1) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
@@ -154,11 +167,15 @@ func highlight_scene_node_by_path(path: String, play_flash := false, button_inde
 	)
 
 
+## Highlights multiple Scene dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
+## for details on the other parameters.
 func highlight_scene_nodes_by_path(paths: Array[String], play_flash := false, button_index := -1) -> void:
 	for path in paths:
 		highlight_scene_node_by_path(path, play_flash, button_index)
 
 
+## Highlights FileSystem dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
+## for [code]play_flash[/code].
 func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
 	for path in paths:
 		if path.is_empty():
@@ -170,6 +187,8 @@ func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> vo
 		)
 
 
+## Highlights Inspector dock properties by (programmatic) [code]name[/code]. See [method highlight_tree_items]
+## for [code]play_flash[/code].
 func highlight_inspector_properties(names: Array[StringName], play_flash := false) -> void:
 	for name in names:
 		var property: EditorProperty = Utils.find_child(
@@ -203,6 +222,8 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 			add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
 
 
+## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]
+## for details on the other parameters.
 func highlight_signals(signal_names: Array[String], play_flash := false) -> void:
 	for signal_name in signal_names:
 		if signal_name.is_empty():
@@ -215,7 +236,10 @@ func highlight_signals(signal_names: Array[String], play_flash := false) -> void
 		)
 
 
-# TODO: add flash if play_flash is true.
+## Higlights code lines in the current [ScriptEditor] in the range from [code]start[/code] to [code]end[/code].
+## [code]end[/code] is optional in which case only the [code]start[/code] line gets highlighted.
+## [code]do_center[/code] forces the [ScriptEditor] to center veritcally on the given
+## [code]start[/code]-[code]end[/code] line range. See [method highlight_tree_items] for [code]play_flash[/code].
 func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_center := true) -> void:
 	start -= 1
 	end = start if end < 1 else (end - 1)
@@ -243,9 +267,10 @@ func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_ce
 			rect.position.x = code_editor.global_position.x
 			rect.size.x = code_editor.size.x
 		return rect
-	add_highlight_to_control.call_deferred(code_editor, rect_getter)
+	add_highlight_to_control.call_deferred(code_editor, rect_getter, play_flash)
 
 
+## Highlights arbitrary [code]controls[/code]. See [method highlight_tree_items] for [code]play_flash[/code].
 func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 	for control in controls:
 		if control == null:
@@ -253,6 +278,8 @@ func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 		add_highlight_to_control(control, control.get_global_rect, play_flash)
 
 
+## Highlights either the whole [code]tabs[/code] [TabBar] if [code]index == -1[/code] or the given [TabContainer] tab
+## by [code]index[/code].
 func highlight_tab_index(tabs: Control, index := -1) -> void:
 	var tab_bar: TabBar = Utils.find_child(tabs, "TabBar") if tabs is TabContainer else tabs
 	var dimmer := ensure_get_dimmer_for(tab_bar)
@@ -264,6 +291,7 @@ func highlight_tab_index(tabs: Control, index := -1) -> void:
 	add_highlight_to_control(tabs, rect_getter)
 
 
+## Highlights a [TabContainer] tab for the given [code]tabs[/code] [TabBar] by its [code]title[/code].
 func highlight_tab_title(tabs: Control, title: String) -> void:
 	if not (tabs is TabContainer or tabs is TabBar):
 		return
@@ -274,7 +302,7 @@ func highlight_tab_title(tabs: Control, title: String) -> void:
 			highlight_tab_index(tabs, index)
 
 
-## Highlights a ListItem in the TileMap dock, such as a tile or a terrain's drawing mode or terrain
+## Highlights a [Itemlist] in the TileMap dock, such as a tile or a terrain's drawing mode or terrain
 ## tile.
 func highlight_tilemap_list_item(item_list: ItemList, item_index: int) -> void:
 	if item_list == null or item_index < 0 or item_index >= item_list.item_count:

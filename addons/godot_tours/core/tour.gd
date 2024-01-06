@@ -106,7 +106,6 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	interface.restore_default_layout()
 	_build()
 	bubble.set_step_count(_steps.size())
-	overlays.toggle_dimmers(true)
 	step_changed.connect(bubble.update_step_count_display)
 
 
@@ -664,10 +663,7 @@ func find_tabs_title(tabs: TabBar, title: String) -> int:
 
 ## Toggles the visibility of all the tour-specific nodes: overlays, bubble, and mouse.
 func toggle_visible(is_visible: bool) -> void:
-	for node in [
-		bubble,
-		mouse,
-	]:
+	for node in [bubble, mouse]:
 		if node != null:
 			node.visible = is_visible
 	overlays.toggle_dimmers(is_visible)
