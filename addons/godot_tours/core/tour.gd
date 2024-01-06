@@ -578,7 +578,7 @@ func ensure_mouse() -> void:
 
 func clear_mouse() -> void:
 	if mouse != null:
-		mouse.free()
+		mouse.queue_free()
 		mouse = null
 
 
