@@ -118,10 +118,11 @@ func _build() -> void:
 
 
 func clean_up() -> void:
-	bubble.queue_free()
 	_clear_game_world_overlays()
 	clear_mouse()
 	log.clean_up()
+	if is_instance_valid(bubble):
+		bubble.queue_free()
 
 
 func set_index(value: int) -> void:
@@ -568,7 +569,7 @@ func ensure_mouse() -> void:
 		# We don't preload to avoid errors on a project's first import, to distribute the tour to
 		# schools for example.
 		var MousePackedScene := load("res://addons/godot_tours/core/mouse/mouse.tscn")
-		mouse = MousePackedScene.instantiate() as Mouse
+		mouse = MousePackedScene.instantiate()
 		interface.base_control.get_viewport().add_child(mouse)
 
 
@@ -579,8 +580,8 @@ func clear_mouse() -> void:
 
 
 func play_mouse() -> void:
-	if mouse != null:
-		mouse.play()
+	ensure_mouse()
+	mouse.play()
 
 
 func get_scene_node_by_path(path: String) -> Node:
