@@ -1,4 +1,4 @@
-## Animated mouse cursor for the tutorial. 
+## Animated mouse cursor for the tutorial.
 ## Moves to a desired point to indicate where to click or where to drag and drop something.
 ## Call functions add_*_operation() to queue animations, then call play() to run the animations.
 ## See tour.gd for utility functions that simplify usage of the mouse cursor.

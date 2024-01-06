@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://cn2a5q0hrcvsd"]
-
-[node name="Overlay" type="ColorRect" groups=["overlay"]]
-top_level = true
-mouse_default_cursor_shape = 8
-color = Color(1, 1, 1, 0)

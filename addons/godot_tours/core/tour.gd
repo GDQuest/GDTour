@@ -62,7 +62,6 @@ var _steps: Array[Array] = []
 var _step_commands: Array[Command] = []
 
 
-
 ## Overlays added to the current scene to highlight a specific area.
 ## We don't set their owner property so they stay hidden from the scene tree, but still show in the viewport.
 ## They are automatically cleared on new _steps.
@@ -107,11 +106,7 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	interface.restore_default_layout()
 	_build()
 	bubble.set_step_count(_steps.size())
-	bubble.set_custom_minimum_size(bubble.custom_minimum_size * EditorInterface.get_editor_scale())
-
-	overlays.toggle_overlays(true)
 	overlays.toggle_dimmers(true)
-
 	step_changed.connect(bubble.update_step_count_display)
 
 
@@ -123,11 +118,11 @@ func _build() -> void:
 
 
 func clean_up() -> void:
-	bubble.clean_up()
-	bubble.queue_free()
 	_clear_game_world_overlays()
 	clear_mouse()
 	log.clean_up()
+	if is_instance_valid(bubble):
+		bubble.queue_free()
 
 
 func set_index(value: int) -> void:
@@ -167,7 +162,8 @@ func next() -> void:
 func complete_step() -> void:
 	var step_start: Array[Command] = [
 		Command.new(bubble.clear),
-		Command.new(overlays.clear),
+		Command.new(overlays.clean_up),
+		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
 		Command.new(_clear_game_world_overlays)
 	]
@@ -504,8 +500,7 @@ func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:
 			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
-		var overlay := overlays.find_overlay_for(interface.canvas_item_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+		overlays.add_highlight_to_control(interface.canvas_item_editor, rect_getter, play_flash),
 	)
 
 
@@ -525,8 +520,7 @@ func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index :
 			var s := camera.unproject_position(start)
 			var e := camera.unproject_position(end)
 			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
-		var overlay := overlays.find_overlay_for(interface.spatial_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+		overlays.add_highlight_to_control(interface.spatial_editor, rect_getter, play_flash),
 	)
 
 
@@ -575,7 +569,7 @@ func ensure_mouse() -> void:
 		# We don't preload to avoid errors on a project's first import, to distribute the tour to
 		# schools for example.
 		var MousePackedScene := load("res://addons/godot_tours/core/mouse/mouse.tscn")
-		mouse = MousePackedScene.instantiate() as Mouse
+		mouse = MousePackedScene.instantiate()
 		interface.base_control.get_viewport().add_child(mouse)
 
 
@@ -586,8 +580,8 @@ func clear_mouse() -> void:
 
 
 func play_mouse() -> void:
-	if mouse != null:
-		mouse.play()
+	ensure_mouse()
+	mouse.play()
 
 
 func get_scene_node_by_path(path: String) -> Node:
@@ -645,13 +639,6 @@ func get_tree_item_center_by_name(tree: Tree, name: String) -> Vector2:
 	return result
 
 
-func get_highlight_center_by_index(control: Control, index := 0) -> Vector2:
-	var highlights := overlays.find_highlights_for(control)
-	if index < 0 or index >= highlights.size():
-		return Vector2.ZERO
-	return highlights[index].get_global_rect().get_center()
-
-
 func node_find_path(node_name: String) -> String:
 	var root_node := EditorInterface.get_edited_scene_root()
 	var found_node := root_node.find_child(node_name)
@@ -679,7 +666,6 @@ func toggle_visible(is_visible: bool) -> void:
 	]:
 		if node != null:
 			node.visible = is_visible
-	overlays.toggle_overlays(is_visible)
 	overlays.toggle_dimmers(is_visible)
 
 

@@ -2,14 +2,13 @@
 
 [ext_resource type="Script" path="res://addons/godot_tours/core/overlays/dimmer/dimmer.gd" id="1_30fag"]
 
-[node name="Dimmer" type="CanvasGroup"]
+[node name="Dimmer" type="CanvasGroup" groups=["dimmer"]]
 self_modulate = Color(1, 1, 1, 0.6)
-top_level = true
 script = ExtResource("1_30fag")
 
 [node name="FilmColorRect" type="ColorRect" parent="."]
 unique_name_in_owner = true
 offset_right = 1920.0
-offset_bottom = 1043.0
-mouse_filter = 2
+offset_bottom = 1011.0
+mouse_default_cursor_shape = 8
 color = Color(0, 0, 0, 1)

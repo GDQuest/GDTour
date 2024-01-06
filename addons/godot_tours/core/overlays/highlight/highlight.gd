@@ -8,11 +8,13 @@ const Dimmer := preload("../dimmer/dimmer.gd")
 
 var rect_getters: Array[Callable] = []
 var dimmer_mask: ColorRect = null
+var control: Control = null
 
 @onready var flash_area: ColorRect = %FlashArea
 
 
-func setup(rect_getter: Callable, dimmer: Dimmer, stylebox: StyleBoxFlat) -> void:
+func setup(control: Control, rect_getter: Callable, dimmer: Dimmer, stylebox: StyleBoxFlat) -> void:
+	self.control = control
 	self.dimmer_mask = dimmer.add_mask()
 	self.rect_getters.push_back(rect_getter)
 	refresh.call_deferred()
@@ -34,18 +36,19 @@ func refresh() -> void:
 	for index in range(rect_getters.size()):
 		var new_rect := rect_getters[index].call()
 		if not new_rect.position.is_zero_approx() and not new_rect.size.is_zero_approx():
-			rect = new_rect if rect.position.is_zero_approx() and rect.size.is_zero_approx() else rect.merge(new_rect)
+			rect = (
+				new_rect
+				if rect.position.is_zero_approx() and rect.size.is_zero_approx()
+				else rect.merge(new_rect)
+			)
 	global_position = rect.position
 	custom_minimum_size = rect.size
-	visible = rect != Rect2()
+	visible = rect != Rect2() and control.is_visible_in_tree()
 	dimmer_mask.global_position = global_position
 	dimmer_mask.size = custom_minimum_size
-	dimmer_mask.visible = is_visible_in_tree()
+	dimmer_mask.visible = visible
 	reset_size.call_deferred()
 
 
-func refresh_tabs(index: int, tabs: TabBar) -> void:
-	var rect := tabs.get_tab_rect(index)
-	set_position.call_deferred(rect.position)
-	set_custom_minimum_size.call_deferred(rect.size)
-	reset_size.call_deferred()
+func refresh_tabs(_index: int) -> void:
+	refresh()
