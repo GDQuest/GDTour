@@ -21,8 +21,14 @@ offset_right = 395.0
 offset_bottom = 174.0
 theme = ExtResource("1_yjsvg")
 
-[node name="BackgroundTextureRect" type="TextureRect" parent="PanelContainer"]
+[node name="Outline" type="PanelContainer" parent="."]
+clip_contents = true
+layout_mode = 2
+theme_type_variation = &"PanelContainerOutline"
+
+[node name="BackgroundTextureRect" type="TextureRect" parent="Outline"]
 unique_name_in_owner = true
+show_behind_parent = true
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 6

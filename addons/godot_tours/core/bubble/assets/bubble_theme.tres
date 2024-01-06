@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=14 format=3 uid="uid://cx2cxgbadh7fg"]
+[gd_resource type="Theme" load_steps=15 format=3 uid="uid://cx2cxgbadh7fg"]
 
 [ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/core/bubble/assets/fonts/Mukta-Bold.ttf" id="2_dcrkv"]
 [ext_resource type="FontFile" uid="uid://c3xincxynype7" path="res://addons/godot_tours/core/bubble/assets/fonts/hasklug_nerd_mono.otf" id="3_q3s3n"]
@@ -52,6 +52,17 @@ shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7nwh6"]
 bg_color = Color(0.0823529, 0.133333, 0.239216, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.184314)
+shadow_size = 4
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_amkf7"]
+bg_color = Color(0.0823529, 0.133333, 0.239216, 1)
+draw_center = false
 border_width_left = 4
 border_width_top = 4
 border_width_right = 4
@@ -61,9 +72,6 @@ corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.184314)
-shadow_size = 4
-shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_biu8p"]
 
@@ -120,6 +128,8 @@ NextButton/styles/hover = SubResource("StyleBoxFlat_a3rh2")
 NextButton/styles/normal = SubResource("StyleBoxFlat_mkome")
 NextButton/styles/pressed = SubResource("StyleBoxFlat_x34p0")
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_7nwh6")
+PanelContainerOutline/base_type = &"PanelContainer"
+PanelContainerOutline/styles/panel = SubResource("StyleBoxFlat_amkf7")
 RichTextLabel/colors/default_color = Color(1, 1, 1, 1)
 RichTextLabel/font_sizes/bold_font_size = 16
 RichTextLabel/font_sizes/bold_italics_font_size = 16
