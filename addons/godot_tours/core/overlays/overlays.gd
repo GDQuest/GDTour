@@ -124,14 +124,14 @@ func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, 
 	var root := tree.get_root()
 	if root == null:
 		return
-
+	
+	var height_fix := 6 * EditorInterface.get_editor_scale()
 	for item in Utils.filter_tree_items(root, predicate):
 		interface.unfold_tree_item(item)
 		tree.scroll_to_item(item)
 
 		var item_path := Utils.get_tree_item_path(item)
 		var rect_getter := func() -> Rect2:
-			const height_fix := 6
 			for the_item in Utils.filter_tree_items(
 				tree.get_root(),
 				func(ti: TreeItem) -> bool: return item_path == Utils.get_tree_item_path(ti),
