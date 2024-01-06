@@ -43,6 +43,10 @@ func _enter_tree() -> void:
 		push_warning("Godot Tours: no tours found. The user interface will not be modified.")
 		return
 
+	# Hack for `EditorInterface.open_scene_from_path()`, see: https://github.com/godotengine/godot/issues/86869
+	for _frame in range(10):
+		await get_tree().process_frame
+
 	_tour_paths.assign(tour_list.tours.map(
 		func get_tour_path(tour_entry) -> String:
 			return tour_entry.tour_path

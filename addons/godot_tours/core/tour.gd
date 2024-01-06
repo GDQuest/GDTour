@@ -165,7 +165,7 @@ func complete_step() -> void:
 		Command.new(overlays.clean_up),
 		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
-		Command.new(_clear_game_world_overlays)
+		Command.new(_clear_game_world_overlays),
 	]
 	_step_commands.push_back(Command.new(play_mouse))
 	_steps.push_back(step_start + _step_commands)
