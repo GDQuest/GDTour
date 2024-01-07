@@ -71,6 +71,18 @@ var script_editor_functions_panel: VBoxContainer = null
 var script_editor_code_panel: VBoxContainer = null
 var asset_lib: PanelContainer = null
 
+# Snap Dialog, AKA Configure Snap window
+var snap_options_window: ConfirmationDialog = null
+var snap_options_cancel_button: Button = null
+var snap_options_ok_button: Button = null
+var snap_options: VBoxContainer = null
+var snap_options_grid_offset_controls: Array[Control] = []
+var snap_options_grid_step_controls: Array[Control] = []
+var snap_options_primary_line_controls: Array[Control] = []
+var snap_options_rotation_offset_controls: Array[Control] = []
+var snap_options_rotation_step_controls: Array[Control] = []
+var snap_options_scale_step_controls: Array[Control] = []
+
 # Left Upper
 var scene_tabs: TabBar = null
 var scene_dock: VBoxContainer = null
@@ -205,6 +217,19 @@ func _init() -> void:
 	canvas_item_editor_zoom_button_lower = canvas_item_editor_zoom_widget.get_child(0)
 	canvas_item_editor_zoom_button_reset = canvas_item_editor_zoom_widget.get_child(1)
 	canvas_item_editor_zoom_button_increase = canvas_item_editor_zoom_widget.get_child(2)
+
+	snap_options_window = Utils.find_child(base_control, "SnapDialog")
+	snap_options = snap_options_window.get_child(0)
+	snap_options_cancel_button = snap_options_window.get_cancel_button()
+	snap_options_ok_button = snap_options_window.get_ok_button()
+	var snap_options_controls: Array[Node] = snap_options.get_child(0).get_children()
+	snap_options_grid_offset_controls.assign(snap_options_controls.slice(0, 3))
+	snap_options_grid_step_controls.assign(snap_options_controls.slice(3, 6))
+	snap_options_primary_line_controls.assign(snap_options_controls.slice(6, 9))
+	snap_options_controls = snap_options.get_child(2).get_children()
+	snap_options_rotation_offset_controls.assign(snap_options_controls.slice(0, 2))
+	snap_options_rotation_step_controls.assign(snap_options_controls.slice(2, 4))
+	snap_options_scale_step_controls.assign(snap_options.get_child(4).get_children())
 
 	spatial_editor = Utils.find_child(main_screen, "Node3DEditor")
 	spatial_editor_cameras.assign(spatial_editor.find_children("", "Camera3D", true, false))
