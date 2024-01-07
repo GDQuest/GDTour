@@ -381,7 +381,7 @@ func bubble_add_task_toggle_button(button: Button, is_toggled := true, descripti
 	bubble_add_task(
 		description,
 		1,
-		func(task: Task) -> int: return 1 if button.button_pressed == is_toggled else 0,
+		func(_task: Task) -> int: return 1 if button.button_pressed == is_toggled else 0,
 		noop_error_predicate,
 	)
 
@@ -392,7 +392,7 @@ func bubble_add_task_set_tab_to_index(tabs: TabBar, index: int, description := "
 		return
 	var which_tabs: String = "[b]%s[/b] tabs" % interface.tabs_text.get(tabs, "")
 	description = gtr("Set %s to tab with index [b]%d[/b].") % [which_tabs, index] if description.is_empty() else description
-	queue_command(bubble.add_task, [description, 1, func(task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate])
+	queue_command(bubble.add_task, [description, 1, func(_task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate])
 
 
 func bubble_add_task_set_tab_to_title(tabs: TabBar, title: String, description := "") -> void:
@@ -410,12 +410,34 @@ func bubble_add_task_select_node(node_name: String) -> void:
 	bubble_add_task(
 		"Select the [b]" + node_name + "[/b] node in the [b]Scene Dock[/b].",
 		1,
-		func task_select_node(task: Task) -> int:
+		func task_select_node(_task: Task) -> int:
 			var scene_root: Node = EditorInterface.get_edited_scene_root()
 			var target_node: Node = scene_root.find_child(node_name)
 			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
 			return 1 if selected_nodes.size() == 1 and selected_nodes.front() == target_node else 0,
 	)
+
+
+func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, description := "") -> void:
+	var controls := ranges.keys()
+	if controls.any(func(n: Node) -> bool: return not n is Range):
+		var classes := controls.map(func(x: Node) -> String: return x.get_class())
+		warn("Not all 'ranges' are of type 'Range' [b]'[%s]'[/b]" % [classes], "bubble_add_task_set_range_value")
+	else:
+		if description.is_empty():
+			description = gtr(
+				"""Set [b]%s[/b] to [code]%s[/code]"""
+				% [
+					label_text,
+					"x".join(ranges.keys().map(func(r: Range) -> String: return str(snappedf(ranges[r], r.step)))),
+				]
+			)
+		bubble_add_task(
+			description,
+			1,
+			func set_ranges(_task: Task) -> int:
+				return 1 if ranges.keys().all(func(r: Range) -> bool: return r.value == ranges[r]) else 0,
+		)
 
 
 func bubble_set_header(text: String) -> void:
@@ -669,7 +691,7 @@ func toggle_visible(is_visible: bool) -> void:
 	overlays.toggle_dimmers(is_visible)
 
 
-func noop_error_predicate(task: Task) -> bool:
+func noop_error_predicate(_task: Task) -> bool:
 	return false
 
 
