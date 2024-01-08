@@ -28,6 +28,7 @@ var plugin_path := ""
 var interface: EditorInterfaceAccess = null
 var overlays: Overlays = null
 var translation_service: TranslationService = null
+var tour_paths: Array[String] = []
 
 @onready var toggle_dimmers_check_button: Button = %ToggleDimmersCheckButton
 @onready var dimmers_alpha_h_slider: HSlider = %OverlaysAlphaHSlider
@@ -38,16 +39,16 @@ var translation_service: TranslationService = null
 @onready var button_start_tour: Button = %ButtonStartTour
 
 
-func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Overlays, translation_service: TranslationService, tour: Tour) -> void:
-	if not is_inside_tree():
-		await ready
-
+func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Overlays, translation_service: TranslationService, tour: Tour, tour_paths: Array[String]) -> void:
 	self.plugin_path = plugin_path
 	self.interface = interface
 	self.overlays = overlays
 	self.translation_service = translation_service
 	self.tour = tour
+	self.tour_paths = tour_paths
 
+
+func _ready() -> void:
 	toggle_dimmers_check_button.button_pressed = not overlays.dimmers.is_empty()
 	toggle_dimmers_check_button.toggled.connect(func(is_active: bool) -> void:
 		overlays.toggle_dimmers(is_active)
@@ -62,6 +63,7 @@ func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Over
 	overlays.add_highlight_to_control(self)
 	dimmers_alpha_h_slider.editable = toggle_dimmers_check_button.button_pressed
 	_update_spinbox_step_count()
+	populate_tours_item_list()
 
 
 func _exit_tree() -> void:
@@ -92,11 +94,11 @@ func _on_overlay_alpha_h_slider_value_changed(value: float) -> void:
 	toggle_dimmers_check_button.set_pressed_no_signal(not is_zero_approx(value))
 
 
-func populate_tours_item_list(tours: Array[String]) -> void:
+func populate_tours_item_list() -> void:
 	tours_item_list.clear()
-	for index in range(tours.size()):
-		tours_item_list.add_item(tours[index].get_file())
-		tours_item_list.set_item_metadata(index, tours[index])
+	for index in range(tour_paths.size()):
+		tours_item_list.add_item(tour_paths[index].get_file())
+		tours_item_list.set_item_metadata(index, tour_paths[index])
 
 
 func _update_spinbox_step_count() -> void:

@@ -16,6 +16,7 @@ theme = ExtResource("1_4yn7l")
 script = ExtResource("1_kfmbk")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

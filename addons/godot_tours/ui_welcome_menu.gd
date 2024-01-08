@@ -21,6 +21,7 @@ var selected_tour_path := ""
 @onready var label_title: Label = %LabelTitle
 @onready var margin_container: MarginContainer = %MarginContainer
 @onready var panel_container: PanelContainer = %PanelContainer
+@onready var color_rect: ColorRect = %ColorRect
 
 
 var _theme_utils: ThemeUtils = ThemeUtils.new()
@@ -56,6 +57,11 @@ func setup(tour_list: GodotTourList) -> void:
 		panel_container.custom_minimum_size.x *= EditorInterface.get_editor_scale()
 		[label_title, button].map(_theme_utils.scale_font_size)
 		_theme_utils.scale_margin_container_margins(margin_container)
-	
+
 	if tours_column.get_child_count() > 0:
 		tours_column.get_child(0).select()
+
+
+func toggle_dimmer(is_on := true) -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP if is_on else Control.MOUSE_FILTER_IGNORE
+	color_rect.mouse_filter = mouse_filter

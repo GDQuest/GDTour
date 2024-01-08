@@ -13,6 +13,7 @@ const Overlays := preload("core/overlays/overlays.gd")
 const Debugger := preload("core/debugger/debugger.gd")
 const TranslationParser := preload("core/translation/translation_parser.gd")
 const TranslationService := preload("core/translation/translation_service.gd")
+const UIWelcomeMenu := preload("ui_welcome_menu.gd")
 
 const UI_DEBUGGER_DOCK_SCENE := preload("core/debugger/debugger.tscn")
 const UI_WELCOME_MENU_SCENE = preload("ui_welcome_menu.tscn")
@@ -24,6 +25,7 @@ var translation_service: TranslationService = null
 var debugger: Debugger = null
 var editor_interface_access: EditorInterfaceAccess = null
 var overlays: Overlays = null
+var welcome_menu: UIWelcomeMenu = null
 
 ## Resource of type godot_tour_list.gd. Contains an array of tour entries.
 var tour_list = get_tours()
@@ -94,13 +96,14 @@ func _show_welcome_menu() -> void:
 
 	_button_top_bar.hide()
 
-	var welcome_menu := UI_WELCOME_MENU_SCENE.instantiate()
+	welcome_menu = UI_WELCOME_MENU_SCENE.instantiate()
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
 	welcome_menu.setup(tour_list)
 	welcome_menu.tour_start_requested.connect(func start_tour(tour_path: String) -> void:
 		welcome_menu.queue_free()
+		welcome_menu = null
 		tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
 		tour.ended.connect(_button_top_bar.show)
 	)
@@ -117,6 +120,9 @@ func _exit_tree() -> void:
 	if debugger != null:
 		remove_control_from_docks(debugger)
 		debugger.queue_free()
+
+	if welcome_menu != null:
+		welcome_menu.queue_free()
 
 	editor_interface_access.clean_up()
 	overlays.clean_up()
@@ -153,13 +159,14 @@ func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
 func toggle_debugger() -> void:
 	if debugger == null:
 		debugger = UI_DEBUGGER_DOCK_SCENE.instantiate()
-		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour)
-		debugger.populate_tours_item_list(_tour_paths)
+		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour, _tour_paths)
 
 	if not debugger.is_inside_tree():
 		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
+		welcome_menu.toggle_dimmer(false)
 	else:
 		remove_control_from_docks(debugger)
+		welcome_menu.toggle_dimmer(true)
 
 
 ## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of
@@ -170,5 +177,3 @@ func get_tours():
 		return null
 
 	return load(TOUR_LIST_FILE_PATH)
-
-

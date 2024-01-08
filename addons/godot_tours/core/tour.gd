@@ -87,14 +87,8 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	var BubblePackedScene := load("res://addons/godot_tours/core/bubble/bubble.tscn")
 	bubble = BubblePackedScene.instantiate()
 	bubble.setup(interface, translation_service)
-	bubble.back_button.pressed.connect(func():
-		EditorInterface.stop_playing_scene()
-		back()
-	)
-	bubble.next_button.pressed.connect(func():
-		EditorInterface.stop_playing_scene()
-		next()
-	)
+	bubble.back_button.pressed.connect(back)
+	bubble.next_button.pressed.connect(next)
 	bubble.close_requested.connect(func():
 		clean_up()
 		toggle_visible(false)
@@ -144,17 +138,31 @@ func set_index(value: int) -> void:
 	else:
 		bubble.back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		bubble.next_button.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
-
 	step_changed.emit(index)
 
 
 func back() -> void:
+	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.BACK)
 
 
+func auto_back() -> void:
+	queue_command(func() -> void:
+		await interface.base_control.get_tree().process_frame
+		back()
+	)
+
+
 func next() -> void:
+	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.NEXT)
 
+
+func auto_next() -> void:
+	queue_command(func() -> void:
+		await interface.base_control.get_tree().process_frame
+		next()
+	)
 
 ## Completes the current step's commands, adding some more commands to clear the bubble, overlays, and the mouse.
 ## Then, this function appends the completed step (an array of Command objects) to the tour.
