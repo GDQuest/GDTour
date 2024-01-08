@@ -66,7 +66,6 @@ var _step_commands: Array[Command] = []
 ## We don't set their owner property so they stay hidden from the scene tree, but still show in the viewport.
 ## They are automatically cleared on new _steps.
 var game_world_overlays := []
-var state := {}
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -146,16 +145,16 @@ func back() -> void:
 	set_index(index + Direction.BACK)
 
 
+func next() -> void:
+	EditorInterface.stop_playing_scene()
+	set_index(index + Direction.NEXT)
+
+
 func auto_back() -> void:
 	queue_command(func() -> void:
 		await interface.base_control.get_tree().process_frame
 		back()
 	)
-
-
-func next() -> void:
-	EditorInterface.stop_playing_scene()
-	set_index(index + Direction.NEXT)
 
 
 func auto_next() -> void:
@@ -199,13 +198,6 @@ func scene_open(path: String) -> void:
 	queue_command(EditorInterface.open_scene_from_path, [path])
 
 
-func scene_edit_node(node: Node) -> void:
-	if node == null:
-		warn("Called with [b]null[/b] value", "scene_edit_node")
-		return
-	queue_command(EditorInterface.edit_node, [node])
-
-
 func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
 	scene_deselect_all_nodes()
 	queue_command(func() -> void:
@@ -221,19 +213,17 @@ func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
 func scene_toggle_lock_nodes_by_path(node_paths: Array[String] = [], is_locked := true) -> void:
 	queue_command(func get_and_lock_nodes() -> void:
 		var root := EditorInterface.get_edited_scene_root()
+		var prop := &"_edit_lock_"
 		if root.name in node_paths:
-			root.set_meta("_edit_lock_", is_locked)
+			root.set_meta(prop, is_locked) if is_locked else root.remove_meta(prop)
 		for child in root.find_children("*"):
 			if child.owner == root and root.name.path_join(root.get_path_to(child)) in node_paths:
-				child.set_meta("_edit_lock_", is_locked)
+				child.set_meta(prop, is_locked) if is_locked else child.remove_meta(prop)
 	)
 
 
 func scene_deselect_all_nodes() -> void:
-	queue_command(func() -> void:
-		EditorInterface.edit_node(null)
-		editor_selection.clear()
-	)
+	queue_command(editor_selection.clear)
 
 
 func tabs_set_to_index(tabs: TabBar, index: int) -> void:
