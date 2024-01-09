@@ -533,7 +533,7 @@ func highlight_tilemap_list_item(item_list: ItemList, item_index: int, play_flas
 	queue_command(overlays.highlight_tilemap_list_item.bind(item_list, item_index, play_flash))
 
 
-func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index := 0, play_flash := false) -> void:
+func highlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index := 0, play_flash := false) -> void:
 	if index < 0 or index > interface.spatial_editor_cameras.size():
 		warn("[b]'index(=%d)'[/b] not in [b]'range(0, interface.spatial_editor_cameras.size()(=%d))'[/b]." % [index, interface.spatial_editor_cameras.size()], "higlight_spatial_editor_camera_region")
 		return
