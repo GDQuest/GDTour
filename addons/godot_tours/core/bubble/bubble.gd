@@ -172,7 +172,7 @@ func add_text(text: Array[String]) -> void:
 
 func add_code(code: Array[String]) -> void:
 	for snippet in code:
-		add_element(CodeEditPackedScene.instantiate(), code)
+		add_element(CodeEditPackedScene.instantiate(), snippet)
 
 
 func add_texture(texture: Texture2D) -> void:

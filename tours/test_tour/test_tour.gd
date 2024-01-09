@@ -60,7 +60,10 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	context_set("2D")
+	context_set_2d()
+	queue_command(func() -> void:
+		await interface.base_control.get_tree().process_frame
+	)
 	canvas_item_editor_center_at(Vector2.ZERO, CanvasItemEditorZoom._50)
 	queue_command(func() -> void:
 		var scene_viewport := EditorInterface.get_edited_scene_root().get_viewport()
@@ -89,6 +92,103 @@ func _build() -> void:
 			overlays.ensure_get_dimmer_for(interface.base_control).get_children().filter(predicate).size() == 1,
 			"'FlashArea' instance should be a child of the main screen 'Dimmer'",
 		)
+	)
+	auto_next()
+	complete_step()
+
+	context_set("2D")
+	queue_command(func() -> void:
+		assert(
+			interface.context_switcher_2d_button.button_pressed == true,
+			"'interface.context_switcher_2d_button' should be pressed",
+		)
+	)
+	auto_next()
+	complete_step()
+
+	context_set("3D")
+	queue_command(func() -> void:
+		assert(
+			interface.context_switcher_3d_button.button_pressed == true,
+			"'interface.context_switcher_3d_button' should be pressed",
+		)
+	)
+	auto_next()
+	complete_step()
+
+	context_set("Script")
+	queue_command(func() -> void:
+		assert(
+			interface.context_switcher_script_button.button_pressed == true,
+			"'interface.context_switcher_script_button' should be pressed"
+		)
+	)
+	auto_next()
+	complete_step()
+
+	context_set("AssetLib")
+	queue_command(func() -> void:
+		assert(
+			interface.context_switcher_asset_lib_button.button_pressed == true,
+			"'interface.context_switcher_asset_lib_button' should be pressed",
+		)
+	)
+	auto_next()
+	complete_step()
+
+	var title := "Test Title"
+	bubble_set_title(title)
+	queue_command(func() -> void:
+		assert(
+			bubble.title_label.text == title, "'bubble.title_label.text' should be 'Test Title'"
+		)
+	)
+	auto_next()
+	complete_step()
+
+	var lines: Array[String] = ["Test Line 1", "Test Line 2"]
+	bubble_add_text(lines)
+	queue_command(func() -> void:
+		await bubble.get_tree().process_frame
+		assert(bubble.main_v_box_container.get_child_count() == 2, "'bubble.main_v_box_container' should have '2' children")
+		var elements := bubble.main_v_box_container.get_children()
+		for i in range(bubble.main_v_box_container.get_child_count()):
+			var element := elements[i]
+			var line := lines[i]
+			assert(
+				element is RichTextLabel and element.text == line,
+				"'bubble.main_v_box_container' '%d' element should have text '%s'" % [i, line],
+			)
+	)
+	auto_next()
+	complete_step()
+
+	lines = ["Code Line 1", "Code Line 2", "Code Line 3"]
+	bubble_add_code(lines)
+	queue_command(func() -> void:
+		await bubble.get_tree().process_frame
+		assert(bubble.main_v_box_container.get_child_count() == 3, "'bubble.main_v_box_container' should have '3' children")
+		var elements := bubble.main_v_box_container.get_children()
+		for i in range(bubble.main_v_box_container.get_child_count()):
+			var element := elements[i]
+			var line := lines[i]
+			assert(
+				element is CodeEdit and element.text == line,
+				"'bubble.main_v_box_container' '%d' element should have text '%s'" % [i, line],
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var texture := load("res://icon.svg")
+	bubble_add_texture(texture)
+	queue_command(func() -> void:
+		await bubble.get_tree().process_frame
+		for element: TextureRect in bubble.main_v_box_container.get_children():
+			assert(
+				element.texture == texture,
+				"'bubble.main_v_box_container' element should a 'TextureRect' set to 'icon.svg'",
+			)
 	)
 	auto_next()
 	complete_step()

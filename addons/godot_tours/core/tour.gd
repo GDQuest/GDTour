@@ -277,10 +277,12 @@ func canvas_item_editor_flash_area(global_rect: Rect2) -> void:
 	)
 
 
+# TODO: how to test?
 func spatial_editor_focus() -> void:
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
 
 
+# TODO: how to test?
 func spatial_editor_focus_node_by_paths(paths: Array[String]) -> void:
 	scene_select_nodes_by_path(paths)
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
