@@ -1,5 +1,5 @@
 @tool
-extends Control
+extends CanvasLayer
 
 const UI_SELECTABLE_TOUR_SCENE = preload("ui_selectable_tour.tscn")
 const UiSelectableTour = preload("res://addons/godot_tours/ui_selectable_tour.gd")
@@ -15,6 +15,7 @@ signal closed
 
 var selected_tour_path := ""
 
+@onready var control: Control = %Control
 @onready var button: Button = %ButtonStartLearning
 @onready var tours_column: VBoxContainer = %ToursColumn
 @onready var button_close: Button = %ButtonClose
@@ -63,5 +64,5 @@ func setup(tour_list: GodotTourList) -> void:
 
 
 func toggle_dimmer(is_on := true) -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP if is_on else Control.MOUSE_FILTER_IGNORE
-	color_rect.mouse_filter = mouse_filter
+	control.mouse_filter = Control.MOUSE_FILTER_STOP if is_on else Control.MOUSE_FILTER_IGNORE
+	color_rect.mouse_filter = control.mouse_filter

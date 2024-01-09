@@ -70,10 +70,9 @@ func _enter_tree() -> void:
 	EditorInterface.get_base_control().add_child(overlays)
 
 	# Add button to the editor top bar, right before the run buttons
-	if tour_list != null:
-		_add_top_bar_button()
-		_show_welcome_menu()
-		ensure_pot_generation(plugin_path)
+	_add_top_bar_button()
+	_show_welcome_menu()
+	ensure_pot_generation(plugin_path)
 
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		toggle_debugger()
@@ -82,6 +81,9 @@ func _enter_tree() -> void:
 ## Adds a button labeled Godot Tours to the editor top bar, right before the run buttons.
 ## This button only shows when there are tours in the project, there's no tour active, and the welcome menu is hidden.
 func _add_top_bar_button() -> void:
+	if tour_list == null:
+		return
+
 	_button_top_bar = UI_BUTTON_GODOT_TOURS.instantiate()
 	_button_top_bar.setup()
 	editor_interface_access.run_bar.add_sibling(_button_top_bar)
@@ -91,7 +93,7 @@ func _add_top_bar_button() -> void:
 
 ## Shows the welcome menu, which lists all the tours in the file res://godot_tours.tres.
 func _show_welcome_menu() -> void:
-	if tour_list == null:
+	if tour_list == null and not Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		return
 
 	_button_top_bar.hide()
@@ -118,11 +120,9 @@ func _exit_tree() -> void:
 		return
 
 	if debugger != null:
-		remove_control_from_docks(debugger)
+		if debugger.is_inside_tree():
+			remove_control_from_docks(debugger)
 		debugger.queue_free()
-
-	if welcome_menu != null:
-		welcome_menu.queue_free()
 
 	editor_interface_access.clean_up()
 	overlays.clean_up()
@@ -131,8 +131,7 @@ func _exit_tree() -> void:
 		tour.clean_up()
 
 	remove_translation_parser_plugin(translation_parser)
-	if tour_list != null:
-		ensure_pot_generation(plugin_path, true)
+	ensure_pot_generation(plugin_path, true)
 
 
 func _input(event: InputEvent) -> void:
@@ -142,6 +141,9 @@ func _input(event: InputEvent) -> void:
 
 ## Registers and unregisters translation files for the tours.
 func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
+	if tour_list == null:
+		return
+
 	const key := "internationalization/locale/translations_pot_files"
 	var tour_base_script_file_path := plugin_path.path_join("core").path_join("tour.gd")
 	var pot_files_setting := ProjectSettings.get_setting(key, PackedStringArray())
@@ -161,12 +163,20 @@ func toggle_debugger() -> void:
 		debugger = UI_DEBUGGER_DOCK_SCENE.instantiate()
 		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour, _tour_paths)
 
-	if not debugger.is_inside_tree():
-		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
-		welcome_menu.toggle_dimmer(false)
-	else:
+	if debugger.is_inside_tree():
 		remove_control_from_docks(debugger)
-		welcome_menu.toggle_dimmer(true)
+		debugger.queue_free()
+		debugger = null
+		if welcome_menu == null and tour == null:
+			_show_welcome_menu()
+		else:
+			_button_top_bar.show()
+	else:
+		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
+		if welcome_menu != null:
+			welcome_menu.queue_free()
+		else:
+			_button_top_bar.hide()
 
 
 ## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of

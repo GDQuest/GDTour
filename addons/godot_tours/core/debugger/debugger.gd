@@ -5,6 +5,7 @@
 extends PanelContainer
 
 const EditorInterfaceAccess := preload("../editor_interface_access.gd")
+const Highlight := preload("../overlays/highlight/highlight.gd")
 const Overlays := preload("../overlays/overlays.gd")
 const TranslationService := preload("../translation/translation_service.gd")
 const Tour := preload("../tour.gd")
@@ -20,7 +21,7 @@ const DIMMER_GROUP: StringName = "dimmer"
 var tour: Tour = null:
 	set(new_tour):
 		tour = new_tour
-		if tour != null:
+		if tour != null and button_toggle_tour_visible != null:
 			button_toggle_tour_visible.disabled = tour == null
 			button_toggle_tour_visible.toggled.connect(tour.toggle_visible)
 
@@ -49,6 +50,7 @@ func setup(plugin_path: String, interface: EditorInterfaceAccess, overlays: Over
 
 
 func _ready() -> void:
+	overlays.cleaned_up.connect(overlays.add_highlight_to_control.bind(self))
 	toggle_dimmers_check_button.button_pressed = not overlays.dimmers.is_empty()
 	toggle_dimmers_check_button.toggled.connect(func(is_active: bool) -> void:
 		overlays.toggle_dimmers(is_active)
@@ -57,17 +59,22 @@ func _ready() -> void:
 	tours_item_list.item_selected.connect(_on_tours_item_list_item_selected)
 	button_start_tour.pressed.connect(_start_selected_tour)
 	dimmers_alpha_h_slider.value_changed.connect(_on_overlay_alpha_h_slider_value_changed)
-	dimmers_alpha_h_slider.value_changed.emit(dimmers_alpha_h_slider.value)
 	jump_button.pressed.connect(_jump_to_step)
 
-	overlays.add_highlight_to_control(self)
 	dimmers_alpha_h_slider.editable = toggle_dimmers_check_button.button_pressed
+	overlays.add_highlight_to_control(self)
+	_on_overlay_alpha_h_slider_value_changed(dimmers_alpha_h_slider.value)
 	_update_spinbox_step_count()
 	populate_tours_item_list()
 
 
 func _exit_tree() -> void:
-	_on_overlay_alpha_h_slider_value_changed(0.0)
+	overlays.cleaned_up.disconnect(overlays.add_highlight_to_control)
+	_on_overlay_alpha_h_slider_value_changed(1.0)
+	for child in overlays.ensure_get_dimmer_for(self).get_children():
+		if child is Highlight and child.control == self:
+			child.queue_free()
+			break
 
 
 func _start_selected_tour() -> void:

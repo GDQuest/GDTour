@@ -2,6 +2,8 @@
 ## Can dim areas of the editor and block mouse clicks, or allow mouse clicks within a restricted area.
 extends Node
 
+signal cleaned_up
+
 const Highlight := preload("highlight/highlight.gd")
 const Dimmer := preload("dimmer/dimmer.gd")
 const EditorInterfaceAccess := preload("../editor_interface_access.gd")
@@ -92,6 +94,7 @@ func clean_up() -> void:
 	for dimmer: Dimmer in dimmers:
 		dimmer.queue_free()
 	dimmers = []
+	cleaned_up.emit()
 
 
 ## Toggle dimmers visibility on/off.

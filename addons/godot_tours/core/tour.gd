@@ -21,7 +21,7 @@ extends RefCounted
 ## Emitted when the tour moves to the next or previous _step_commands.
 signal step_changed(step_index: int)
 ## Emitted when the tour is closed or the user completes the last _step_commands.
-signal ended()
+signal ended
 
 ## Represents one command to execute in a _step_commands. All commands are executed in the order they are added.
 ## Use the Command() function to create a Command object faster.
