@@ -44,6 +44,9 @@ const Bubble := preload("bubble/bubble.gd")
 const Task := preload("bubble/task/task.gd")
 const Mouse := preload("mouse/mouse.gd")
 const TranslationService := preload("translation/translation_service.gd")
+const FlashArea := preload("overlays/flash_area/flash_area.gd")
+
+const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 
 const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'_step_commands(=%d)'[/b]."
 
@@ -60,12 +63,6 @@ const EVENTS := {
 var index := -1: set = set_index
 var _steps: Array[Array] = []
 var _step_commands: Array[Command] = []
-
-
-## Overlays added to the current scene to highlight a specific area.
-## We don't set their owner property so they stay hidden from the scene tree, but still show in the viewport.
-## They are automatically cleared on new _steps.
-var game_world_overlays := []
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -110,7 +107,6 @@ func _build() -> void:
 
 
 func clean_up() -> void:
-	_clear_game_world_overlays()
 	clear_mouse()
 	log.clean_up()
 	if is_instance_valid(bubble):
@@ -171,7 +167,6 @@ func complete_step() -> void:
 		Command.new(overlays.clean_up),
 		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
-		Command.new(_clear_game_world_overlays),
 	]
 	_step_commands.push_back(Command.new(play_mouse))
 	_steps.push_back(step_start + _step_commands)
@@ -201,24 +196,18 @@ func scene_open(path: String) -> void:
 func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
 	scene_deselect_all_nodes()
 	queue_command(func() -> void:
-		var root := EditorInterface.get_edited_scene_root()
-		if root.name in paths:
-			editor_selection.add_node(root)
-		for child in root.find_children("*"):
-			if child.owner == root and root.name.path_join(root.get_path_to(child)) in paths:
-				editor_selection.add_node(child)
+		var nodes := Utils.find_children_by_path(EditorInterface.get_edited_scene_root(), paths)
+		for node in nodes:
+			editor_selection.add_node(node)
 	)
 
 
-func scene_toggle_lock_nodes_by_path(node_paths: Array[String] = [], is_locked := true) -> void:
+func scene_toggle_lock_nodes_by_path(paths: Array[String] = [], is_locked := true) -> void:
 	queue_command(func get_and_lock_nodes() -> void:
-		var root := EditorInterface.get_edited_scene_root()
+		var nodes := Utils.find_children_by_path(EditorInterface.get_edited_scene_root(), paths)
 		var prop := &"_edit_lock_"
-		if root.name in node_paths:
-			root.set_meta(prop, is_locked) if is_locked else root.remove_meta(prop)
-		for child in root.find_children("*"):
-			if child.owner == root and root.name.path_join(root.get_path_to(child)) in node_paths:
-				child.set_meta(prop, is_locked) if is_locked else child.remove_meta(prop)
+		for node in nodes:
+			node.set_meta(prop, is_locked) if is_locked else node.remove_meta(prop)
 	)
 
 
@@ -265,29 +254,26 @@ func canvas_item_editor_center_at(position := Vector2.ZERO, zoom := CanvasItemEd
 		CanvasItemEditorZoom._200: EVENTS._2,
 	}
 	queue_command(func() -> void:
-		interface.canvas_item_editor.gui_input.emit(zoom_to_event[zoom])
 		interface.canvas_item_editor.center_at(position)
+		await interface.canvas_item_editor.get_tree().process_frame
+		interface.canvas_item_editor_viewport.gui_input.emit(zoom_to_event[zoom])
 	)
 
 
 ## Resets the zoom of the 2D viewport to 100%.
-## FIXME: doesn't work.
 func canvas_item_editor_zoom_reset() -> void:
-	queue_command(func set_zoom_to_100_percent() -> void:
-		interface.canvas_item_editor_viewport.grab_focus()
-		interface.canvas_item_editor_zoom_button_reset.set_deferred("button_pressed", true)
-	)
+	queue_command(interface.canvas_item_editor_zoom_widget.set_zoom.bind(1.0))
 
 
 ## Plays a flash animation in the 2D game viewport, over the desired global_rect.
 func canvas_item_editor_flash_area(global_rect: Rect2) -> void:
-	const FlashAreaPackedScene := preload("res://addons/godot_tours/core/overlays/flash_area/flash_area.tscn")
 	queue_command(func flash_canvas_item_editor() -> void:
-		var flash = FlashAreaPackedScene.instantiate()
-		EditorInterface.get_edited_scene_root().add_child(flash)
-		game_world_overlays.append(flash)
-		flash.size = global_rect.size
-		flash.global_position = global_rect.position
+		var flash_area := FlashAreaPackedScene.instantiate()
+		overlays.ensure_get_dimmer_for(interface.canvas_item_editor).add_child(flash_area)
+		interface.canvas_item_editor_viewport.draw.connect(
+			flash_area.refresh.bind(interface.canvas_item_editor_viewport, global_rect)
+		)
+		flash_area.refresh(interface.canvas_item_editor_viewport, global_rect)
 	)
 
 
@@ -711,11 +697,6 @@ func warn(msg: String, func_name: String) -> void:
 
 func get_step_count() -> int:
 	return _steps.size()
-
-
-func _clear_game_world_overlays():
-	for node in game_world_overlays:
-		node.queue_free()
 
 
 ## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor

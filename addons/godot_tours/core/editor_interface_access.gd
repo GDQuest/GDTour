@@ -50,12 +50,12 @@ var canvas_item_editor_toolbar_skeleton_options_button: Button = null
 ## Parent container of the zoom buttons in the top-left of the 2D editor.
 var canvas_item_editor_zoom_widget: Control = null
 ## Lower zoom button in the top-left of the 2D viewport.
-var canvas_item_editor_zoom_button_lower: Control = null
+var canvas_item_editor_zoom_button_lower: Button = null
 ## Button showing the current zoom percentage in the top-left of the 2D viewport. Pressing it resets
 ## the zoom to 100%.
-var canvas_item_editor_zoom_button_reset: Control = null
+var canvas_item_editor_zoom_button_reset: Button = null
 ## Increase zoom button in the top-left of the 2D viewport.
-var canvas_item_editor_zoom_button_increase: Control = null
+var canvas_item_editor_zoom_button_increase: Button = null
 var spatial_editor: Control = null
 var spatial_editor_cameras: Array[Camera3D] = []
 var spatial_editor_surface: Control = null

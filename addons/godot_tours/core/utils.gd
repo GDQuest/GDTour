@@ -6,10 +6,24 @@ class Helper:
 const SEP := "/"
 
 
-static func find_child(node: Node, type: String, pattern := "", predicate := Helper.noop) -> Node:
-	if node == null:
+static func find_children_by_path(from: Node, paths: Array[String]) -> Array[Node]:
+	var result: Array[Node] = []
+	if from == null:
+		return result
+
+	if from.name in paths:
+		result.push_back(from)
+
+	for child in from.find_children("*"):
+		if child.owner == from and from.name.path_join(from.get_path_to(child)) in paths:
+			result.push_back(child)
+	return result
+
+
+static func find_child(from: Node, type: String, pattern := "", predicate := Helper.noop) -> Node:
+	if from == null:
 		return null
-	var result := node.find_children(pattern, type, true, false)
+	var result := from.find_children(pattern, type, true, false)
 	if not result.is_empty() and predicate != Helper.noop:
 		result = result.filter(predicate)
 	return null if result.is_empty() else result[0]
