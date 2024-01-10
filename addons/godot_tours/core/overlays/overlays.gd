@@ -123,7 +123,7 @@ func ensure_get_dimmer_for(control: Control) -> Dimmer:
 ## Highlight [TreeItem]s from the given [code]tree[/code] that match the [code]predicate[/code]. The highlight can
 ## also play a flash animation if [code]play_flash[/code] is [code]true[/code]. [code]button_index[/code] specifies
 ## which button to highlight from the [TreeItem] instead of the whole item.
-func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, button_index := -1) -> void:
+func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, play_flash := false) -> void:
 	var root := tree.get_root()
 	if root == null:
 		return
@@ -146,53 +146,37 @@ func highlight_tree_items(tree: Tree, predicate: Callable, play_flash := false, 
 		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash)
 
 
-## Higlights a Scene dock [TreeItem] by [code]node_name[/code]. See [method highlight_tree_items] for details
-## on the other parameters.
-func highlight_scene_node_by_name(node_name: String, play_flash := false, button_index := -1) -> void:
-	highlight_tree_items(
-		interface.scene_tree,
-		func(item: TreeItem) -> bool: return node_name == item.get_text(0),
-		play_flash,
-		button_index,
-	)
-
-
 ## Highlights multiple Scene dock [TreeItem]s by [code]names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_name(names: Array[String], play_flash := false, button_index := -1) -> void:
-	for node_name in names:
-		highlight_scene_node_by_name(node_name, play_flash, button_index)
-
-
-## Highlights a Scene dock [TreeItem] by [code]path[/code]. See [method highlight_tree_items] for details on the
-## other parameters.
-func highlight_scene_node_by_path(path: String, play_flash := false, button_index := -1) -> void:
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
-		func(item: TreeItem) -> bool: return path == Utils.get_tree_item_path(item),
-		play_flash,
+		func(item: TreeItem) -> bool: return item.get_text(0) in names,
 		button_index,
+		play_flash,
 	)
 
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_path(paths: Array[String], play_flash := false, button_index := -1) -> void:
-	for path in paths:
-		highlight_scene_node_by_path(path, play_flash, button_index)
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, play_flash := false) -> void:
+	highlight_tree_items(
+		interface.scene_tree,
+		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
+		button_index,
+		play_flash,
+	)
 
 
 ## Highlights FileSystem dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for [code]play_flash[/code].
 func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
-	for path in paths:
-		if path.is_empty():
-			return
-		highlight_tree_items(
-			interface.filesystem_tree,
-			func(item: TreeItem) -> bool: return path == Utils.get_tree_item_path(item),
-			play_flash,
-		)
+	highlight_tree_items(
+		interface.filesystem_tree,
+		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
+		-1,
+		play_flash,
+	)
 
 
 ## Highlights Inspector dock properties by (programmatic) [code]name[/code]. See [method highlight_tree_items]
@@ -233,22 +217,21 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 ## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
 func highlight_signals(signal_names: Array[String], play_flash := false) -> void:
-	for signal_name in signal_names:
-		if signal_name.is_empty():
-			continue
-
-		highlight_tree_items(
-			interface.node_dock_signals_tree,
-			func(item: TreeItem) -> bool: return item.get_text(0).begins_with(signal_name),
-			play_flash,
-		)
+	highlight_tree_items(
+		interface.node_dock_signals_tree,
+		func(item: TreeItem) -> bool:
+			var predicate := func(sn: String) -> bool: return item.get_text(0).begins_with(sn)
+			return signal_names.any(predicate),
+		-1,
+		play_flash,
+	)
 
 
 ## Higlights code lines in the current [ScriptEditor] in the range from [code]start[/code] to [code]end[/code].
 ## [code]end[/code] is optional in which case only the [code]start[/code] line gets highlighted.
 ## [code]do_center[/code] forces the [ScriptEditor] to center veritcally on the given
 ## [code]start[/code]-[code]end[/code] line range. See [method highlight_tree_items] for [code]play_flash[/code].
-func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_center := true) -> void:
+func highlight_code(start: int, end := 0, caret := 0, do_center := true, play_flash := false) -> void:
 	start -= 1
 	end = start if end < 1 else (end - 1)
 	if caret == 0:
@@ -288,7 +271,7 @@ func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 
 ## Highlights either the whole [code]tabs[/code] [TabBar] if [code]index == -1[/code] or the given [TabContainer] tab
 ## by [code]index[/code].
-func highlight_tab_index(tabs: Control, index := -1) -> void:
+func highlight_tab_index(tabs: Control, index := -1, play_flash := true) -> void:
 	var tab_bar: TabBar = Utils.find_child(tabs, "TabBar") if tabs is TabContainer else tabs
 	var dimmer := ensure_get_dimmer_for(tab_bar)
 	if dimmer == null or tab_bar == null or index < -1 or index >= tab_bar.tab_count:
@@ -296,18 +279,18 @@ func highlight_tab_index(tabs: Control, index := -1) -> void:
 
 	var rect_getter := func() -> Rect2:
 		return tab_bar.get_global_rect() if index == -1 else tab_bar.get_global_transform() * tab_bar.get_tab_rect(index)
-	add_highlight_to_control(tabs, rect_getter)
+	add_highlight_to_control(tabs, rect_getter, play_flash)
 
 
 ## Highlights a [TabContainer] tab for the given [code]tabs[/code] [TabBar] by its [code]title[/code].
-func highlight_tab_title(tabs: Control, title: String) -> void:
+func highlight_tab_title(tabs: Control, title: String, play_flash := true) -> void:
 	if not (tabs is TabContainer or tabs is TabBar):
 		return
 
 	for index in range(tabs.get_tab_count()):
 		var tab_title: String = tabs.get_tab_title(index)
 		if title == tab_title or tabs == interface.main_screen_tabs and "%s(*)" % title == tab_title:
-			highlight_tab_index(tabs, index)
+			highlight_tab_index(tabs, index, play_flash)
 
 
 ## Highlights a [Itemlist] in the TileMap dock, such as a tile or a terrain's drawing mode or terrain

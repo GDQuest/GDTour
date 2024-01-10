@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dkiu31kpq64co"]
+
+[ext_resource type="Script" path="res://tours/test_tour/test_tour_2d.gd" id="1_jx4hj"]
+
+[node name="TestTour2D" type="Node2D"]
+script = ExtResource("1_jx4hj")
+
+[node name="NodeToEdit" type="Node2D" parent="."]

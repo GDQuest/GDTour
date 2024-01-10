@@ -475,12 +475,12 @@ func bubble_set_avatar_surprised() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
 
 
-func highlight_scene_nodes_by_name(names: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_name, [names, play_flash, button_index])
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_name, [names, button_index, play_flash])
 
 
-func highlight_scene_nodes_by_path(paths: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_path, [paths, play_flash, button_index])
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_path, [paths, button_index, play_flash])
 
 
 func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:
@@ -495,22 +495,23 @@ func highlight_signals(paths: Array[String], play_flash := true) -> void:
 	queue_command(overlays.highlight_signals, [paths, play_flash])
 
 
-func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_center := true) -> void:
-	queue_command(overlays.highlight_code, [start, end, caret, play_flash, do_center])
+func highlight_code(start: int, end := 0, caret := 0, do_center := true, play_flash := false) -> void:
+	queue_command(overlays.highlight_code, [start, end, caret, do_center, play_flash])
 
 
 func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 	queue_command(overlays.highlight_controls, [controls, play_flash])
 
 
-func highlight_tabs_index(tabs: Control, play_flash := true, index := -1) -> void:
-	queue_command(overlays.highlight_tab_index, [tabs, play_flash, index])
+func highlight_tabs_index(tabs: Control, index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_tab_index, [tabs, index, play_flash])
 
 
 func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> void:
 	queue_command(overlays.highlight_tab_title, [tabs, title, play_flash])
 
 
+# FIXME account for highlight rects that are too large
 func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:

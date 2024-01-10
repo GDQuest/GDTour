@@ -1,5 +1,9 @@
 extends "res://addons/godot_tours/core/tour.gd"
 
+const Highlight := preload("../../addons/godot_tours/core/overlays/highlight/highlight.gd")
+
+const HIGHLIGHT_GROUP := "highlight"
+
 
 func are_tasks_done() -> bool:
 	return bubble.tasks_v_box_container.get_children().all(func(task: Task) -> bool: return task.is_done())
@@ -10,26 +14,37 @@ func delay(frames: int = 1) -> void:
 		await interface.base_control.get_tree().process_frame
 
 
+func get_highlights() -> Array[Highlight]:
+	var result: Array[Highlight] = []
+	var dimmer := overlays.ensure_get_dimmer_for(interface.base_control)
+	await delay()
+	result.assign(dimmer.get_tree().get_nodes_in_group(HIGHLIGHT_GROUP))
+	return result
+
+
 func _build() -> void:
-	scene_open("res://tours/test_tour/test_tour.tscn")
+	var file_path := "res://tours/test_tour/test_tour_2d.tscn"
+	scene_open(file_path)
 	queue_command(func() -> void:
+		var name := "TestTour2D"
 		var edited_scene_root := EditorInterface.get_edited_scene_root()
-		assert(edited_scene_root is Node2D and edited_scene_root.name == "TestTour", "'edited_scene_root' should be 'TestTour'")
+		assert(edited_scene_root is Node2D and edited_scene_root.name == name, "'edited_scene_root' should be '%s'" % name)
 	)
 	auto_next()
 	complete_step()
 
-	scene_select_nodes_by_path(["TestTour", "TestTour/NodeToEdit"])
+	scene_select_nodes_by_path(["TestTour2D", "TestTour2D/NodeToEdit"])
 	queue_command(func() -> void:
+		var names: Array[String] = ["TestTour2D", "NodeToEdit"]
 		var selected_nodes := editor_selection.get_selected_nodes()
 		assert(selected_nodes.size() == 2, "'selected_nodes' should have size '2'")
 		for selected_node in selected_nodes:
-			assert(selected_node.name in ["TestTour", "NodeToEdit"], "'selected_node.name' should be one of ['TestTour', 'NodeToEdit']")
+			assert(selected_node.name in names, "'selected_node.name' should be one of '%s'" % ", ".join(names))
 	)
 	auto_next()
 	complete_step()
 
-	scene_toggle_lock_nodes_by_path(["TestTour"])
+	scene_toggle_lock_nodes_by_path(["TestTour2D"])
 	queue_command(func() -> void:
 		var edited_scene_root := EditorInterface.get_edited_scene_root()
 		assert(edited_scene_root.get_meta(&"_edit_lock_"), "'edited_scene_root' '_edit_lock_' meta should be 'true'")
@@ -37,7 +52,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	scene_toggle_lock_nodes_by_path(["TestTour"], false)
+	scene_toggle_lock_nodes_by_path(["TestTour2D"], false)
 	queue_command(func() -> void:
 		var edited_scene_root := EditorInterface.get_edited_scene_root()
 		assert(not edited_scene_root.has_meta(&"_edit_lock_"), "'edited_scene_root' '_edit_lock_' meta should not exist")
@@ -189,27 +204,29 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	var texture := load("res://icon.svg")
+	file_path = "res://icon.svg"
+	var texture := load(file_path)
 	bubble_add_texture(texture)
 	queue_command(func() -> void:
 		await delay()
 		for element: TextureRect in bubble.main_v_box_container.get_children():
 			assert(
 				element.texture == texture,
-				"'bubble.main_v_box_container' element should a 'TextureRect' set to 'res://icon.svg'",
+				"'bubble.main_v_box_container' element should a 'TextureRect' set to '%s'" % file_path,
 			)
 	)
 	auto_next()
 	complete_step()
 
-	var stream := load("res://tours/test_tour/test_video.ogv")
+	file_path = "res://tours/test_tour/test_video.ogv"
+	var stream := load(file_path)
 	bubble_add_video(stream)
 	queue_command(func() -> void:
 		await delay()
 		for element: VideoStreamPlayer in bubble.main_v_box_container.get_children():
 			assert(
 				element.stream == stream,
-				"'bubble.main_v_box_container' element should a 'VideoStreamPlayer' set to 'res://tours/test_tour/test_video.ogv'",
+				"'bubble.main_v_box_container' element should a 'VideoStreamPlayer' set to '%s'" % file_path,
 			)
 	)
 	auto_next()
@@ -347,5 +364,146 @@ func _build() -> void:
 			"'bubble_set_minimum_size_scaled()' should set the bubble minimum size to '%s'" % str(size),
 		)
 	)
+	auto_next()
+	complete_step()
+
+	var node_names: Array[String] = ["NodeToEdit"]
+	bubble_set_minimum_size_scaled()
+	highlight_scene_nodes_by_name(node_names)
+	queue_command(func() -> void:
+		var dimmer := overlays.ensure_get_dimmer_for(interface.base_control)
+		await delay()
+		var highlights := dimmer.get_tree().get_nodes_in_group(HIGHLIGHT_GROUP)
+		assert(highlights.size() == 1, "'highlight_scene_nodes_by_name()' highlights '%s'" % ", ".join(node_names))
+		for highlight: Highlight in highlights:
+			assert(
+				interface.scene_dock.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_scene_nodes_by_name()' places highlight in Scene dock"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var node_paths: Array[String] = ["TestTour2D", "TestTour2D/NodeToEdit"]
+	highlight_scene_nodes_by_path(node_paths)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_scene_nodes_by_path()' highlights '%s' Scene dock nodes" % ", ".join(node_paths))
+		for highlight in highlights:
+			assert(
+				interface.scene_dock.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_scene_nodes_by_path()' places highlight in Scene dock"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var filesystem_paths: Array[String] = ["res://icon.svg"]
+	highlight_filesystem_paths(filesystem_paths)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_filesystem_paths()' highlights '%s'" % ", ".join(filesystem_paths))
+		for highlight in highlights:
+			assert(
+				interface.filesystem_dock.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_filesystem_paths()' places highlight in FileSystem dock"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var inspector_properties: Array[StringName] = [&"position", &"scale"]
+	scene_select_nodes_by_path(["TestTour2D/NodeToEdit"])
+	highlight_inspector_properties(inspector_properties)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 2, "'highlight_inspector_properties()' highlights '%s'" % ", ".join(inspector_properties))
+		for highlight in highlights:
+			assert(
+				interface.inspector_dock.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_inspector_properties()' places highlights in Inspector dock"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var signals: Array[String] = ["draw", "hidden"]
+	tabs_set_to_index(interface.inspector_tabs, 1)
+	queue_command(func() -> void: interface.node_dock_signals_button.pressed.emit())
+	highlight_signals(signals)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_signals()' highlights '%s'" % ", ".join(signals))
+		for highlight in highlights:
+			assert(
+				interface.node_dock.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_signals()' places highlights in Node dock"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	file_path = "res://tours/test_tour/test_tour_2d.gd"
+	var script := load(file_path)
+	context_set_script()
+	queue_command(EditorInterface.edit_script.bind(script))
+	highlight_code(3, 4)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_code()' highlights lines '3 - 4'")
+		for highlight in highlights:
+			assert(
+				interface.script_editor_code_panel.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_code()' places highlights in code editor"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	highlight_controls([interface.run_bar])
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_controls()' highlights 'interface.run_bar'")
+		for highlight in highlights:
+			assert(
+				interface.run_bar.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_controls()' places highlights in 'interface.run_bar'"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var tab_index := 0
+	highlight_tabs_index(interface.inspector_tabs, tab_index)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_tabs_index()' highlights 'interface.inspector_tabs' index '%d'" % [tab_index])
+		for highlight in highlights:
+			assert(
+				interface.inspector_tabs.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_tabs_index()' places highlights in 'interface.run_bar'"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	var tab_title := "Import"
+	highlight_tabs_title(interface.scene_tabs, tab_title)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_tabs_title()' highlights 'interface.scene_tabs' titled '%s'" % [tab_title])
+		for highlight in highlights:
+			assert(
+				interface.scene_tabs.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_tabs_title()' places highlights in 'interface.scene_tabs'"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	# FIXME if the highlight rectangle is too large it needs to be trimmed to the 2D viewport
+	var canvas_item_highlight_rect := Rect2(0, 0, 800, 800)
+	context_set_2d()
+	highlight_canvas_item_editor_rect(canvas_item_highlight_rect)
 	auto_next()
 	complete_step()
