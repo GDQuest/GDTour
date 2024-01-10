@@ -277,12 +277,12 @@ func canvas_item_editor_flash_area(global_rect: Rect2) -> void:
 	)
 
 
-# TODO: how to test?
+# TODO: test?
 func spatial_editor_focus() -> void:
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
 
 
-# TODO: how to test?
+# TODO: test?
 func spatial_editor_focus_node_by_paths(paths: Array[String]) -> void:
 	scene_select_nodes_by_path(paths)
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
@@ -328,6 +328,7 @@ func bubble_add_video(stream: VideoStream) -> void:
 	queue_command(bubble.add_video, [stream])
 
 
+# TODO: test?
 func bubble_add_task(description: String, repeat: int, repeat_callable: Callable, error_predicate := noop_error_predicate) -> void:
 	queue_command(bubble.add_task, [description, repeat, repeat_callable, error_predicate])
 
@@ -456,17 +457,20 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## you can call this function with a `size` of `Vector2.ZERO` on the following _step_commands to let the bubble
 ## automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
-	queue_command(bubble.set_custom_minimum_size, [size * EditorInterface.get_editor_scale()])
+	queue_command(bubble.panel_container.set_custom_minimum_size, [size * EditorInterface.get_editor_scale()])
 
 
+# TODO: test?
 func bubble_set_avatar_neutral() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.NEUTRAL])
 
 
+# TODO: test?
 func bubble_set_avatar_happy() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.HAPPY])
 
 
+# TODO: test?
 func bubble_set_avatar_surprised() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
 
