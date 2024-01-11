@@ -514,8 +514,11 @@ func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> v
 func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:
+			var scene_root := EditorInterface.get_edited_scene_root()
+			if scene_root == null:
+				return Rect2()
 			return interface.canvas_item_editor_viewport.get_global_rect().intersection(
-				EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
+				scene_root.get_viewport().get_screen_transform() * rect
 			)
 		overlays.add_highlight_to_control(interface.canvas_item_editor_viewport, rect_getter, play_flash),
 	)
@@ -536,8 +539,10 @@ func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index :
 		var rect_getter := func() -> Rect2:
 			var s := camera.unproject_position(start)
 			var e := camera.unproject_position(end)
-			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
-		overlays.add_highlight_to_control(interface.spatial_editor, rect_getter, play_flash),
+			return interface.spatial_editor_surface.get_global_rect().intersection(
+				camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
+			)
+		overlays.add_highlight_to_control(interface.spatial_editor_surface, rect_getter, play_flash),
 	)
 
 
@@ -709,7 +714,7 @@ func get_step_count() -> int:
 
 ## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor
 ## scale.
-func bbcode_generate_icon_image_string(image_filepath: String) -> String:
+static func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	const base_size_pixels := 24
 	var size := base_size_pixels * EditorInterface.get_editor_scale()
 	return "[img=%sx%s]" % [size, size] + image_filepath + "[/img]"
@@ -717,6 +722,6 @@ func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 
 ## Wraps the text in a [font_size] BBCode tag, scaling the value of size_pixels based on the editor
 ## scale.
-func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
+static func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 	var size_scaled := size_pixels * EditorInterface.get_editor_scale()
 	return "[font_size=%s]" % size_scaled + text + "[/font_size]"

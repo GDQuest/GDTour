@@ -295,7 +295,7 @@ func highlight_tab_title(tabs: Control, title: String, play_flash := true) -> vo
 
 ## Highlights a [Itemlist] in the TileMap dock, such as a tile or a terrain's drawing mode or terrain
 ## tile.
-func highlight_tilemap_list_item(item_list: ItemList, item_index: int) -> void:
+func highlight_tilemap_list_item(item_list: ItemList, item_index: int, play_flash := true) -> void:
 	if item_list == null or item_index < 0 or item_index >= item_list.item_count:
 		return
 
@@ -304,4 +304,4 @@ func highlight_tilemap_list_item(item_list: ItemList, item_index: int) -> void:
 			var rect := item_list.get_item_rect(item_index)
 			rect.position += item_list.global_position
 			return rect
-	add_highlight_to_control(interface.tilemap, rect_getter)
+	add_highlight_to_control(interface.tilemap, rect_getter, play_flash)

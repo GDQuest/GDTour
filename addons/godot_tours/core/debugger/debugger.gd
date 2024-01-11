@@ -31,7 +31,8 @@ var overlays: Overlays = null
 var translation_service: TranslationService = null
 var tour_paths: Array[String] = []
 
-@onready var toggle_dimmers_check_button: Button = %ToggleDimmersCheckButton
+@onready var toggle_dimmers_check_button: CheckButton = %ToggleDimmersCheckButton
+@onready var toggle_bubble_check_button: CheckButton = %ToggleBubbleCheckButton
 @onready var dimmers_alpha_h_slider: HSlider = %OverlaysAlphaHSlider
 @onready var tours_item_list: ItemList = %ToursItemList
 @onready var jump_button: Button = %JumpButton
@@ -56,6 +57,10 @@ func _ready() -> void:
 		overlays.toggle_dimmers(is_active)
 		dimmers_alpha_h_slider.editable = is_active
 	)
+	toggle_bubble_check_button.toggled.connect(func(is_toggled: bool) -> void:
+		if tour != null:
+			tour.bubble.visible = is_toggled
+	)
 	tours_item_list.item_selected.connect(_on_tours_item_list_item_selected)
 	button_start_tour.pressed.connect(_start_selected_tour)
 	dimmers_alpha_h_slider.value_changed.connect(_on_overlay_alpha_h_slider_value_changed)
@@ -66,6 +71,7 @@ func _ready() -> void:
 	_on_overlay_alpha_h_slider_value_changed(dimmers_alpha_h_slider.value)
 	_update_spinbox_step_count()
 	populate_tours_item_list()
+	toggle_bubble_check_button.button_pressed = tour != null
 
 
 func _exit_tree() -> void:
@@ -88,6 +94,7 @@ func _start_selected_tour() -> void:
 	var tour_path := tours_item_list.get_item_metadata(index)
 	tour = ResourceInvalidator.resource_force_editor_reload(tour_path).new(interface, overlays, translation_service)
 	toggle_dimmers_check_button.button_pressed = true
+	toggle_bubble_check_button.button_pressed = true
 	tour.toggle_visible(true)
 	_update_spinbox_step_count()
 

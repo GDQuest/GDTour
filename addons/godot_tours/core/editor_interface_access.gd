@@ -128,6 +128,7 @@ var bottom_panels_container: Control = null
 var tilemap: Control = null
 var tilemap_tabs: TabBar = null
 var tilemap_tiles_panel: VBoxContainer = null
+var tilemap_tiles: ItemList = null
 var tilemap_tiles_atlas_view: Control = null
 var tilemap_tiles_toolbar: HBoxContainer = null
 var tilemap_terrains_panel: VBoxContainer = null
@@ -331,6 +332,12 @@ func _init() -> void:
 	tilemap_tiles_panel = tilemap.get_node("Tiles")
 	var tilemap_tiles_hsplitcontainer: HSplitContainer = Utils.get_child_by_type(
 		tilemap_tiles_panel, "HSplitContainer"
+	)
+	tilemap_tiles = (
+		tilemap_tiles_hsplitcontainer
+		. get_child(0)
+		. find_children("*", "ItemList", false, false)
+		. back()
 	)
 	tilemap_tiles_atlas_view = Utils.get_child_by_type(
 		tilemap_tiles_hsplitcontainer, "TileAtlasView"

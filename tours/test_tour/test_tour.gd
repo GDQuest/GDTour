@@ -15,9 +15,9 @@ func delay(frames: int = 1) -> void:
 
 
 func get_highlights() -> Array[Highlight]:
+	await delay()
 	var result: Array[Highlight] = []
 	var dimmer := overlays.ensure_get_dimmer_for(interface.base_control)
-	await delay()
 	result.assign(dimmer.get_tree().get_nodes_in_group(HIGHLIGHT_GROUP))
 	return result
 
@@ -513,5 +513,48 @@ func _build() -> void:
 				"'highlight_tabs_title()' places highlight in 'interface.canvas_item_editor_viewport'"
 			)
 	)
+	auto_next()
+	complete_step()
+
+	var item_index := 1
+	scene_select_nodes_by_path(["TestTour2D/TileMap"])
+	tabs_set_to_index(interface.tilemap_tabs, 0)
+	queue_command(func() -> void:
+		interface.bottom_button_tilemap.pressed.emit()
+		await delay(2)
+	)
+	highlight_tilemap_list_item(interface.tilemap_tiles, item_index)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_tilemap_list_item()' highlights item '%d' of 'interface.tilemap_tiles'" % [item_index])
+		for highlight in highlights:
+			assert(
+				interface.tilemap_tiles.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_tilemap_list_item()' places highlight in 'interface.tilemap_tiles'"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	context_set_3d()
+	queue_command(func() -> void:
+		interface.bottom_button_tilemap.toggled.emit(false)
+		await delay(2)
+	)
+	higlight_spatial_editor_camera_region(Vector3.ZERO, Vector3(2, 0, 3))
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'higlight_spatial_editor_camera_region()' highlights part of 'interface.spatial_editor_surface'")
+		for highlight in highlights:
+			assert(
+				interface.spatial_editor_surface.get_global_rect().encloses(highlight.get_global_rect()),
+				"'higlight_spatial_editor_camera_region()' places highlight in 'interface.spatial_editor_surface'"
+			)
+	)
+	auto_next()
+	complete_step()
+
+	context_set_2d()
+	mouse_move_by_position(Vector2.ZERO, 100 * Vector2.ONE)
 	auto_next()
 	complete_step()

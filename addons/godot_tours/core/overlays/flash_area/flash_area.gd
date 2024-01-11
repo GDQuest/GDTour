@@ -9,8 +9,11 @@ func _ready() -> void:
 
 
 func refresh(canvas_item_editor_viewport: Control, rect: Rect2) -> void:
+	var scene_root := EditorInterface.get_edited_scene_root()
+	if scene_root == null:
+		return
 	rect = canvas_item_editor_viewport.get_global_rect().intersection(
-		EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
+		scene_root.get_viewport().get_screen_transform() * rect
 	)
 	size = rect.size
 	global_position = rect.position
