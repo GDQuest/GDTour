@@ -265,15 +265,15 @@ func canvas_item_editor_zoom_reset() -> void:
 	queue_command(interface.canvas_item_editor_zoom_widget.set_zoom.bind(1.0))
 
 
-## Plays a flash animation in the 2D game viewport, over the desired global_rect.
-func canvas_item_editor_flash_area(global_rect: Rect2) -> void:
+## Plays a flash animation in the 2D game viewport, over the desired rect.
+func canvas_item_editor_flash_area(rect: Rect2) -> void:
 	queue_command(func flash_canvas_item_editor() -> void:
 		var flash_area := FlashAreaPackedScene.instantiate()
 		overlays.ensure_get_dimmer_for(interface.canvas_item_editor).add_child(flash_area)
 		interface.canvas_item_editor_viewport.draw.connect(
-			flash_area.refresh.bind(interface.canvas_item_editor_viewport, global_rect)
+			flash_area.refresh.bind(interface.canvas_item_editor_viewport, rect)
 		)
-		flash_area.refresh(interface.canvas_item_editor_viewport, global_rect)
+		flash_area.refresh(interface.canvas_item_editor_viewport, rect)
 	)
 
 
@@ -511,12 +511,13 @@ func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> v
 	queue_command(overlays.highlight_tab_title, [tabs, title, play_flash])
 
 
-# FIXME account for highlight rects that are too large
 func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:
-			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
-		overlays.add_highlight_to_control(interface.canvas_item_editor, rect_getter, play_flash),
+			return interface.canvas_item_editor_viewport.get_global_rect().intersection(
+				EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
+			)
+		overlays.add_highlight_to_control(interface.canvas_item_editor_viewport, rect_getter, play_flash),
 	)
 
 

@@ -109,7 +109,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	canvas_item_editor_flash_area(Rect2(0, 0, 100, 200))
+	canvas_item_editor_flash_area(Rect2(0, 0, 1200, 900))
 	queue_command(func() -> void:
 		var predicate := func(n: Node) -> bool: return n is FlashArea
 		assert(
@@ -421,7 +421,7 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.inspector_dock.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_inspector_properties()' places highlights in Inspector dock"
+				"'highlight_inspector_properties()' places highlight in Inspector dock"
 			)
 	)
 	auto_next()
@@ -437,7 +437,7 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.node_dock.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_signals()' places highlights in Node dock"
+				"'highlight_signals()' places highlight in Node dock"
 			)
 	)
 	auto_next()
@@ -454,7 +454,7 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.script_editor_code_panel.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_code()' places highlights in code editor"
+				"'highlight_code()' places highlight in code editor"
 			)
 	)
 	auto_next()
@@ -467,7 +467,7 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.run_bar.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_controls()' places highlights in 'interface.run_bar'"
+				"'highlight_controls()' places highlight in 'interface.run_bar'"
 			)
 	)
 	auto_next()
@@ -481,7 +481,7 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.inspector_tabs.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_tabs_index()' places highlights in 'interface.run_bar'"
+				"'highlight_tabs_index()' places highlight in 'interface.run_bar'"
 			)
 	)
 	auto_next()
@@ -495,15 +495,23 @@ func _build() -> void:
 		for highlight in highlights:
 			assert(
 				interface.scene_tabs.get_global_rect().encloses(highlight.get_global_rect()),
-				"'highlight_tabs_title()' places highlights in 'interface.scene_tabs'"
+				"'highlight_tabs_title()' places highlight in 'interface.scene_tabs'"
 			)
 	)
 	auto_next()
 	complete_step()
 
-	# FIXME if the highlight rectangle is too large it needs to be trimmed to the 2D viewport
 	var canvas_item_highlight_rect := Rect2(0, 0, 800, 800)
 	context_set_2d()
 	highlight_canvas_item_editor_rect(canvas_item_highlight_rect)
+	queue_command(func() -> void:
+		var highlights := await get_highlights()
+		assert(highlights.size() == 1, "'highlight_canvas_item_editor_rect()' highlights part of 'interface.canvas_item_editor_viewport'")
+		for highlight in highlights:
+			assert(
+				interface.canvas_item_editor_viewport.get_global_rect().encloses(highlight.get_global_rect()),
+				"'highlight_tabs_title()' places highlight in 'interface.canvas_item_editor_viewport'"
+			)
+	)
 	auto_next()
 	complete_step()
