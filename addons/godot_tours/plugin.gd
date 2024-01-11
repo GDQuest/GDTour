@@ -13,6 +13,7 @@ const Overlays := preload("core/overlays/overlays.gd")
 const Debugger := preload("core/debugger/debugger.gd")
 const TranslationParser := preload("core/translation/translation_parser.gd")
 const TranslationService := preload("core/translation/translation_service.gd")
+const UIWelcomeMenu := preload("ui_welcome_menu.gd")
 
 const UI_DEBUGGER_DOCK_SCENE := preload("core/debugger/debugger.tscn")
 const UI_WELCOME_MENU_SCENE = preload("ui_welcome_menu.tscn")
@@ -24,6 +25,7 @@ var translation_service: TranslationService = null
 var debugger: Debugger = null
 var editor_interface_access: EditorInterfaceAccess = null
 var overlays: Overlays = null
+var welcome_menu: UIWelcomeMenu = null
 
 ## Resource of type godot_tour_list.gd. Contains an array of tour entries.
 var tour_list = get_tours()
@@ -68,10 +70,9 @@ func _enter_tree() -> void:
 	EditorInterface.get_base_control().add_child(overlays)
 
 	# Add button to the editor top bar, right before the run buttons
-	if tour_list != null:
-		_add_top_bar_button()
-		_show_welcome_menu()
-		ensure_pot_generation(plugin_path)
+	_add_top_bar_button()
+	_show_welcome_menu()
+	ensure_pot_generation(plugin_path)
 
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		toggle_debugger()
@@ -80,6 +81,9 @@ func _enter_tree() -> void:
 ## Adds a button labeled Godot Tours to the editor top bar, right before the run buttons.
 ## This button only shows when there are tours in the project, there's no tour active, and the welcome menu is hidden.
 func _add_top_bar_button() -> void:
+	if tour_list == null:
+		return
+
 	_button_top_bar = UI_BUTTON_GODOT_TOURS.instantiate()
 	_button_top_bar.setup()
 	editor_interface_access.run_bar.add_sibling(_button_top_bar)
@@ -89,18 +93,19 @@ func _add_top_bar_button() -> void:
 
 ## Shows the welcome menu, which lists all the tours in the file res://godot_tours.tres.
 func _show_welcome_menu() -> void:
-	if tour_list == null:
+	if tour_list == null and not Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		return
 
 	_button_top_bar.hide()
 
-	var welcome_menu := UI_WELCOME_MENU_SCENE.instantiate()
+	welcome_menu = UI_WELCOME_MENU_SCENE.instantiate()
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
 	welcome_menu.setup(tour_list)
 	welcome_menu.tour_start_requested.connect(func start_tour(tour_path: String) -> void:
 		welcome_menu.queue_free()
+		welcome_menu = null
 		tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
 		tour.ended.connect(_button_top_bar.show)
 	)
@@ -115,7 +120,8 @@ func _exit_tree() -> void:
 		return
 
 	if debugger != null:
-		remove_control_from_docks(debugger)
+		if debugger.is_inside_tree():
+			remove_control_from_docks(debugger)
 		debugger.queue_free()
 
 	editor_interface_access.clean_up()
@@ -125,8 +131,7 @@ func _exit_tree() -> void:
 		tour.clean_up()
 
 	remove_translation_parser_plugin(translation_parser)
-	if tour_list != null:
-		ensure_pot_generation(plugin_path, true)
+	ensure_pot_generation(plugin_path, true)
 
 
 func _input(event: InputEvent) -> void:
@@ -136,6 +141,9 @@ func _input(event: InputEvent) -> void:
 
 ## Registers and unregisters translation files for the tours.
 func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
+	if tour_list == null:
+		return
+
 	const key := "internationalization/locale/translations_pot_files"
 	var tour_base_script_file_path := plugin_path.path_join("core").path_join("tour.gd")
 	var pot_files_setting := ProjectSettings.get_setting(key, PackedStringArray())
@@ -153,13 +161,22 @@ func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
 func toggle_debugger() -> void:
 	if debugger == null:
 		debugger = UI_DEBUGGER_DOCK_SCENE.instantiate()
-		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour)
-		debugger.populate_tours_item_list(_tour_paths)
+		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour, _tour_paths)
 
-	if not debugger.is_inside_tree():
-		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
-	else:
+	if debugger.is_inside_tree():
 		remove_control_from_docks(debugger)
+		debugger.queue_free()
+		debugger = null
+		if welcome_menu == null and tour == null:
+			_show_welcome_menu()
+		else:
+			_button_top_bar.show()
+	else:
+		add_control_to_dock(DOCK_SLOT_LEFT_UL, debugger)
+		if welcome_menu != null:
+			welcome_menu.queue_free()
+		else:
+			_button_top_bar.hide()
 
 
 ## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of
@@ -170,5 +187,3 @@ func get_tours():
 		return null
 
 	return load(TOUR_LIST_FILE_PATH)
-
-

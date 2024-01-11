@@ -1,0 +1,26 @@
+[gd_resource type="TileSet" load_steps=7 format=3 uid="uid://y111l4w24pml"]
+
+[ext_resource type="Texture2D" uid="uid://dke7fcrgcuh2w" path="res://tours/test_tour/common/obstacle.png" id="1_yml6p"]
+[ext_resource type="Texture2D" uid="uid://v4phwcqepkqn" path="res://tours/test_tour/common/path_start.png" id="2_xcfdl"]
+[ext_resource type="Texture2D" uid="uid://ce2t4igduiaqq" path="res://tours/test_tour/common/path_end.png" id="3_2d2sd"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tol7a"]
+texture = ExtResource("1_yml6p")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gx51g"]
+texture = ExtResource("2_xcfdl")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2sont"]
+texture = ExtResource("3_2d2sd")
+texture_region_size = Vector2i(64, 64)
+0:0/0 = 0
+
+[resource]
+tile_size = Vector2i(64, 64)
+sources/0 = SubResource("TileSetAtlasSource_tol7a")
+sources/1 = SubResource("TileSetAtlasSource_gx51g")
+sources/2 = SubResource("TileSetAtlasSource_2sont")

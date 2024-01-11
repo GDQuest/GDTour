@@ -39,6 +39,20 @@ max_value = 1.0
 step = 0.01
 value = 0.25
 
+[node name="LabelBubble" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Bubble controls"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ToggleBubbleCheckButton" type="CheckButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Toggle the visibility of overlays.
+Overlays allow or block mouse input, and outline clickable areas."
+text = "Bubble"
+
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 12

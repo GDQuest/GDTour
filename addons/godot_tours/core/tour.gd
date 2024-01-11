@@ -21,7 +21,7 @@ extends RefCounted
 ## Emitted when the tour moves to the next or previous _step_commands.
 signal step_changed(step_index: int)
 ## Emitted when the tour is closed or the user completes the last _step_commands.
-signal ended()
+signal ended
 
 ## Represents one command to execute in a _step_commands. All commands are executed in the order they are added.
 ## Use the Command() function to create a Command object faster.
@@ -44,6 +44,9 @@ const Bubble := preload("bubble/bubble.gd")
 const Task := preload("bubble/task/task.gd")
 const Mouse := preload("mouse/mouse.gd")
 const TranslationService := preload("translation/translation_service.gd")
+const FlashArea := preload("overlays/flash_area/flash_area.gd")
+
+const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 
 const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'_step_commands(=%d)'[/b]."
 
@@ -60,13 +63,6 @@ const EVENTS := {
 var index := -1: set = set_index
 var _steps: Array[Array] = []
 var _step_commands: Array[Command] = []
-
-
-## Overlays added to the current scene to highlight a specific area.
-## We don't set their owner property so they stay hidden from the scene tree, but still show in the viewport.
-## They are automatically cleared on new _steps.
-var game_world_overlays := []
-var state := {}
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -87,14 +83,8 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	var BubblePackedScene := load("res://addons/godot_tours/core/bubble/bubble.tscn")
 	bubble = BubblePackedScene.instantiate()
 	bubble.setup(interface, translation_service)
-	bubble.back_button.pressed.connect(func():
-		EditorInterface.stop_playing_scene()
-		back()
-	)
-	bubble.next_button.pressed.connect(func():
-		EditorInterface.stop_playing_scene()
-		next()
-	)
+	bubble.back_button.pressed.connect(back)
+	bubble.next_button.pressed.connect(next)
 	bubble.close_requested.connect(func():
 		clean_up()
 		toggle_visible(false)
@@ -117,7 +107,6 @@ func _build() -> void:
 
 
 func clean_up() -> void:
-	_clear_game_world_overlays()
 	clear_mouse()
 	log.clean_up()
 	if is_instance_valid(bubble):
@@ -144,17 +133,35 @@ func set_index(value: int) -> void:
 	else:
 		bubble.back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		bubble.next_button.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
-
 	step_changed.emit(index)
 
 
+## Goes back to the previous step.
 func back() -> void:
+	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.BACK)
 
 
+## Goes to the next step, or shows a button to end the tour if the last step is reached.
 func next() -> void:
+	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.NEXT)
 
+
+## Waits for the next frame and goes back to the previous step. Used for automated testing.
+func auto_back() -> void:
+	queue_command(func() -> void:
+		await interface.base_control.get_tree().process_frame
+		back()
+	)
+
+
+## Waits for the next frame and advances to the next step. Used for automated testing.
+func auto_next() -> void:
+	queue_command(func wait_for_frame_and_advance() -> void:
+		await interface.base_control.get_tree().process_frame
+		next()
+	)
 
 ## Completes the current step's commands, adding some more commands to clear the bubble, overlays, and the mouse.
 ## Then, this function appends the completed step (an array of Command objects) to the tour.
@@ -164,7 +171,6 @@ func complete_step() -> void:
 		Command.new(overlays.clean_up),
 		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
-		Command.new(_clear_game_world_overlays),
 	]
 	_step_commands.push_back(Command.new(play_mouse))
 	_steps.push_back(step_start + _step_commands)
@@ -191,41 +197,26 @@ func scene_open(path: String) -> void:
 	queue_command(EditorInterface.open_scene_from_path, [path])
 
 
-func scene_edit_node(node: Node) -> void:
-	if node == null:
-		warn("Called with [b]null[/b] value", "scene_edit_node")
-		return
-	queue_command(EditorInterface.edit_node, [node])
-
-
 func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
 	scene_deselect_all_nodes()
 	queue_command(func() -> void:
-		var root := EditorInterface.get_edited_scene_root()
-		if root.name in paths:
-			editor_selection.add_node(root)
-		for child in root.find_children("*"):
-			if child.owner == root and root.name.path_join(root.get_path_to(child)) in paths:
-				editor_selection.add_node(child)
+		var nodes := Utils.find_children_by_path(EditorInterface.get_edited_scene_root(), paths)
+		for node in nodes:
+			editor_selection.add_node(node)
 	)
 
 
-func scene_toggle_lock_nodes_by_path(node_paths: Array[String] = [], is_locked := true) -> void:
+func scene_toggle_lock_nodes_by_path(paths: Array[String] = [], is_locked := true) -> void:
 	queue_command(func get_and_lock_nodes() -> void:
-		var root := EditorInterface.get_edited_scene_root()
-		if root.name in node_paths:
-			root.set_meta("_edit_lock_", is_locked)
-		for child in root.find_children("*"):
-			if child.owner == root and root.name.path_join(root.get_path_to(child)) in node_paths:
-				child.set_meta("_edit_lock_", is_locked)
+		var nodes := Utils.find_children_by_path(EditorInterface.get_edited_scene_root(), paths)
+		var prop := &"_edit_lock_"
+		for node in nodes:
+			node.set_meta(prop, is_locked) if is_locked else node.remove_meta(prop)
 	)
 
 
 func scene_deselect_all_nodes() -> void:
-	queue_command(func() -> void:
-		EditorInterface.edit_node(null)
-		editor_selection.clear()
-	)
+	queue_command(editor_selection.clear)
 
 
 func tabs_set_to_index(tabs: TabBar, index: int) -> void:
@@ -267,36 +258,35 @@ func canvas_item_editor_center_at(position := Vector2.ZERO, zoom := CanvasItemEd
 		CanvasItemEditorZoom._200: EVENTS._2,
 	}
 	queue_command(func() -> void:
-		interface.canvas_item_editor.gui_input.emit(zoom_to_event[zoom])
 		interface.canvas_item_editor.center_at(position)
+		await interface.canvas_item_editor.get_tree().process_frame
+		interface.canvas_item_editor_viewport.gui_input.emit(zoom_to_event[zoom])
 	)
 
 
 ## Resets the zoom of the 2D viewport to 100%.
-## FIXME: doesn't work.
 func canvas_item_editor_zoom_reset() -> void:
-	queue_command(func set_zoom_to_100_percent() -> void:
-		interface.canvas_item_editor_viewport.grab_focus()
-		interface.canvas_item_editor_zoom_button_reset.set_deferred("button_pressed", true)
-	)
+	queue_command(interface.canvas_item_editor_zoom_widget.set_zoom.bind(1.0))
 
 
-## Plays a flash animation in the 2D game viewport, over the desired global_rect.
-func canvas_item_editor_flash_area(global_rect: Rect2) -> void:
-	const FlashAreaPackedScene := preload("res://addons/godot_tours/core/overlays/flash_area/flash_area.tscn")
+## Plays a flash animation in the 2D game viewport, over the desired rect.
+func canvas_item_editor_flash_area(rect: Rect2) -> void:
 	queue_command(func flash_canvas_item_editor() -> void:
-		var flash = FlashAreaPackedScene.instantiate()
-		EditorInterface.get_edited_scene_root().add_child(flash)
-		game_world_overlays.append(flash)
-		flash.size = global_rect.size
-		flash.global_position = global_rect.position
+		var flash_area := FlashAreaPackedScene.instantiate()
+		overlays.ensure_get_dimmer_for(interface.canvas_item_editor).add_child(flash_area)
+		interface.canvas_item_editor_viewport.draw.connect(
+			flash_area.refresh.bind(interface.canvas_item_editor_viewport, rect)
+		)
+		flash_area.refresh(interface.canvas_item_editor_viewport, rect)
 	)
 
 
+# TODO: test?
 func spatial_editor_focus() -> void:
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
 
 
+# TODO: test?
 func spatial_editor_focus_node_by_paths(paths: Array[String]) -> void:
 	scene_select_nodes_by_path(paths)
 	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
@@ -342,6 +332,7 @@ func bubble_add_video(stream: VideoStream) -> void:
 	queue_command(bubble.add_video, [stream])
 
 
+# TODO: test?
 func bubble_add_task(description: String, repeat: int, repeat_callable: Callable, error_predicate := noop_error_predicate) -> void:
 	queue_command(bubble.add_task, [description, repeat, repeat_callable, error_predicate])
 
@@ -470,27 +461,30 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## you can call this function with a `size` of `Vector2.ZERO` on the following _step_commands to let the bubble
 ## automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
-	queue_command(bubble.set_custom_minimum_size, [size * EditorInterface.get_editor_scale()])
+	queue_command(bubble.panel_container.set_custom_minimum_size, [size * EditorInterface.get_editor_scale()])
 
 
+# TODO: test?
 func bubble_set_avatar_neutral() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.NEUTRAL])
 
 
+# TODO: test?
 func bubble_set_avatar_happy() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.HAPPY])
 
 
+# TODO: test?
 func bubble_set_avatar_surprised() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
 
 
-func highlight_scene_nodes_by_name(names: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_name, [names, play_flash, button_index])
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_name, [names, button_index, play_flash])
 
 
-func highlight_scene_nodes_by_path(paths: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_path, [paths, play_flash, button_index])
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_path, [paths, button_index, play_flash])
 
 
 func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:
@@ -505,16 +499,16 @@ func highlight_signals(paths: Array[String], play_flash := true) -> void:
 	queue_command(overlays.highlight_signals, [paths, play_flash])
 
 
-func highlight_code(start: int, end := 0, caret := 0, play_flash := false, do_center := true) -> void:
-	queue_command(overlays.highlight_code, [start, end, caret, play_flash, do_center])
+func highlight_code(start: int, end := 0, caret := 0, do_center := true, play_flash := false) -> void:
+	queue_command(overlays.highlight_code, [start, end, caret, do_center, play_flash])
 
 
 func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 	queue_command(overlays.highlight_controls, [controls, play_flash])
 
 
-func highlight_tabs_index(tabs: Control, play_flash := true, index := -1) -> void:
-	queue_command(overlays.highlight_tab_index, [tabs, play_flash, index])
+func highlight_tabs_index(tabs: Control, index := -1, play_flash := true) -> void:
+	queue_command(overlays.highlight_tab_index, [tabs, index, play_flash])
 
 
 func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> void:
@@ -524,8 +518,13 @@ func highlight_tabs_title(tabs: Control, title: String, play_flash := true) -> v
 func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void:
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:
-			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
-		overlays.add_highlight_to_control(interface.canvas_item_editor, rect_getter, play_flash),
+			var scene_root := EditorInterface.get_edited_scene_root()
+			if scene_root == null:
+				return Rect2()
+			return interface.canvas_item_editor_viewport.get_global_rect().intersection(
+				scene_root.get_viewport().get_screen_transform() * rect
+			)
+		overlays.add_highlight_to_control(interface.canvas_item_editor_viewport, rect_getter, play_flash),
 	)
 
 
@@ -544,8 +543,10 @@ func highlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index 
 		var rect_getter := func() -> Rect2:
 			var s := camera.unproject_position(start)
 			var e := camera.unproject_position(end)
-			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
-		overlays.add_highlight_to_control(interface.spatial_editor, rect_getter, play_flash),
+			return interface.spatial_editor_surface.get_global_rect().intersection(
+				camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
+			)
+		overlays.add_highlight_to_control(interface.spatial_editor_surface, rect_getter, play_flash),
 	)
 
 
@@ -715,14 +716,9 @@ func get_step_count() -> int:
 	return _steps.size()
 
 
-func _clear_game_world_overlays():
-	for node in game_world_overlays:
-		node.queue_free()
-
-
 ## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor
 ## scale.
-func bbcode_generate_icon_image_string(image_filepath: String) -> String:
+static func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	const base_size_pixels := 24
 	var size := base_size_pixels * EditorInterface.get_editor_scale()
 	return "[img=%sx%s]" % [size, size] + image_filepath + "[/img]"
@@ -730,6 +726,6 @@ func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 
 ## Wraps the text in a [font_size] BBCode tag, scaling the value of size_pixels based on the editor
 ## scale.
-func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
+static func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 	var size_scaled := size_pixels * EditorInterface.get_editor_scale()
 	return "[font_size=%s]" % size_scaled + text + "[/font_size]"

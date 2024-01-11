@@ -50,12 +50,12 @@ var canvas_item_editor_toolbar_skeleton_options_button: Button = null
 ## Parent container of the zoom buttons in the top-left of the 2D editor.
 var canvas_item_editor_zoom_widget: Control = null
 ## Lower zoom button in the top-left of the 2D viewport.
-var canvas_item_editor_zoom_button_lower: Control = null
+var canvas_item_editor_zoom_button_lower: Button = null
 ## Button showing the current zoom percentage in the top-left of the 2D viewport. Pressing it resets
 ## the zoom to 100%.
-var canvas_item_editor_zoom_button_reset: Control = null
+var canvas_item_editor_zoom_button_reset: Button = null
 ## Increase zoom button in the top-left of the 2D viewport.
-var canvas_item_editor_zoom_button_increase: Control = null
+var canvas_item_editor_zoom_button_increase: Button = null
 var spatial_editor: Control = null
 var spatial_editor_cameras: Array[Camera3D] = []
 var spatial_editor_surface: Control = null
@@ -128,6 +128,7 @@ var bottom_panels_container: Control = null
 var tilemap: Control = null
 var tilemap_tabs: TabBar = null
 var tilemap_tiles_panel: VBoxContainer = null
+var tilemap_tiles: ItemList = null
 var tilemap_tiles_atlas_view: Control = null
 var tilemap_tiles_toolbar: HBoxContainer = null
 var tilemap_terrains_panel: VBoxContainer = null
@@ -331,6 +332,12 @@ func _init() -> void:
 	tilemap_tiles_panel = tilemap.get_node("Tiles")
 	var tilemap_tiles_hsplitcontainer: HSplitContainer = Utils.get_child_by_type(
 		tilemap_tiles_panel, "HSplitContainer"
+	)
+	tilemap_tiles = (
+		tilemap_tiles_hsplitcontainer
+		. get_child(0)
+		. find_children("*", "ItemList", false, false)
+		. back()
 	)
 	tilemap_tiles_atlas_view = Utils.get_child_by_type(
 		tilemap_tiles_hsplitcontainer, "TileAtlasView"

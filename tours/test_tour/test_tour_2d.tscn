@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkiu31kpq64co"]
+
+[ext_resource type="Script" path="res://tours/test_tour/test_tour_2d.gd" id="1_jx4hj"]
+[ext_resource type="TileSet" uid="uid://y111l4w24pml" path="res://tours/test_tour/test_tileset.tres" id="2_i0tlh"]
+
+[node name="TestTour2D" type="Node2D"]
+script = ExtResource("1_jx4hj")
+
+[node name="NodeToEdit" type="Node2D" parent="."]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("2_i0tlh")
+format = 2
