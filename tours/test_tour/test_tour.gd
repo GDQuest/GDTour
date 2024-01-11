@@ -1,3 +1,6 @@
+## Integration test for the tour framework. Runs many of the tour APIs and uses asserts to verify the results.
+## Because of the nature of interactive tours and the complex interactions with the Godot editor, we can't rely on
+## unit tests to verify the results. This is why we have this integration test.
 extends "res://addons/godot_tours/core/tour.gd"
 
 const Highlight := preload("../../addons/godot_tours/core/overlays/highlight/highlight.gd")
