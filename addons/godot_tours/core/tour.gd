@@ -136,16 +136,19 @@ func set_index(value: int) -> void:
 	step_changed.emit(index)
 
 
+## Goes back to the previous step.
 func back() -> void:
 	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.BACK)
 
 
+## Goes to the next step, or shows a button to end the tour if the last step is reached.
 func next() -> void:
 	EditorInterface.stop_playing_scene()
 	set_index(index + Direction.NEXT)
 
 
+## Waits for the next frame and goes back to the previous step. Used for automated testing.
 func auto_back() -> void:
 	queue_command(func() -> void:
 		await interface.base_control.get_tree().process_frame
@@ -153,8 +156,9 @@ func auto_back() -> void:
 	)
 
 
+## Waits for the next frame and advances to the next step. Used for automated testing.
 func auto_next() -> void:
-	queue_command(func() -> void:
+	queue_command(func wait_for_frame_and_advance() -> void:
 		await interface.base_control.get_tree().process_frame
 		next()
 	)
