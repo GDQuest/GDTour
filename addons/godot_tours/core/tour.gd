@@ -718,7 +718,7 @@ func get_step_count() -> int:
 
 ## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor
 ## scale.
-static func bbcode_generate_icon_image_string(image_filepath: String) -> String:
+func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	const base_size_pixels := 24
 	var size := base_size_pixels * EditorInterface.get_editor_scale()
 	return "[img=%sx%s]" % [size, size] + image_filepath + "[/img]"
@@ -726,6 +726,6 @@ static func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 
 ## Wraps the text in a [font_size] BBCode tag, scaling the value of size_pixels based on the editor
 ## scale.
-static func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
+func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 	var size_scaled := size_pixels * EditorInterface.get_editor_scale()
 	return "[font_size=%s]" % size_scaled + text + "[/font_size]"
