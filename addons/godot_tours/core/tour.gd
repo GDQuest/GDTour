@@ -403,7 +403,7 @@ func bubble_add_task_select_node(node_name: String) -> void:
 		1,
 		func task_select_node(_task: Task) -> int:
 			var scene_root: Node = EditorInterface.get_edited_scene_root()
-			var target_node: Node = scene_root.find_child(node_name)
+			var target_node: Node = scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
 			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
 			return 1 if selected_nodes.size() == 1 and selected_nodes.front() == target_node else 0,
 	)
