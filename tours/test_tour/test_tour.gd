@@ -544,7 +544,7 @@ func _build() -> void:
 		interface.bottom_button_tilemap.toggled.emit(false)
 		await delay(2)
 	)
-	higlight_spatial_editor_camera_region(Vector3.ZERO, Vector3(2, 0, 3))
+	highlight_spatial_editor_camera_region(Vector3.ZERO, Vector3(2, 0, 3))
 	queue_command(func() -> void:
 		var highlights := await get_highlights()
 		assert(highlights.size() == 1, "'higlight_spatial_editor_camera_region()' highlights part of 'interface.spatial_editor_surface'")
