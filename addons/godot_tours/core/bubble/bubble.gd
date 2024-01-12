@@ -12,11 +12,6 @@ const EditorInterfaceAccess := preload("../editor_interface_access.gd")
 const TranslationService := preload("../translation/translation_service.gd")
 const Debugger := preload("../debugger/debugger.gd")
 
-const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
-const CodeEditPackedScene := preload("code_edit.tscn")
-const TextureRectPackedScene := preload("texture_rect.tscn")
-const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
-
 const ThemeUtils := preload("res://addons/godot_tours/theme_utils.gd")
 
 const TaskPackedScene: PackedScene = preload("res://addons/godot_tours/core/bubble/task/task.tscn")
@@ -57,6 +52,10 @@ var avatar_tween_rotation: Tween = null
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	self.translation_service = translation_service
 	self.step_count = step_count
+
+
+func on_tour_step_changed(index: int) -> void:
+	pass
 
 
 func clear() -> void:

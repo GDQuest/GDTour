@@ -79,26 +79,12 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	self.interface = interface
 	self.overlays = overlays
 	self.translation_service = translation_service
-
-	var BubblePackedScene := load("res://addons/godot_tours/core/bubble/bubble.tscn")
 	translation_service.update_tour_key(get_script().resource_path)
 
 	# Applies the default layout so every tour starts from the same UI state.
 	interface.restore_default_layout()
 	_build()
-
-	bubble = BubblePackedScene.instantiate()
-	interface.base_control.add_child(bubble)
-	bubble.setup(translation_service, steps.size())
-	bubble.back_button_pressed.connect(back)
-	bubble.next_button_pressed.connect(next)
-	bubble.close_requested.connect(func() -> void:
-		clean_up()
-		toggle_visible(false)
-		ended.emit()
-	)
-	step_changed.connect(bubble.update_step_count_display)
-
+	load_bubble()
 	if index == -1:
 		set_index(0)
 
@@ -125,19 +111,27 @@ func set_index(value: int) -> void:
 		log.info("[_step_commands: %d]\n%s" % [index, interface.logger_rich_text_label.get_parsed_text()])
 		run(steps[index])
 	index = clampi(value, 0, step_count - 1)
-	bubble.back_button.visible = true
-	bubble.finish_button.visible = false
-	if index == 0:
-		bubble.back_button.visible = false
-		bubble.next_button.visible = true
-		bubble.next_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER | Control.SIZE_EXPAND
-	elif index == step_count - 1:
-		bubble.next_button.visible = false
-		bubble.finish_button.visible = true
-	else:
-		bubble.back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-		bubble.next_button.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
 	step_changed.emit(index)
+
+
+func load_bubble(BubblePackedScene: PackedScene = null) -> void:
+	if bubble != null:
+		bubble.queue_free()
+
+	if BubblePackedScene == null:
+		BubblePackedScene = load("res://addons/godot_tours/core/bubble/bubble.tscn")
+
+	bubble = BubblePackedScene.instantiate()
+	interface.base_control.add_child(bubble)
+	bubble.setup(translation_service, steps.size())
+	bubble.back_button_pressed.connect(back)
+	bubble.next_button_pressed.connect(next)
+	bubble.close_requested.connect(func() -> void:
+		clean_up()
+		toggle_visible(false)
+		ended.emit()
+	)
+	step_changed.connect(bubble.on_tour_step_changed)
 
 
 ## Goes back to the previous step.
@@ -190,6 +184,10 @@ func run(current_step: Array[Command]) -> void:
 ## To complete a step and start creating the next one, call [complete_step()].
 func queue_command(callable: Callable, parameters := []) -> void:
 	step_commands.push_back(Command.new(callable, parameters))
+
+
+func swap_bubble(BubblePackedScene: PackedScene = null) -> void:
+	queue_command(load_bubble, [BubblePackedScene])
 
 
 func scene_open(path: String) -> void:
@@ -436,49 +434,6 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
 	queue_command(func() -> void: bubble.panel.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
-
-
-# func bubble_set_header(text: String) -> void:
-# 	queue_command(bubble.set_header, [text])
-
-
-# func bubble_set_footer(text: String) -> void:
-# 	queue_command(bubble.set_footer, [text])
-
-
-# func bubble_set_background(texture: Texture2D) -> void:
-# 	queue_command(bubble.set_background, [texture])
-
-
-# func bubble_add_text(lines: Array[String]) -> void:
-# 	queue_command(bubble.add_text, [lines])
-
-
-# func bubble_add_code(lines: Array[String]) -> void:
-# 	queue_command(bubble.add_code, [lines])
-
-
-# func bubble_add_texture(texture: Texture2D) -> void:
-# 	queue_command(bubble.add_texture, [texture])
-
-
-# func bubble_add_video(stream: VideoStream) -> void:
-# 	queue_command(bubble.add_video, [stream])
-
-
-# # TODO: test?
-# func bubble_set_avatar_neutral() -> void:
-# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.NEUTRAL))
-
-
-# # TODO: test?
-# func bubble_set_avatar_happy() -> void:
-# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.HAPPY))
-
-
-# # TODO: test?
-# func bubble_set_avatar_surprised() -> void:
-# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.SURPRISED))
 
 
 func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:

@@ -2,6 +2,11 @@
 @tool
 extends "bubble.gd"
 
+const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
+const CodeEditPackedScene := preload("code_edit.tscn")
+const TextureRectPackedScene := preload("texture_rect.tscn")
+const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
+
 ## Separation between paragraphs of text and elements in the main content in pixels.
 @export var paragraph_separation := 12:
 	set(new_value):
@@ -61,6 +66,22 @@ func _ready() -> void:
 	button_close.custom_minimum_size *= editor_scale
 	avatar.scale = avatar.scale_start * editor_scale
 	paragraph_separation *= editor_scale
+
+
+func on_tour_step_changed(index: int) -> void:
+	back_button.visible = true
+	finish_button.visible = false
+	if index == 0:
+		back_button.visible = false
+		next_button.visible = true
+		next_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER | Control.SIZE_EXPAND
+	elif index == step_count - 1:
+		next_button.visible = false
+		finish_button.visible = true
+	else:
+		back_button.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		next_button.size_flags_horizontal = Control.SIZE_SHRINK_END | Control.SIZE_EXPAND
+	update_step_count_display(index)
 
 
 func clear() -> void:

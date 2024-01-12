@@ -22,6 +22,15 @@ func get_highlights() -> Array[Highlight]:
 
 
 func _build() -> void:
+	var TestTourBubblePackedScene := load("res://tours/test_tour/test_tour_bubble.tscn")
+	swap_bubble(TestTourBubblePackedScene)
+	auto_next()
+	complete_step()
+
+	swap_bubble()
+	auto_next()
+	complete_step()
+
 	var file_path := "res://tours/test_tour/test_tour_2d.tscn"
 	scene_open(file_path)
 	queue_command(func() -> void:
