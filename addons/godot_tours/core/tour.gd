@@ -61,8 +61,8 @@ const EVENTS := {
 }
 ## Index of the _step_commands currently running.
 var index := -1: set = set_index
-var _steps: Array[Array] = []
-var _step_commands: Array[Command] = []
+var steps: Array[Array] = []
+var step_commands: Array[Command] = []
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -81,22 +81,26 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	self.translation_service = translation_service
 
 	var BubblePackedScene := load("res://addons/godot_tours/core/bubble/bubble.tscn")
-	bubble = BubblePackedScene.instantiate()
-	bubble.setup(interface, translation_service)
-	bubble.back_button.pressed.connect(back)
-	bubble.next_button.pressed.connect(next)
-	bubble.close_requested.connect(func():
-		clean_up()
-		toggle_visible(false)
-		ended.emit()
-	)
 	translation_service.update_tour_key(get_script().resource_path)
 
 	# Applies the default layout so every tour starts from the same UI state.
 	interface.restore_default_layout()
 	_build()
-	bubble.set_step_count(_steps.size())
+
+	bubble = BubblePackedScene.instantiate()
+	interface.base_control.add_child(bubble)
+	bubble.setup(translation_service, steps.size())
+	bubble.back_button_pressed.connect(back)
+	bubble.next_button_pressed.connect(next)
+	bubble.close_requested.connect(func() -> void:
+		clean_up()
+		toggle_visible(false)
+		ended.emit()
+	)
 	step_changed.connect(bubble.update_step_count_display)
+
+	if index == -1:
+		set_index(0)
 
 
 ## Virtual function to override to build the tour. Write all your tour steps in it.
@@ -114,12 +118,12 @@ func clean_up() -> void:
 
 
 func set_index(value: int) -> void:
-	var step_count := _steps.size()
+	var step_count := steps.size()
 	var stride := Direction.BACK if value < index else Direction.NEXT
 	value = clampi(value, -1, step_count)
 	for index in range(index + stride, clampi(value + stride, -1, step_count), stride):
 		log.info("[_step_commands: %d]\n%s" % [index, interface.logger_rich_text_label.get_parsed_text()])
-		run(_steps[index])
+		run(steps[index])
 	index = clampi(value, 0, step_count - 1)
 	bubble.back_button.visible = true
 	bubble.finish_button.visible = false
@@ -167,16 +171,14 @@ func auto_next() -> void:
 ## Then, this function appends the completed step (an array of Command objects) to the tour.
 func complete_step() -> void:
 	var step_start: Array[Command] = [
-		Command.new(bubble.clear),
+		Command.new(func() -> void: bubble.clear()),
 		Command.new(overlays.clean_up),
 		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
 	]
-	_step_commands.push_back(Command.new(play_mouse))
-	_steps.push_back(step_start + _step_commands)
-	_step_commands = []
-	if index == -1:
-		set_index(0)
+	step_commands.push_back(Command.new(play_mouse))
+	steps.push_back(step_start + step_commands)
+	step_commands = []
 
 
 func run(current_step: Array[Command]) -> void:
@@ -187,7 +189,7 @@ func run(current_step: Array[Command]) -> void:
 ## Appends a command to the currently edited step. Commands are executed in the order they are added.
 ## To complete a step and start creating the next one, call [complete_step()].
 func queue_command(callable: Callable, parameters := []) -> void:
-	_step_commands.push_back(Command.new(callable, parameters))
+	step_commands.push_back(Command.new(callable, parameters))
 
 
 func scene_open(path: String) -> void:
@@ -313,28 +315,12 @@ func context_set_asset_lib() -> void:
 
 
 func bubble_set_title(title_text: String) -> void:
-	queue_command(bubble.set_title, [title_text])
-
-
-func bubble_add_text(lines: Array[String]) -> void:
-	queue_command(bubble.add_text, [lines])
-
-
-func bubble_add_code(lines: Array[String]) -> void:
-	queue_command(bubble.add_code, [lines])
-
-
-func bubble_add_texture(texture: Texture2D) -> void:
-	queue_command(bubble.add_texture, [texture])
-
-
-func bubble_add_video(stream: VideoStream) -> void:
-	queue_command(bubble.add_video, [stream])
+	queue_command(func() -> void: bubble.set_title(title_text))
 
 
 # TODO: test?
 func bubble_add_task(description: String, repeat: int, repeat_callable: Callable, error_predicate := noop_error_predicate) -> void:
-	queue_command(bubble.add_task, [description, repeat, repeat_callable, error_predicate])
+	queue_command(func() -> void: bubble.add_task(description, repeat, repeat_callable, error_predicate))
 
 
 func bubble_add_task_press_button(button: Button, description := "") -> void:
@@ -383,7 +369,7 @@ func bubble_add_task_set_tab_to_index(tabs: TabBar, index: int, description := "
 		return
 	var which_tabs: String = "[b]%s[/b] tabs" % interface.tabs_text.get(tabs, "")
 	description = gtr("Set %s to tab with index [b]%d[/b].") % [which_tabs, index] if description.is_empty() else description
-	queue_command(bubble.add_task, [description, 1, func(_task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate])
+	bubble_add_task(description, 1, func(_task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate)
 
 
 func bubble_add_task_set_tab_to_title(tabs: TabBar, title: String, description := "") -> void:
@@ -431,27 +417,15 @@ func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, descript
 		)
 
 
-func bubble_set_header(text: String) -> void:
-	queue_command(bubble.set_header, [text])
-
-
-func bubble_set_footer(text: String) -> void:
-	queue_command(bubble.set_footer, [text])
-
-
-func bubble_set_background(texture: Texture2D) -> void:
-	queue_command(bubble.set_background, [texture])
-
-
 ## Moves and anchors the bubble relative to the given control.
 ## You can optionally set a margin and an offset to fine-tune the bubble's position.
 func bubble_move_and_anchor(control: Control, at := Bubble.At.CENTER, margin := 16.0, offset := Vector2.ZERO) -> void:
-	queue_command(bubble.move_and_anchor, [control, at, margin, offset])
+	queue_command(func() -> void: bubble.move_and_anchor(control, at, margin, offset))
 
 
 ## Places the avatar on the given side at the top of the bubble.
 func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
-	queue_command(bubble.set_avatar_at, [at])
+	queue_command(func() -> void: bubble.set_avatar_at(at))
 
 
 ## Changes the minimum size of the bubble, scaled by the editor scale setting.
@@ -461,22 +435,50 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## you can call this function with a `size` of `Vector2.ZERO` on the following _step_commands to let the bubble
 ## automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
-	queue_command(bubble.panel_container.set_custom_minimum_size, [size * EditorInterface.get_editor_scale()])
+	queue_command(func() -> void: bubble.panel.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
 
 
-# TODO: test?
-func bubble_set_avatar_neutral() -> void:
-	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.NEUTRAL])
+# func bubble_set_header(text: String) -> void:
+# 	queue_command(bubble.set_header, [text])
 
 
-# TODO: test?
-func bubble_set_avatar_happy() -> void:
-	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.HAPPY])
+# func bubble_set_footer(text: String) -> void:
+# 	queue_command(bubble.set_footer, [text])
 
 
-# TODO: test?
-func bubble_set_avatar_surprised() -> void:
-	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
+# func bubble_set_background(texture: Texture2D) -> void:
+# 	queue_command(bubble.set_background, [texture])
+
+
+# func bubble_add_text(lines: Array[String]) -> void:
+# 	queue_command(bubble.add_text, [lines])
+
+
+# func bubble_add_code(lines: Array[String]) -> void:
+# 	queue_command(bubble.add_code, [lines])
+
+
+# func bubble_add_texture(texture: Texture2D) -> void:
+# 	queue_command(bubble.add_texture, [texture])
+
+
+# func bubble_add_video(stream: VideoStream) -> void:
+# 	queue_command(bubble.add_video, [stream])
+
+
+# # TODO: test?
+# func bubble_set_avatar_neutral() -> void:
+# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.NEUTRAL))
+
+
+# # TODO: test?
+# func bubble_set_avatar_happy() -> void:
+# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.HAPPY))
+
+
+# # TODO: test?
+# func bubble_set_avatar_surprised() -> void:
+# 	queue_command(func() -> void: bubble.avatar.set_expression(bubble.avatar.Expressions.SURPRISED))
 
 
 func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:
@@ -709,11 +711,7 @@ func ptr(resource_path: String) -> String:
 
 
 func warn(msg: String, func_name: String) -> void:
-	print_rich(WARNING_MESSAGE % [msg, func_name, _steps.size()])
-
-
-func get_step_count() -> int:
-	return _steps.size()
+	print_rich(WARNING_MESSAGE % [msg, func_name, steps.size()])
 
 
 ## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor

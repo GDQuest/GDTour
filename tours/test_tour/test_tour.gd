@@ -8,10 +8,6 @@ const Highlight := preload("../../addons/godot_tours/core/overlays/highlight/hig
 const HIGHLIGHT_GROUP := "highlight"
 
 
-func are_tasks_done() -> bool:
-	return bubble.tasks_v_box_container.get_children().all(func(task: Task) -> bool: return task.is_done())
-
-
 func delay(frames: int = 1) -> void:
 	for _frame in range(frames):
 		await interface.base_control.get_tree().process_frame
@@ -174,11 +170,11 @@ func _build() -> void:
 	complete_step()
 
 	var lines: Array[String] = ["Test Line 1", "Test Line 2"]
-	bubble_add_text(lines)
+	queue_command(func() -> void: bubble.add_text(lines))
 	queue_command(func() -> void:
 		await delay()
 		assert(bubble.main_v_box_container.get_child_count() == 2, "'bubble.main_v_box_container' should have '2' children")
-		var elements := bubble.main_v_box_container.get_children()
+		var elements: Array[Node] = bubble.main_v_box_container.get_children()
 		for i in range(bubble.main_v_box_container.get_child_count()):
 			var element := elements[i]
 			var line := lines[i]
@@ -191,11 +187,11 @@ func _build() -> void:
 	complete_step()
 
 	lines = ["Code Line 1", "Code Line 2", "Code Line 3"]
-	bubble_add_code(lines)
+	queue_command(func() -> void: bubble.add_code(lines))
 	queue_command(func() -> void:
 		await delay()
 		assert(bubble.main_v_box_container.get_child_count() == 3, "'bubble.main_v_box_container' should have '3' children")
-		var elements := bubble.main_v_box_container.get_children()
+		var elements: Array[Node] = bubble.main_v_box_container.get_children()
 		for i in range(bubble.main_v_box_container.get_child_count()):
 			var element := elements[i]
 			var line := lines[i]
@@ -209,7 +205,7 @@ func _build() -> void:
 
 	file_path = "res://icon.svg"
 	var texture := load(file_path)
-	bubble_add_texture(texture)
+	queue_command(func() -> void: bubble.add_texture(texture))
 	queue_command(func() -> void:
 		await delay()
 		for element: TextureRect in bubble.main_v_box_container.get_children():
@@ -223,7 +219,7 @@ func _build() -> void:
 
 	file_path = "res://tours/test_tour/test_video.ogv"
 	var stream := load(file_path)
-	bubble_add_video(stream)
+	queue_command(func() -> void: bubble.add_video(stream))
 	queue_command(func() -> void:
 		await delay()
 		for element: VideoStreamPlayer in bubble.main_v_box_container.get_children():
@@ -240,7 +236,7 @@ func _build() -> void:
 		EditorInterface.play_current_scene()
 		await delay()
 		EditorInterface.stop_playing_scene()
-		assert(are_tasks_done(), "'bubble_add_task_press_button()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_press_button()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
@@ -249,7 +245,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		EditorInterface.set_main_screen_editor("2D")
 		await delay()
-		assert(are_tasks_done(), "'bubble_add_task_toggle_button()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_toggle_button()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
@@ -258,7 +254,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		interface.inspector_tabs.set_current_tab(1)
 		await delay()
-		assert(are_tasks_done(), "'bubble_add_task_set_tab_to_index()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_set_tab_to_index()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
@@ -267,7 +263,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		interface.inspector_tabs.set_current_tab(0)
 		await delay()
-		assert(are_tasks_done(), "'bubble_add_task_set_tab_to_title()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_set_tab_to_title()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
@@ -277,7 +273,7 @@ func _build() -> void:
 		editor_selection.clear()
 		editor_selection.add_node(EditorInterface.get_edited_scene_root().find_child("NodeToEdit"))
 		await delay()
-		assert(are_tasks_done(), "'bubble_add_task_select_node()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_select_node()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
@@ -292,13 +288,13 @@ func _build() -> void:
 		interface.snap_options_grid_step_controls[1].value = 32
 		interface.snap_options_grid_step_controls[2].value = 32
 		await delay()
-		assert(are_tasks_done(), "'bubble_add_task_set_ranges()' all tasks should be done")
+		assert(bubble.check_tasks(), "'bubble_add_task_set_ranges()' all tasks should be done")
 	)
 	auto_next()
 	complete_step()
 
 	var text := "Text Header"
-	bubble_set_header(text)
+	queue_command(func() -> void: bubble.set_header(text))
 	queue_command(func() -> void:
 		assert(
 			bubble.header_rich_text_label.text == text,
@@ -309,7 +305,7 @@ func _build() -> void:
 	complete_step()
 
 	text = "Text Footer"
-	bubble_set_footer(text)
+	queue_command(func() -> void: bubble.set_footer(text))
 	queue_command(func() -> void:
 		assert(
 			bubble.footer_rich_text_label.text == text,
@@ -319,7 +315,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	bubble_set_background(texture)
+	queue_command(func() -> void: bubble.set_background(texture))
 	queue_command(func() -> void:
 		assert(
 			bubble.background_texture_rect.texture == texture,
@@ -333,9 +329,9 @@ func _build() -> void:
 	queue_command(func() -> void:
 		await delay(2)
 		await bubble.tween.finished
-		var should_be_global_position := interface.main_screen.global_position + Vector2(interface.main_screen.size.x - bubble.panel_container.size.x, 0)
+		var should_be_global_position := interface.main_screen.global_position + Vector2(interface.main_screen.size.x - bubble.panel.size.x, 0)
 		assert(
-			bubble.at == Bubble.At.TOP_RIGHT and bubble.panel_container.global_position.is_equal_approx(should_be_global_position),
+			bubble.at == Bubble.At.TOP_RIGHT and bubble.panel.global_position.is_equal_approx(should_be_global_position),
 			"'bubble_move_and_anchor()' should place the bubble at the top right of main screen",
 		)
 	)
@@ -348,7 +344,7 @@ func _build() -> void:
 		await delay(2)
 		await bubble.avatar_tween_position.finished
 		var editor_scale := EditorInterface.get_editor_scale()
-		var should_be_position := Vector2(bubble.panel_container.size.x + 3.0 * editor_scale, -8.0 * editor_scale)
+		var should_be_position := Vector2(bubble.panel.size.x + 3.0 * editor_scale, -8.0 * editor_scale)
 		assert(
 			bubble.avatar_at == Bubble.AvatarAt.RIGHT and bubble.avatar.position.is_equal_approx(should_be_position),
 			"'bubble_set_avatar_at()' should place the bubble avatar at right",
@@ -363,7 +359,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		size *= EditorInterface.get_editor_scale()
 		assert(
-			bubble.panel_container.custom_minimum_size.is_equal_approx(size),
+			bubble.panel.custom_minimum_size.is_equal_approx(size),
 			"'bubble_set_minimum_size_scaled()' should set the bubble minimum size to '%s'" % str(size),
 		)
 	)
