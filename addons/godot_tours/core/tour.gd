@@ -1,30 +1,33 @@
-## Main class to use to design a tour. Provides an API to design tour steps.
+## Main class used to design a tour. Provides an API to design tour steps.
+##
 ##
 ## The tour is a series of steps, each step being a series of commands to execute.
 ## Commands are executed in the order they are added.
-##
+## [br][br]
 ## This class provides many common commands to use in your tour, like selecting a node in the scene
 ## tree, highlighting a control, or playing a mouse animation.
-##
-## Each command is a [Command] object, which is a wrapper around a callable and its parameters. You can
-## run any function in the editor by wrapping it in a Command object. Use the utility function [queue_command()]
-## to create a Command object faster.
-##
-## To design a tour, override the [_build()] function and write all your tour steps in it:
-##
-## 1. Call API functions to queue commands required for your step.
-## 2. Call [complete_step()] to complete and save the current _step_commands as a new.
-##
+## [br][br]
+## Each command is a ["addons/godot_tours/core/tour.gd".Command] object, which is a wrapper around a callable and
+## its parameters. You can run any function in the editor by wrapping it in a [code]Command[/code] object.
+## Use the utility function [method queue_command] to create a [code]Command[/code] and add it to
+## [member step_commands] faster.
+## [br][br]
+## To design a tour, override the [method _build] function and write all your tour steps in it:
+## [br][br]
+## 1. Call API functions to queue commands required for your step. [br]
+## 2. Call [method complete_step] to complete and save the current [code]step_commands[/code] as a new.
+## [br][br]
 ## See the provided demo tour for an example.
 extends RefCounted
 
-## Emitted when the tour moves to the next or previous _step_commands.
+## Emitted when the tour moves to the next or previous [member step_commands].
 signal step_changed(step_index: int)
-## Emitted when the tour is closed or the user completes the last _step_commands.
+## Emitted when the tour is closed or the user completes the last [member step_commands].
 signal ended
 
-## Represents one command to execute in a _step_commands. All commands are executed in the order they are added.
-## Use the Command() function to create a Command object faster.
+## Represents one command to execute in a step_commands. All commands are executed in the order they are added.
+## Use the [member queue_command] function to create a [code]Command[/code] object and add it to
+## [member step_commands] faster.
 class Command:
 	var callable := func() -> void: pass
 	var parameters := []
@@ -48,7 +51,7 @@ const FlashArea := preload("overlays/flash_area/flash_area.gd")
 
 const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 
-const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'_step_commands(=%d)'[/b]."
+const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'step_commands(=%d)'[/b]."
 
 enum Direction {BACK = -1, NEXT = 1}
 enum CanvasItemEditorZoom {_50, _100, _200}
@@ -59,7 +62,7 @@ const EVENTS := {
 	_2 = preload("events/2_input_event_key.tres"),
 	f = preload("events/f_input_event_key.tres"),
 }
-## Index of the _step_commands currently running.
+## Index of the step_commands currently running.
 var index := -1: set = set_index
 var steps: Array[Array] = []
 var step_commands: Array[Command] = []
@@ -108,7 +111,7 @@ func set_index(value: int) -> void:
 	var stride := Direction.BACK if value < index else Direction.NEXT
 	value = clampi(value, -1, step_count)
 	for index in range(index + stride, clampi(value + stride, -1, step_count), stride):
-		log.info("[_step_commands: %d]\n%s" % [index, interface.logger_rich_text_label.get_parsed_text()])
+		log.info("[step_commands: %d]\n%s" % [index, interface.logger_rich_text_label.get_parsed_text()])
 		run(steps[index])
 	index = clampi(value, 0, step_count - 1)
 	step_changed.emit(index)
@@ -162,7 +165,8 @@ func auto_next() -> void:
 	)
 
 ## Completes the current step's commands, adding some more commands to clear the bubble, overlays, and the mouse.
-## Then, this function appends the completed step (an array of Command objects) to the tour.
+## Then, this function appends the completed step (an array of
+## ["addons/godot_tours/core/tour.gd".Command] objects) to the tour.
 func complete_step() -> void:
 	var step_start: Array[Command] = [
 		Command.new(func() -> void: bubble.clear()),
@@ -181,7 +185,7 @@ func run(current_step: Array[Command]) -> void:
 
 
 ## Appends a command to the currently edited step. Commands are executed in the order they are added.
-## To complete a step and start creating the next one, call [complete_step()].
+## To complete a step and start creating the next one, call [method complete_step].
 func queue_command(callable: Callable, parameters := []) -> void:
 	step_commands.push_back(Command.new(callable, parameters))
 
@@ -429,9 +433,9 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## Changes the minimum size of the bubble, scaled by the editor scale setting.
 ## This is useful to have the bubble take the same space on different screens.
 ##
-## If you want to set the minimum size for one _step_commands only, for example, when using only a title
-## you can call this function with a `size` of `Vector2.ZERO` on the following _step_commands to let the bubble
-## automatically control its size again.
+## If you want to set the minimum size for one step_commands only, for example, when using only a title
+## you can call this function with a [code]size[/code] of [constant Vector2.ZERO] on the following
+## [member step_commands] to let the bubble automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
 	queue_command(func() -> void: bubble.panel.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
 
@@ -669,7 +673,7 @@ func warn(msg: String, func_name: String) -> void:
 	print_rich(WARNING_MESSAGE % [msg, func_name, steps.size()])
 
 
-## Generates a BBCode [img] tag for a Godot editor icon, scaling the image size based on the editor
+## Generates a BBCode [code][img][/code] tag for a Godot editor icon, scaling the image size based on the editor.
 ## scale.
 func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	const base_size_pixels := 24
@@ -677,7 +681,7 @@ func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	return "[img=%sx%s]" % [size, size] + image_filepath + "[/img]"
 
 
-## Wraps the text in a [font_size] BBCode tag, scaling the value of size_pixels based on the editor
+## Wraps the text in a [code][font_size][/code] BBCode tag, scaling the value of size_pixels based on the editor
 ## scale.
 func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 	var size_scaled := size_pixels * EditorInterface.get_editor_scale()

@@ -1,24 +1,27 @@
-## Text bubble used to display instructions to the user.
+## Base class for the text bubble used to display instructions to the user.
+## Check out ["addons/godot_tours/core/bubble/default_bubble.gd"] for the default implementation.
 @tool
 extends CanvasLayer
 
+## Emitted to go backward one step in the tour.
 signal back_button_pressed
+## Emitted to go forward one step in the tour.
 signal next_button_pressed
-## Emitted when the user confirms wanting to quit the tour
+## Emitted when the user confirms wanting to quit the tour.
 signal close_requested
 
 const Task := preload("task/task.gd")
 const EditorInterfaceAccess := preload("../editor_interface_access.gd")
 const TranslationService := preload("../translation/translation_service.gd")
 const Debugger := preload("../debugger/debugger.gd")
-
 const ThemeUtils := preload("res://addons/godot_tours/theme_utils.gd")
 
 const TaskPackedScene: PackedScene = preload("res://addons/godot_tours/core/bubble/task/task.tscn")
 
 const TWEEN_DURATION := 0.1
 
-## Location to place and anchor the bubble relative to a given Control node. Used in the function `move_and_anchor()` and by the `at` variable.
+## Location to place and anchor the bubble relative to a given Control node [b]inside its rectangle[/b]. Used in the
+## function [method move_and_anchor] and by the [member at] variable.
 enum At {
 	TOP_LEFT,
 	TOP_RIGHT,
@@ -30,16 +33,19 @@ enum At {
 	CENTER_RIGHT,
 	CENTER,
 }
-## Location of the Gobot avatar along the top edge of the bubble.
+## Location of the Avatar along the top edge of the bubble.
 enum AvatarAt { LEFT, CENTER, RIGHT }
 
-var at := At.CENTER
-var avatar_at := AvatarAt.LEFT
+var at := At.CENTER  ## Bubble location relative to a given Control node. See [enum At] for details.
+var avatar_at := AvatarAt.LEFT  ## Avatar location relative to the bubble. See [enum AvatarAt] for details.
+
+## Margin offset for [method move_and_anchor]. It keeps the bubble at [code]margin[/code] pixels away relative to
+## the Control border.
 var margin := 16.0
-var offset_vector := Vector2.ZERO
-var control: Control = null
+var offset_vector := Vector2.ZERO  ## Custom offset for [method move_and_anchor] for extra control.
+var control: Control = null  ## Reference to the control node passed to [method move_and_anchor].
 var translation_service: TranslationService = null
-var step_count := 0
+var step_count := 0  ## Tour step count.
 
 var tween: Tween = null
 var avatar_tween_position: Tween = null
@@ -54,18 +60,23 @@ func setup(translation_service: TranslationService, step_count: int) -> void:
 	self.step_count = step_count
 
 
+## [b]Virtual[/b] method for reacting to the tour step change. See ["addons/godot_tours/core/tour.gd"]
+## [code]step_changed[/code] signal for details.
 func on_tour_step_changed(index: int) -> void:
 	pass
 
 
+## [b]Virtual[/b] method called at the beginning of every tour step for clearing anything necessary.
 func clear() -> void:
 	pass
 
 
+## [b]Virtual[/b] method to set the bubble title if applicable.
 func set_title(title_text: String) -> void:
 	pass
 
 
+## [b]Virtual[/b] method to add a task.
 func add_task(
 	description: String,
 	repeat: int,
@@ -75,11 +86,14 @@ func add_task(
 	pass
 
 
+## [b]Virtual[/b] method for checking if all tasks are done.
+## Returns [code]true[/code] or [code]false[/code] based on the status of all tasks.
 func check_tasks() -> bool:
 	return true
 
 
-## Moves and anchors the bubble relative to the given control node.
+## Moves and anchors the bubble relative to the given control node. Check out [member at], [member margin], and
+## [member offset_vector] for details on the parameters.
 func move_and_anchor(
 	control: Control, at := At.CENTER, margin := 16.0, offset_vector := Vector2.ZERO
 ) -> void:
@@ -90,6 +104,7 @@ func move_and_anchor(
 	refresh()
 
 
+## Sets the avatar location at the top of the bubble. Check [member avatar_at] for details on the parameter.
 func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	avatar_at = at
 	var editor_scale := EditorInterface.get_editor_scale()
@@ -124,6 +139,7 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 		)
 
 
+## Refreshes the position and size of the bubble and its avatar as necessary.
 func refresh() -> void:
 	if control == null:
 		return
@@ -153,6 +169,17 @@ func refresh() -> void:
 	set_avatar_at(avatar_at)
 
 
+## Updates the locale of any key for the nodes given as keys in the [code]locales[/code] parameter.
+##
+## [codeblock]
+## # `locales` schema:
+## locales = {
+##     node1: { prop1 = "text1", ...},
+##     ...
+## }
+## [/codeblock]
+##
+## See ["addons/godot_tours/core/bubble/default_bubble.gd"] [code]setup[/code] function for an example usage.
 func update_locale(locales: Dictionary) -> void:
 	for node in locales:
 		var dict: Dictionary = locales[node]
