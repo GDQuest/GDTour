@@ -26,6 +26,7 @@ var rendering_options: OptionButton = null
 
 # Main Screen
 var main_screen: VBoxContainer = null
+## The horizontal tabs representing open scenes above the 2D and 3D viewports.
 var main_screen_tabs: TabBar = null
 var distraction_free_button: Button = null
 
