@@ -1,7 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://ovx565n4b8pm"]
+[gd_scene load_steps=4 format=3 uid="uid://ovx565n4b8pm"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/core/bubble/bubble.gd" id="1_tq7q0"]
-[ext_resource type="Theme" uid="uid://xo6wvt8khfsn" path="res://tours/test_tour/common/test_tour_bubble_theme.tres" id="2_0ey82"]
 [ext_resource type="PackedScene" uid="uid://bgxtydff0olev" path="res://addons/godot_tours/core/bubble/gobot/gobot.tscn" id="7_qn2ph"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7d560"]
@@ -24,7 +23,6 @@ offset_right = 256.0
 offset_bottom = 87.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2_0ey82")
 theme_override_styles/panel = SubResource("StyleBoxFlat_7d560")
 
 [node name="Avatar" parent="Panel" instance=ExtResource("7_qn2ph")]
