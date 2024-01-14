@@ -32,11 +32,12 @@ To register a tour in the menu that appears upon opening the Godot project, you 
 
 Godot Tours comes with these features, in the `core` folder of the addon:
 
-- The UI Bubble which provides step-by-step instructions and explanations. It contains:
+- The default UI Bubble which provides step-by-step instructions and explanations. It contains:
   - An optional header.
   - Any number of text descriptions, media (images, videos), code listings, and (verifiable) tasks added to the body.
   - An optional footer.
   - The Godot Bot animated avatar.
+- The ability to add your own custom bubble and replace the default one.
 - A debug dock which helps instructors prepare and navigate the tours, toggled with <kbd>CTRL</kbd><kbd>F10</kbd>.
 - A Mouse Preview for previewing actions such as: Drag n' Drop, Click, Press, Release.
 - An Overlays manager that prevents students from interacting with the *Editor Interface* UI elements. The instructor can give access to the underlying UI elements using highlights that disable the overlays on mouse-over.

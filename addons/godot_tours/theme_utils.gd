@@ -1,20 +1,19 @@
 ## Functions to process UI Theme properties. In particular, provides functions to scale theme values with the editor scale.
 @tool
-extends RefCounted
 
-
-var editor_scale := EditorInterface.get_editor_scale()
 
 ## Gets and scales the font_size theme override of the input text_node using the editor scale.
 ## Adds a font size override to text_node directly.
-func scale_font_size(text_node: Node) -> void:
+static func scale_font_size(text_node: Node) -> void:
+	var editor_scale := EditorInterface.get_editor_scale()
 	var title_font_size: int = text_node.get_theme_font_size("font_size")
 	text_node.add_theme_font_size_override("font_size", title_font_size * editor_scale)
 
 
 ## Gets and scales the margins of the input margin_container using the editor scale.
 ## Adds a theme constant override for each margin property directly.
-func scale_margin_container_margins(margin_container: MarginContainer) -> void:
+static func scale_margin_container_margins(margin_container: MarginContainer) -> void:
+	var editor_scale := EditorInterface.get_editor_scale()
 	for property in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
 		var margin: int = margin_container.get_theme_constant(property)
 		margin_container.add_theme_constant_override(property, margin * editor_scale)
@@ -24,8 +23,9 @@ func scale_margin_container_margins(margin_container: MarginContainer) -> void:
 ## using the editor scale.
 ## Making a deep copy ensures values don't get scaled and saved when working on an addon's
 ## user interface.
-func generate_scaled_theme(theme_resource: Theme) -> Theme:
+static func generate_scaled_theme(theme_resource: Theme) -> Theme:
 	var new_theme = theme_resource.duplicate(true)
+	var editor_scale := EditorInterface.get_editor_scale()
 
 	# Scale font sizes
 	# We take two measures into account when scaling the interface. Users may have changed their
@@ -40,7 +40,9 @@ func generate_scaled_theme(theme_resource: Theme) -> Theme:
 	var theme_types := Array(new_theme.get_font_size_type_list()) + ["TitleLabel"]
 	for theme_type in theme_types:
 		for font_size_property in new_theme.get_font_size_list(theme_type):
-			var font_size: int = new_theme.get_font_size( font_size_property, theme_type) + size_difference
+			var font_size: int = (
+				new_theme.get_font_size(font_size_property, theme_type) + size_difference
+			)
 			var new_font_size: int = font_size * editor_scale
 			new_theme.set_font_size(font_size_property, theme_type, new_font_size)
 

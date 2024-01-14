@@ -119,7 +119,7 @@ func _update_spinbox_step_count() -> void:
 	if tour == null:
 		jump_spin_box.suffix = "/ 1"
 	else:
-		var max_value := tour.get_step_count()
+		var max_value := tour.steps.size()
 		jump_spin_box.suffix = " / " + str(max_value)
 		jump_spin_box.max_value = max_value
 
