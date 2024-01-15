@@ -565,5 +565,6 @@ func _build() -> void:
 
 	context_set_2d()
 	mouse_move_by_position(Vector2.ZERO, 100 * Vector2.ONE)
+	mouse_bounce(func() -> Vector2: return 100 * Vector2.ONE)
 	auto_next()
 	complete_step()

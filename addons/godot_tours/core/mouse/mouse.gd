@@ -68,3 +68,36 @@ func add_click_operation() -> void:
 		tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
 		tween.tween_property(press_sprite, "scale", Vector2.ZERO, OFF_DURATION)
 	)
+
+
+func add_bounce_operation(at: Callable, loops := 2) -> void:
+	const WAIT := 0.3
+
+	const SCALE_Y := 0.7
+	const SCALE_DURATION := 0.15
+
+	const AMPLITUDE := 30 * Vector2.UP
+	const UP_DURATION := 0.25
+	const DOWN_DURATION := 0.4
+
+	for _loop in range(loops):
+		operations.push_back(func() -> void:
+			tween.tween_property(pointer_sprite, "scale:y", SCALE_Y, SCALE_DURATION).from(1.0).set_delay(WAIT)
+			tween.tween_property(pointer_sprite, "scale:y", 1.0, SCALE_DURATION).from(SCALE_Y)
+			tween.parallel().tween_method(
+				func(param: float) -> void:
+					var at_vector: Vector2 = at.call()
+					global_position = at_vector.lerp(at_vector + AMPLITUDE, param),
+				0.0,
+				1.0,
+				UP_DURATION,
+			).set_trans(Tween.TRANS_SINE)
+			tween.tween_method(
+				func(param: float) -> void:
+					var at_vector: Vector2 = at.call()
+					global_position = (at_vector + AMPLITUDE).lerp(at_vector, param),
+				0.0,
+				1.0,
+				DOWN_DURATION,
+			).set_trans(Tween.TRANS_BOUNCE)
+	)
