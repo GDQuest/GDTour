@@ -1,7 +1,0 @@
-[gd_resource type="InputEventKey" format=3 uid="uid://l6e8mbojq0yh"]
-
-[resource]
-device = -1
-pressed = true
-keycode = 49
-unicode = 49

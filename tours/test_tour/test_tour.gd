@@ -96,8 +96,9 @@ func _build() -> void:
 	queue_command(func() -> void:
 		await delay()
 	)
-	canvas_item_editor_center_at(Vector2.ZERO, CanvasItemEditorZoom._50)
+	canvas_item_editor_center_at(Vector2.ZERO, 0.5)
 	queue_command(func() -> void:
+		await delay()
 		var scene_viewport := EditorInterface.get_edited_scene_root().get_viewport()
 		assert(
 			Vector2i(scene_viewport.global_canvas_transform.origin) == scene_viewport.size / 2,

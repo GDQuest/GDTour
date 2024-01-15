@@ -1,25 +1,34 @@
 [gd_scene load_steps=10 format=3 uid="uid://b3tpnkc5xu2o"]
 
-[ext_resource type="Theme" uid="uid://cx2cxgbadh7fg" path="res://addons/godot_tours/core/bubble/assets/bubble_theme.tres" id="1_yjsvg"]
-[ext_resource type="Script" path="res://addons/godot_tours/core/bubble/bubble.gd" id="2_yvt0w"]
-[ext_resource type="Texture2D" uid="uid://bidxqlunyylhn" path="res://addons/godot_tours/core/bubble/assets/icon_close.svg" id="3_42pht"]
-[ext_resource type="PackedScene" uid="uid://wd822miy3aij" path="res://addons/godot_tours/core/bubble/rich_text_label/rich_text_label.tscn" id="3_k15j0"]
-[ext_resource type="Script" path="res://addons/godot_tours/core/bubble/rich_text_label/rich_text_label.gd" id="4_kfwjx"]
-[ext_resource type="PackedScene" uid="uid://bgxtydff0olev" path="res://addons/godot_tours/core/bubble/gobot/gobot.tscn" id="5_2y80m"]
-[ext_resource type="PackedScene" uid="uid://b5junnl76yqmo" path="res://addons/godot_tours/core/bubble/task/task.tscn" id="5_mxk4s"]
-[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/core/bubble/assets/fonts/Poppins-Regular.ttf" id="6_ul4l4"]
+[ext_resource type="Script" path="res://addons/godot_tours/core/bubble/default_bubble.gd" id="1_q308r"]
+[ext_resource type="Theme" uid="uid://cx2cxgbadh7fg" path="res://addons/godot_tours/core/bubble/assets/bubble_theme.tres" id="2_mkok2"]
+[ext_resource type="Texture2D" uid="uid://bidxqlunyylhn" path="res://addons/godot_tours/core/bubble/assets/icon_close.svg" id="3_y6crt"]
+[ext_resource type="PackedScene" uid="uid://wd822miy3aij" path="res://addons/godot_tours/core/bubble/rich_text_label/rich_text_label.tscn" id="4_ev3jl"]
+[ext_resource type="PackedScene" uid="uid://b5junnl76yqmo" path="res://addons/godot_tours/core/bubble/task/task.tscn" id="5_al2df"]
+[ext_resource type="Script" path="res://addons/godot_tours/core/bubble/rich_text_label/rich_text_label.gd" id="6_iitqn"]
+[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/core/bubble/assets/fonts/Poppins-Regular.ttf" id="7_nlyrj"]
+[ext_resource type="PackedScene" uid="uid://bgxtydff0olev" path="res://addons/godot_tours/core/bubble/gobot/gobot.tscn" id="8_oayod"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0pees"]
 
 [node name="Bubble" type="CanvasLayer"]
-script = ExtResource("2_yvt0w")
+script = ExtResource("1_q308r")
 
 [node name="Panel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(512, 0)
-offset_right = 395.0
-offset_bottom = 174.0
-theme = ExtResource("1_yjsvg")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -87.0
+offset_right = 256.0
+offset_bottom = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_mkok2")
 
 [node name="Outline" type="PanelContainer" parent="Panel"]
 clip_contents = true
@@ -68,11 +77,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("3_42pht")
+texture = ExtResource("3_y6crt")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="HeaderRichTextLabel" parent="Panel/MarginContainer/ViewContent" instance=ExtResource("3_k15j0")]
+[node name="HeaderRichTextLabel" parent="Panel/MarginContainer/ViewContent" instance=ExtResource("4_ev3jl")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -89,15 +98,15 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 
-[node name="RichTextLabel" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("3_k15j0")]
+[node name="RichTextLabel" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
 layout_mode = 2
 text = "The player can move [b]outside of the bridges![/b]"
 
-[node name="RichTextLabel2" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("3_k15j0")]
+[node name="RichTextLabel2" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
 layout_mode = 2
 text = "This is normal. In a game, what you see and the physical limits of the world live in two separate layers."
 
-[node name="RichTextLabel3" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("3_k15j0")]
+[node name="RichTextLabel3" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
 layout_mode = 2
 text = "Computer games use simple geometric shapes to control where a character can move, which greatly improves performance."
 
@@ -107,7 +116,7 @@ visible = false
 layout_mode = 2
 mouse_filter = 2
 
-[node name="Task" parent="Panel/MarginContainer/ViewContent/TasksVBoxContainer" instance=ExtResource("5_mxk4s")]
+[node name="Task" parent="Panel/MarginContainer/ViewContent/TasksVBoxContainer" instance=ExtResource("5_al2df")]
 layout_mode = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="Panel/MarginContainer/ViewContent"]
@@ -180,7 +189,7 @@ text = "Test text"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
-script = ExtResource("4_kfwjx")
+script = ExtResource("6_iitqn")
 
 [node name="ViewClose" type="VBoxContainer" parent="Panel/MarginContainer"]
 unique_name_in_owner = true
@@ -197,7 +206,7 @@ autowrap_mode = 2
 
 [node name="Label2" type="Label" parent="Panel/MarginContainer/ViewClose"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("6_ul4l4")
+theme_override_fonts/font = ExtResource("7_nlyrj")
 text = "Your progress will be lost."
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -228,7 +237,7 @@ theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
 shortcut_in_tooltip = false
 text = "YES"
 
-[node name="Avatar" parent="Panel" instance=ExtResource("5_2y80m")]
+[node name="Avatar" parent="Panel" instance=ExtResource("8_oayod")]
 unique_name_in_owner = true
 rotation = -0.261799
 scale = Vector2(0.35, 0.35)

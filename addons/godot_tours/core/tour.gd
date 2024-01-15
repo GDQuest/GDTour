@@ -54,12 +54,8 @@ const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'step_commands(=%d)'[/b]."
 
 enum Direction {BACK = -1, NEXT = 1}
-enum CanvasItemEditorZoom {_50, _100, _200}
 
 const EVENTS := {
-	shift_1 = preload("events/shift_1_input_event_key.tres"),
-	_1 = preload("events/1_input_event_key.tres"),
-	_2 = preload("events/2_input_event_key.tres"),
 	f = preload("events/f_input_event_key.tres"),
 }
 ## Index of the step_commands currently running.
@@ -122,7 +118,7 @@ func load_bubble(BubblePackedScene: PackedScene = null) -> void:
 		bubble.queue_free()
 
 	if BubblePackedScene == null:
-		BubblePackedScene = load("res://addons/godot_tours/core/bubble/bubble.tscn")
+		BubblePackedScene = load("res://addons/godot_tours/core/bubble/default_bubble.tscn")
 
 	bubble = BubblePackedScene.instantiate()
 	interface.base_control.add_child(bubble)
@@ -255,16 +251,10 @@ func tree_activate_by_prefix(tree: Tree, prefix: String) -> void:
 	)
 
 
-func canvas_item_editor_center_at(position := Vector2.ZERO, zoom := CanvasItemEditorZoom._100) -> void:
-	const zoom_to_event := {
-		CanvasItemEditorZoom._50: EVENTS.shift_1,
-		CanvasItemEditorZoom._100: EVENTS._1,
-		CanvasItemEditorZoom._200: EVENTS._2,
-	}
+func canvas_item_editor_center_at(position := Vector2.ZERO, zoom := 1.0) -> void:
 	queue_command(func() -> void:
 		interface.canvas_item_editor.center_at(position)
-		await interface.canvas_item_editor.get_tree().process_frame
-		interface.canvas_item_editor_viewport.gui_input.emit(zoom_to_event[zoom])
+		interface.canvas_item_editor_zoom_widget.set_zoom(zoom)
 	)
 
 

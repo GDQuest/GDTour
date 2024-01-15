@@ -1,7 +1,0 @@
-[gd_resource type="InputEventKey" format=3 uid="uid://cegg1fg0sa06a"]
-
-[resource]
-device = -1
-pressed = true
-keycode = 50
-unicode = 50
