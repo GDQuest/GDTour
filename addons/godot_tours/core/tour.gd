@@ -616,6 +616,17 @@ func get_tree_item_center_by_name(tree: Tree, name: String) -> Vector2:
 	return result
 
 
+func get_tilemap_global_rect_pixels(tilemap_node: TileMap) -> Rect2:
+	var rect := Rect2(tilemap_node.get_used_rect())
+	rect.size *= Vector2(tilemap_node.tile_set.tile_size)
+	rect.position = tilemap_node.global_position
+	return rect
+
+
+func get_control_center(control: Control) -> Vector2:
+	return control.get_global_rect().get_center()
+
+
 func node_find_path(node_name: String) -> String:
 	var root_node := EditorInterface.get_edited_scene_root()
 	var found_node := root_node.find_child(node_name)

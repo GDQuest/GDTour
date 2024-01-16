@@ -91,7 +91,7 @@ var scene_dock_button_add: Button = null
 var scene_tree: Tree = null
 var import_dock: VBoxContainer = null
 
-var node_create_window = null
+var node_create_window: ConfirmationDialog = null
 var node_create_panel: Control = null
 var node_create_dialog_node_tree: Tree = null
 var node_create_dialog_search_bar: LineEdit = null
