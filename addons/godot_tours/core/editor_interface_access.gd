@@ -26,7 +26,6 @@ var rendering_options: OptionButton = null
 
 # Main Screen
 var main_screen: VBoxContainer = null
-## The horizontal tabs representing open scenes above the 2D and 3D viewports.
 var main_screen_tabs: TabBar = null
 var distraction_free_button: Button = null
 
@@ -148,12 +147,13 @@ var find_in_files: Control = null
 var audio_buses: VBoxContainer = null
 var animation_player: VBoxContainer = null
 var shader: MarginContainer = null
-var bottom_buttons: HBoxContainer = null
 
+var bottom_buttons_container: HBoxContainer = null
 var bottom_button_output: Button = null
 var bottom_button_debugger: Button = null
 var bottom_button_tilemap: Button = null
 var bottom_button_tileset: Button = null
+var bottom_buttons: Array[Button] = []
 
 var tabs_text := {}
 
@@ -315,13 +315,22 @@ func _init() -> void:
 		bottom_panels_vboxcontainer.find_children("*", "AnimationPlayerEditor", false, false).back()
 	)
 	shader = bottom_panels_vboxcontainer.find_children("*", "WindowWrapper", false, false).back()
-	bottom_buttons = (
+	bottom_buttons_container = (
 		Utils
 		. find_child(bottom_panels_vboxcontainer, "EditorToaster")
 		. get_parent()
 		. find_children("", "HBoxContainer", false, false)
 		. front()
 	)
+
+	var bottom_button_children := bottom_buttons_container.get_children()
+	bottom_button_output = _get_bottom_button(bottom_button_children, "Output")
+	bottom_button_debugger = _get_bottom_button(bottom_button_children, "Debugger")
+	bottom_button_tileset = _get_bottom_button(bottom_button_children, "TileSet")
+	bottom_button_tilemap = _get_bottom_button(bottom_button_children, "TileMap")
+	bottom_buttons = [
+		bottom_button_output, bottom_button_debugger, bottom_button_tileset, bottom_button_tilemap
+	]
 
 	tilemap = bottom_panels_vboxcontainer.find_children("*", "TileMapEditor", false, false).back()
 	var tilemap_flow_container: HFlowContainer = (
@@ -357,12 +366,6 @@ func _init() -> void:
 	tilemap_terrains_tool_draw = tilemap_terrains_toolbar.get_child(0).get_child(0)
 
 	tileset = bottom_panels_vboxcontainer.find_children("*", "TileSetEditor", false, false).back()
-
-	var bottom_button_children := bottom_buttons.get_children()
-	bottom_button_output = _get_bottom_button(bottom_button_children, "Output")
-	bottom_button_debugger = _get_bottom_button(bottom_button_children, "Debugger")
-	bottom_button_tileset = _get_bottom_button(bottom_button_children, "TileSet")
-	bottom_button_tilemap = _get_bottom_button(bottom_button_children, "TileMap")
 
 	for window in [signals_dialog_window, node_create_window]:
 		window_toggle_tour_mode(window, true)
