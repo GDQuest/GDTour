@@ -121,7 +121,7 @@ func load_bubble(BubblePackedScene: PackedScene = null) -> void:
 		BubblePackedScene = load("res://addons/godot_tours/core/bubble/default_bubble.tscn")
 
 	bubble = BubblePackedScene.instantiate()
-	interface.base_control.add_child(bubble)
+	await delay_process_frame()
 	bubble.setup(translation_service, steps.size())
 	bubble.back_button_pressed.connect(back)
 	bubble.next_button_pressed.connect(next)
@@ -148,7 +148,7 @@ func next() -> void:
 ## Waits for the next frame and goes back to the previous step. Used for automated testing.
 func auto_back() -> void:
 	queue_command(func() -> void:
-		await interface.base_control.get_tree().process_frame
+		await delay_process_frame()
 		back()
 	)
 
@@ -156,7 +156,7 @@ func auto_back() -> void:
 ## Waits for the next frame and advances to the next step. Used for automated testing.
 func auto_next() -> void:
 	queue_command(func wait_for_frame_and_advance() -> void:
-		await interface.base_control.get_tree().process_frame
+		await delay_process_frame()
 		next()
 	)
 
@@ -239,7 +239,7 @@ func tree_activate_by_prefix(tree: Tree, prefix: String) -> void:
 	queue_command(func() -> void:
 		if tree == interface.node_dock_signals_tree and interface.signals_dialog_window.visible:
 			return
-		await tree.get_tree().process_frame
+		await delay_process_frame()
 		tree.deselect_all()
 		var items := Utils.filter_tree_items(
 			tree.get_root(),
@@ -253,6 +253,7 @@ func tree_activate_by_prefix(tree: Tree, prefix: String) -> void:
 
 func canvas_item_editor_center_at(position := Vector2.ZERO, zoom := 1.0) -> void:
 	queue_command(func() -> void:
+		await delay_process_frame()
 		interface.canvas_item_editor.center_at(position)
 		interface.canvas_item_editor_zoom_widget.set_zoom(zoom)
 	)
@@ -511,7 +512,7 @@ func mouse_move_by_position(from: Vector2, to: Vector2) -> void:
 func mouse_move_by_callable(from: Callable, to: Callable) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
-		await mouse.get_tree().process_frame
+		await delay_process_frame()
 		mouse.add_move_operation(from, to),
 	)
 
@@ -519,7 +520,7 @@ func mouse_move_by_callable(from: Callable, to: Callable) -> void:
 func mouse_bounce(at: Callable) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
-		await mouse.get_tree().process_frame
+		await delay_process_frame()
 		mouse.add_bounce_operation(at),
 	)
 
@@ -695,3 +696,8 @@ func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 	var size_scaled := size_pixels * EditorInterface.get_editor_scale()
 	return "[font_size=%s]" % size_scaled + text + "[/font_size]"
+
+
+func delay_process_frame(frames := 1) -> void:
+	for _frame in range(frames):
+		await interface.base_control.get_tree().process_frame

@@ -8,13 +8,8 @@ const Highlight := preload("../../addons/godot_tours/core/overlays/highlight/hig
 const HIGHLIGHT_GROUP := "highlight"
 
 
-func delay(frames: int = 1) -> void:
-	for _frame in range(frames):
-		await interface.base_control.get_tree().process_frame
-
-
 func get_highlights() -> Array[Highlight]:
-	await delay()
+	await delay_process_frame()
 	var result: Array[Highlight] = []
 	var dimmer := overlays.ensure_get_dimmer_for(interface.base_control)
 	result.assign(dimmer.get_tree().get_nodes_in_group(HIGHLIGHT_GROUP))
@@ -94,11 +89,11 @@ func _build() -> void:
 
 	context_set_2d()
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 	)
 	canvas_item_editor_center_at(Vector2.ZERO, 0.5)
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 		var scene_viewport := EditorInterface.get_edited_scene_root().get_viewport()
 		assert(
 			Vector2i(scene_viewport.global_canvas_transform.origin) == scene_viewport.size / 2,
@@ -182,7 +177,7 @@ func _build() -> void:
 	var lines: Array[String] = ["Test Line 1", "Test Line 2"]
 	queue_command(func() -> void: bubble.add_text(lines))
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 		assert(bubble.main_v_box_container.get_child_count() == 2, "'bubble.main_v_box_container' should have '2' children")
 		var elements: Array[Node] = bubble.main_v_box_container.get_children()
 		for i in range(bubble.main_v_box_container.get_child_count()):
@@ -199,7 +194,7 @@ func _build() -> void:
 	lines = ["Code Line 1", "Code Line 2", "Code Line 3"]
 	queue_command(func() -> void: bubble.add_code(lines))
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 		assert(bubble.main_v_box_container.get_child_count() == 3, "'bubble.main_v_box_container' should have '3' children")
 		var elements: Array[Node] = bubble.main_v_box_container.get_children()
 		for i in range(bubble.main_v_box_container.get_child_count()):
@@ -217,7 +212,7 @@ func _build() -> void:
 	var texture := load(file_path)
 	queue_command(func() -> void: bubble.add_texture(texture))
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 		for element: TextureRect in bubble.main_v_box_container.get_children():
 			assert(
 				element.texture == texture,
@@ -231,7 +226,7 @@ func _build() -> void:
 	var stream := load(file_path)
 	queue_command(func() -> void: bubble.add_video(stream))
 	queue_command(func() -> void:
-		await delay()
+		await delay_process_frame()
 		for element: VideoStreamPlayer in bubble.main_v_box_container.get_children():
 			assert(
 				element.stream == stream,
@@ -244,7 +239,7 @@ func _build() -> void:
 	bubble_add_task_press_button(interface.run_bar_play_current_button)
 	queue_command(func() -> void:
 		EditorInterface.play_current_scene()
-		await delay()
+		await delay_process_frame()
 		EditorInterface.stop_playing_scene()
 		assert(bubble.check_tasks(), "'bubble_add_task_press_button()' all tasks should be done")
 	)
@@ -254,7 +249,7 @@ func _build() -> void:
 	bubble_add_task_toggle_button(interface.context_switcher_2d_button)
 	queue_command(func() -> void:
 		EditorInterface.set_main_screen_editor("2D")
-		await delay()
+		await delay_process_frame()
 		assert(bubble.check_tasks(), "'bubble_add_task_toggle_button()' all tasks should be done")
 	)
 	auto_next()
@@ -263,7 +258,7 @@ func _build() -> void:
 	bubble_add_task_set_tab_to_index(interface.inspector_tabs, 1)
 	queue_command(func() -> void:
 		interface.inspector_tabs.set_current_tab(1)
-		await delay()
+		await delay_process_frame()
 		assert(bubble.check_tasks(), "'bubble_add_task_set_tab_to_index()' all tasks should be done")
 	)
 	auto_next()
@@ -272,7 +267,7 @@ func _build() -> void:
 	bubble_add_task_set_tab_to_title(interface.inspector_tabs, "Inspector")
 	queue_command(func() -> void:
 		interface.inspector_tabs.set_current_tab(0)
-		await delay()
+		await delay_process_frame()
 		assert(bubble.check_tasks(), "'bubble_add_task_set_tab_to_title()' all tasks should be done")
 	)
 	auto_next()
@@ -282,7 +277,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		editor_selection.clear()
 		editor_selection.add_node(EditorInterface.get_edited_scene_root().find_child("NodeToEdit"))
-		await delay()
+		await delay_process_frame()
 		assert(bubble.check_tasks(), "'bubble_add_task_select_node()' all tasks should be done")
 	)
 	auto_next()
@@ -297,7 +292,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		interface.snap_options_grid_step_controls[1].value = 32
 		interface.snap_options_grid_step_controls[2].value = 32
-		await delay()
+		await delay_process_frame()
 		assert(bubble.check_tasks(), "'bubble_add_task_set_ranges()' all tasks should be done")
 	)
 	auto_next()
@@ -337,7 +332,7 @@ func _build() -> void:
 
 	bubble_move_and_anchor(interface.main_screen, Bubble.At.TOP_RIGHT, 0)
 	queue_command(func() -> void:
-		await delay(2)
+		await delay_process_frame(2)
 		await bubble.tween.finished
 		var should_be_global_position := interface.main_screen.global_position + Vector2(interface.main_screen.size.x - bubble.panel.size.x, 0)
 		assert(
@@ -351,7 +346,7 @@ func _build() -> void:
 	bubble_move_and_anchor(interface.main_screen)
 	bubble_set_avatar_at(Bubble.AvatarAt.RIGHT)
 	queue_command(func() -> void:
-		await delay(2)
+		await delay_process_frame(2)
 		await bubble.avatar_tween_position.finished
 		var editor_scale := EditorInterface.get_editor_scale()
 		var should_be_position := Vector2(bubble.panel.size.x + 3.0 * editor_scale, -8.0 * editor_scale)
@@ -381,7 +376,7 @@ func _build() -> void:
 	highlight_scene_nodes_by_name(node_names)
 	queue_command(func() -> void:
 		var dimmer := overlays.ensure_get_dimmer_for(interface.base_control)
-		await delay()
+		await delay_process_frame()
 		var highlights := dimmer.get_tree().get_nodes_in_group(HIGHLIGHT_GROUP)
 		assert(highlights.size() == 1, "'highlight_scene_nodes_by_name()' highlights '%s'" % ", ".join(node_names))
 		for highlight: Highlight in highlights:
@@ -530,7 +525,7 @@ func _build() -> void:
 	tabs_set_to_index(interface.tilemap_tabs, 0)
 	queue_command(func() -> void:
 		interface.bottom_button_tilemap.pressed.emit()
-		await delay(2)
+		await delay_process_frame(2)
 	)
 	highlight_tilemap_list_item(interface.tilemap_tiles, item_index)
 	queue_command(func() -> void:
@@ -548,7 +543,7 @@ func _build() -> void:
 	context_set_3d()
 	queue_command(func() -> void:
 		interface.bottom_button_tilemap.toggled.emit(false)
-		await delay(2)
+		await delay_process_frame(2)
 	)
 	highlight_spatial_editor_camera_region(Vector3.ZERO, Vector3(2, 0, 3))
 	queue_command(func() -> void:
