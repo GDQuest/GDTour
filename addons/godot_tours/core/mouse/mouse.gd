@@ -39,7 +39,7 @@ func play() -> void:
 func add_move_operation(from: Callable, to: Callable) -> void:
 	if first_from.is_null():
 		first_from = from
-	var speed := 400 / editor_scale
+	var speed := 400 * editor_scale
 	operations.push_back(func() -> void:
 		tween.tween_method(
 			func(param: float) -> void:
@@ -82,7 +82,7 @@ func add_bounce_operation(at: Callable, loops := 2) -> void:
 
 	const UP_DURATION := 0.25
 	const DOWN_DURATION := 0.4
-	var amplitude := 30 * Vector2.UP / editor_scale
+	var amplitude := 30 * Vector2.UP * editor_scale
 
 	for _loop in range(loops):
 		operations.push_back(func() -> void:
