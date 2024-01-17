@@ -7,12 +7,15 @@ extends CanvasGroup
 
 var first_from := Callable()
 var operations: Array[Callable] = []
+var editor_scale: float = EditorInterface.get_editor_scale()
+
 @onready var pointer_sprite: Sprite2D = %PointerSprite2D
 @onready var press_sprite: Sprite2D = %PressSprite2D
 @onready var tween := create_tween()
 
 
 func _ready() -> void:
+	scale *= editor_scale
 	tween.kill()
 
 
@@ -22,6 +25,7 @@ func play() -> void:
 	const ON_DURATION := 0.2
 	const OFF_DURATION := 0.1
 	const WAIT := 0.6
+
 	tween.kill()
 	tween = create_tween().set_loops().set_ease(Tween.EASE_OUT)
 	tween.tween_callback(func() -> void: global_position = first_from.call())
@@ -35,14 +39,14 @@ func play() -> void:
 func add_move_operation(from: Callable, to: Callable) -> void:
 	if first_from.is_null():
 		first_from = from
-	const SPEED := 400
+	var speed := 400 * editor_scale
 	operations.push_back(func() -> void:
 		tween.tween_method(
 			func(param: float) -> void:
 				global_position = from.call().lerp(to.call(), param),
 			0.0,
 			1.0,
-			from.call().distance_to(to.call()) / SPEED
+			from.call().distance_to(to.call()) / speed
 		)
 	)
 
@@ -67,4 +71,37 @@ func add_click_operation() -> void:
 	operations.push_back(func() -> void:
 		tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
 		tween.tween_property(press_sprite, "scale", Vector2.ZERO, OFF_DURATION)
+	)
+
+
+func add_bounce_operation(at: Callable, loops := 2) -> void:
+	const WAIT := 0.3
+
+	const SCALE_Y := 0.7
+	const SCALE_DURATION := 0.1
+
+	const UP_DURATION := 0.25
+	const DOWN_DURATION := 0.4
+	var amplitude := 30 * Vector2.UP * editor_scale
+
+	for _loop in range(loops):
+		operations.push_back(func() -> void:
+			tween.tween_property(pointer_sprite, "scale:y", SCALE_Y, SCALE_DURATION).from(1.0).set_delay(WAIT)
+			tween.tween_property(pointer_sprite, "scale:y", 1.0, SCALE_DURATION).from(SCALE_Y)
+			tween.parallel().tween_method(
+				func(param: float) -> void:
+					var at_vector: Vector2 = at.call()
+					global_position = at_vector.lerp(at_vector + amplitude, param),
+				0.0,
+				1.0,
+				UP_DURATION,
+			).set_trans(Tween.TRANS_SINE)
+			tween.tween_method(
+				func(param: float) -> void:
+					var at_vector: Vector2 = at.call()
+					global_position = (at_vector + amplitude).lerp(at_vector, param),
+				0.0,
+				1.0,
+				DOWN_DURATION,
+			).set_trans(Tween.TRANS_BOUNCE)
 	)

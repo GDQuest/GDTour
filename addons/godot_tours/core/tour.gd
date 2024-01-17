@@ -516,6 +516,14 @@ func mouse_move_by_callable(from: Callable, to: Callable) -> void:
 	)
 
 
+func mouse_bounce(at: Callable) -> void:
+	queue_command(func() -> void:
+		ensure_mouse()
+		await mouse.get_tree().process_frame
+		mouse.add_bounce_operation(at),
+	)
+
+
 func mouse_press() -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
