@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://cowlnwvq0rikj"
-path="res://.godot/imported/Poppins-Italic.ttf-e5deedc10f40e43ac35c8d9bf0f13255.fontdata"
+uid="uid://c3xincxynype7"
+path="res://.godot/imported/hasklug_nerd_mono.otf-f67bcac9f850312932c1e6279df5692c.fontdata"
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/fonts/Poppins-Italic.ttf"
-dest_files=["res://.godot/imported/Poppins-Italic.ttf-e5deedc10f40e43ac35c8d9bf0f13255.fontdata"]
+source_file="res://addons/godot_tours/bubble/assets/fonts/hasklug_nerd_mono.otf"
+dest_files=["res://.godot/imported/hasklug_nerd_mono.otf-f67bcac9f850312932c1e6279df5692c.fontdata"]
 
 [params]
 

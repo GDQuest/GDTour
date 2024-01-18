@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dcjtqpica5cvo"
-path="res://.godot/imported/exclamation.svg-97dbbf444c76e21b3a73f29c357486f1.ctex"
+uid="uid://dmv0g5yqal8s7"
+path="res://.godot/imported/lock.svg-1500030e3cba66593df28e24a4f8b89c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/task/exclamation.svg"
-dest_files=["res://.godot/imported/exclamation.svg-97dbbf444c76e21b3a73f29c357486f1.ctex"]
+source_file="res://addons/godot_tours/assets/icons/lock.svg"
+dest_files=["res://.godot/imported/lock.svg-1500030e3cba66593df28e24a4f8b89c.ctex"]
 
 [params]
 
@@ -32,6 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=3.0
+svg/scale=4.0
 editor/scale_with_editor_scale=false
 editor/convert_colors_with_editor_theme=false

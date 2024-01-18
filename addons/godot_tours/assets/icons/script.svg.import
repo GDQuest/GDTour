@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x62xms6s656a"
-path="res://.godot/imported/white_circle.png-c5c33a4424377d19849bc2dc8c3085fb.ctex"
+uid="uid://u6art4ijsu4j"
+path="res://.godot/imported/script.svg-ec015136887cddb36178e3f38a4c3605.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_tours/mouse/assets/white_circle.png"
-dest_files=["res://.godot/imported/white_circle.png-c5c33a4424377d19849bc2dc8c3085fb.ctex"]
+source_file="res://addons/godot_tours/assets/icons/script.svg"
+dest_files=["res://.godot/imported/script.svg-ec015136887cddb36178e3f38a4c3605.ctex"]
 
 [params]
 
@@ -32,3 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=4.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

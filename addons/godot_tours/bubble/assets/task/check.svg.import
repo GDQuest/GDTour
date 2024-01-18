@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dwjvpjb2kpbip"
-path="res://.godot/imported/mouse_texture.png-9b360e266ac60b2338f45af490bf9b36.ctex"
+uid="uid://mk5pq7g1vapi"
+path="res://.godot/imported/check.svg-a5a1c6c83b0de09bf83e250eb6b5f992.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_tours/mouse/assets/mouse_texture.png"
-dest_files=["res://.godot/imported/mouse_texture.png-9b360e266ac60b2338f45af490bf9b36.ctex"]
+source_file="res://addons/godot_tours/bubble/assets/task/check.svg"
+dest_files=["res://.godot/imported/check.svg-a5a1c6c83b0de09bf83e250eb6b5f992.ctex"]
 
 [params]
 
@@ -32,3 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=3.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

@@ -5,6 +5,8 @@
 @tool
 extends CanvasGroup
 
+const DEFAULT_PRESS_TEXTURE := preload("../assets/icons/white_circle.png")
+
 var first_from := Callable()
 var operations: Array[Callable] = []
 var editor_scale: float = EditorInterface.get_editor_scale()
@@ -51,9 +53,14 @@ func add_move_operation(from: Callable, to: Callable) -> void:
 	)
 
 
-func add_press_operation() -> void:
+func add_press_operation(texture: CompressedTexture2D = null) -> void:
 	const ON_DURATION := 0.2
+
+	if texture == null:
+		texture = DEFAULT_PRESS_TEXTURE
+
 	operations.push_back(func() -> void:
+		press_sprite.texture = texture
 		tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
 	)
 
@@ -65,13 +72,14 @@ func add_release_operation() -> void:
 	)
 
 
-func add_click_operation() -> void:
+func add_click_operation(times := 1) -> void:
 	const ON_DURATION := 0.2
 	const OFF_DURATION := 0.1
-	operations.push_back(func() -> void:
-		tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
-		tween.tween_property(press_sprite, "scale", Vector2.ZERO, OFF_DURATION)
-	)
+	for _time in range(times):
+		operations.push_back(func() -> void:
+			tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
+			tween.tween_property(press_sprite, "scale", Vector2.ZERO, OFF_DURATION)
+		)
 
 
 func add_bounce_operation(at: Callable, loops := 2) -> void:

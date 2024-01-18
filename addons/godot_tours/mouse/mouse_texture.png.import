@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmv0g5yqal8s7"
-path="res://.godot/imported/icon_lock.svg-799b0f88cfb75daac970ef01bbb93ea1.ctex"
+uid="uid://dwjvpjb2kpbip"
+path="res://.godot/imported/mouse_texture.png-0dc4e956e91f86e3b1fb8006bda637cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/icons/icon_lock.svg"
-dest_files=["res://.godot/imported/icon_lock.svg-799b0f88cfb75daac970ef01bbb93ea1.ctex"]
+source_file="res://addons/godot_tours/mouse/mouse_texture.png"
+dest_files=["res://.godot/imported/mouse_texture.png-0dc4e956e91f86e3b1fb8006bda637cf.ctex"]
 
 [params]
 
@@ -32,6 +32,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=3.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

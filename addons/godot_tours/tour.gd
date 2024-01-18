@@ -517,6 +517,24 @@ func mouse_move_by_callable(from: Callable, to: Callable) -> void:
 	)
 
 
+func mouse_click_drag_by_position(from: Vector2, to: Vector2, press_texture: CompressedTexture2D = null) -> void:
+	queue_command(func() -> void:
+		ensure_mouse()
+		mouse.add_press_operation(press_texture)
+		mouse.add_move_operation(func() -> Vector2: return from, func() -> Vector2: return to)
+		mouse.add_release_operation()
+	)
+
+
+func mouse_click_drag_by_callable(from: Callable, to: Callable, press_texture: CompressedTexture2D = null) -> void:
+	queue_command(func() -> void:
+		ensure_mouse()
+		mouse.add_press_operation(press_texture)
+		mouse.add_move_operation(from, to)
+		mouse.add_release_operation()
+	)
+
+
 func mouse_bounce(at: Callable) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
@@ -525,10 +543,10 @@ func mouse_bounce(at: Callable) -> void:
 	)
 
 
-func mouse_press() -> void:
+func mouse_press(press_texture: CompressedTexture2D = null) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
-		mouse.add_press_operation()
+		mouse.add_press_operation(press_texture)
 	)
 
 
@@ -539,15 +557,11 @@ func mouse_release() -> void:
 	)
 
 
-func mouse_click() -> void:
+func mouse_click(times := 1) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
-		mouse.add_click_operation()
+		mouse.add_click_operation(times)
 	)
-
-
-func mouse_double_click() -> void:
-	pass
 
 
 func ensure_mouse() -> void:

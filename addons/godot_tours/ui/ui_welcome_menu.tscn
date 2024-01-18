@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://7hcgepakmhxl" path="res://addons/godot_tours/ui/theme_welcome_menu.tres" id="1_4yn7l"]
 [ext_resource type="Script" path="res://addons/godot_tours/ui/ui_welcome_menu.gd" id="1_kfmbk"]
-[ext_resource type="Texture2D" uid="uid://cb4s7cxc5wtdv" path="res://addons/godot_tours/assets/icons/icon_reload.svg" id="3_rgtlm"]
+[ext_resource type="Texture2D" uid="uid://cb4s7cxc5wtdv" path="res://addons/godot_tours/assets/icons/reload.svg" id="3_rgtlm"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1q4hb"]
 

@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://cxeo2n3ky21xb"
-path="res://.godot/imported/Mukta-Bold.ttf-71d31c45ba38bd0ff30dda7e9bd8265b.fontdata"
+path="res://.godot/imported/mukta_bold.ttf-e8d363c2a7fb8b80d728bd7dee4e4d28.fontdata"
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/fonts/Mukta-Bold.ttf"
-dest_files=["res://.godot/imported/Mukta-Bold.ttf-71d31c45ba38bd0ff30dda7e9bd8265b.fontdata"]
+source_file="res://addons/godot_tours/bubble/assets/fonts/mukta_bold.ttf"
+dest_files=["res://.godot/imported/mukta_bold.ttf-e8d363c2a7fb8b80d728bd7dee4e4d28.fontdata"]
 
 [params]
 

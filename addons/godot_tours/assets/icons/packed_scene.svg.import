@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://u6art4ijsu4j"
-path="res://.godot/imported/icon_script.svg-17052f94678f5ae8172a8518f233fe08.ctex"
+uid="uid://ce87ohnwswwpf"
+path="res://.godot/imported/packed_scene.svg-14ed6f2e37d574c725f5982cba2ce421.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/icons/icon_script.svg"
-dest_files=["res://.godot/imported/icon_script.svg-17052f94678f5ae8172a8518f233fe08.ctex"]
+source_file="res://addons/godot_tours/assets/icons/packed_scene.svg"
+dest_files=["res://.godot/imported/packed_scene.svg-14ed6f2e37d574c725f5982cba2ce421.ctex"]
 
 [params]
 
@@ -32,6 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=3.0
+svg/scale=4.0
 editor/scale_with_editor_scale=false
 editor/convert_colors_with_editor_theme=false

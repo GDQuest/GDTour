@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://b0tcgxag5h452"
-path="res://.godot/imported/Poppins-Regular.ttf-3ac8d6afbc2775037c428c9e77e98782.fontdata"
+uid="uid://cowlnwvq0rikj"
+path="res://.godot/imported/poppins_italic.ttf-61875b501353b9c5806e9f1db637f13f.fontdata"
 
 [deps]
 
-source_file="res://addons/godot_tours/assets/fonts/Poppins-Regular.ttf"
-dest_files=["res://.godot/imported/Poppins-Regular.ttf-3ac8d6afbc2775037c428c9e77e98782.fontdata"]
+source_file="res://addons/godot_tours/bubble/assets/fonts/poppins_italic.ttf"
+dest_files=["res://.godot/imported/poppins_italic.ttf-61875b501353b9c5806e9f1db637f13f.fontdata"]
 
 [params]
 

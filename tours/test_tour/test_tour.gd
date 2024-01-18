@@ -558,8 +558,9 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
+	var to := Vector2(400, 600)
 	context_set_2d()
-	mouse_move_by_position(Vector2.ZERO, 100 * Vector2.ONE)
-	mouse_bounce(func() -> Vector2: return 100 * Vector2.ONE)
+	mouse_move_by_position(200 * Vector2.ONE, to)
+	mouse_bounce(func() -> Vector2: return to)
 	auto_next()
 	complete_step()
