@@ -20,14 +20,14 @@ If it's something we also need or plan to work on, we'll likely be able to revie
 
 ## Creating tours
 
-A tour is a GDScript file that extends `res://addons/godot_tours/core/tour.gd`.
+A tour is a GDScript file that extends `res://addons/godot_tours/tour.gd`.
 
 To learn how to use the framework and create a tour, we invite you to check out the open-source tour [101 - The Godot Editor](https://github.com/gdquest-demos/godot-tours-101-the-godot-editor). You can use it as a reference to build your own tours.
 
-Also, we invite you to open the file `res://addons/godot_tours/core/tour.gd` to learn more about how the system works and see all of the functions provided to build tours.
+Also, we invite you to open the file `res://addons/godot_tours/tour.gd` to learn more about how the system works and see all of the functions provided to build tours.
 ## Registering tours
 
-To register a tour in the menu that appears upon opening the Godot project, you need to create a resource file named `godot_tours.tres` at the root of the Godot project. It should extend the file `res://addons/godot_tours/core/godot_tour_list.gd`.
+To register a tour in the menu that appears upon opening the Godot project, you need to create a resource file named `godot_tours.tres` at the root of the Godot project. It should extend the file `res://addons/godot_tours/godot_tour_list.gd`.
 ## Features overview
 
 Godot Tours comes with these features, in the `core` folder of the addon:

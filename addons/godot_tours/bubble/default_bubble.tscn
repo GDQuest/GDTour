@@ -1,0 +1,243 @@
+[gd_scene load_steps=10 format=3 uid="uid://b3tpnkc5xu2o"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/bubble/default_bubble.gd" id="1_q308r"]
+[ext_resource type="Theme" uid="uid://cx2cxgbadh7fg" path="res://addons/godot_tours/assets/bubble_theme.tres" id="2_mkok2"]
+[ext_resource type="Texture2D" uid="uid://bidxqlunyylhn" path="res://addons/godot_tours/assets/icons/icon_close.svg" id="3_y6crt"]
+[ext_resource type="PackedScene" uid="uid://wd822miy3aij" path="res://addons/godot_tours/bubble/rich_text_label/rich_text_label.tscn" id="4_ev3jl"]
+[ext_resource type="PackedScene" uid="uid://b5junnl76yqmo" path="res://addons/godot_tours/bubble/task/task.tscn" id="5_al2df"]
+[ext_resource type="Script" path="res://addons/godot_tours/bubble/rich_text_label/rich_text_label.gd" id="6_iitqn"]
+[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/assets/fonts/Poppins-Regular.ttf" id="7_nlyrj"]
+[ext_resource type="PackedScene" uid="uid://bgxtydff0olev" path="res://addons/godot_tours/bubble/gobot/gobot.tscn" id="8_oayod"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0pees"]
+
+[node name="Bubble" type="CanvasLayer"]
+script = ExtResource("1_q308r")
+
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(512, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -87.0
+offset_right = 256.0
+offset_bottom = 87.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_mkok2")
+
+[node name="Outline" type="PanelContainer" parent="Panel"]
+clip_contents = true
+layout_mode = 2
+theme_type_variation = &"PanelContainerOutline"
+
+[node name="BackgroundTextureRect" type="TextureRect" parent="Panel/Outline"]
+unique_name_in_owner = true
+show_behind_parent = true
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_type_variation = &"MainMarginContainer"
+
+[node name="ViewContent" type="VBoxContainer" parent="Panel/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/MarginContainer/ViewContent"]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="Panel/MarginContainer/ViewContent/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"LabelTitle"
+text = "The missing \"walls\""
+autowrap_mode = 2
+
+[node name="ButtonClose" type="Button" parent="Panel/MarginContainer/ViewContent/HBoxContainer2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(22, 22)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+flat = true
+
+[node name="TextureRect" type="TextureRect" parent="Panel/MarginContainer/ViewContent/HBoxContainer2/ButtonClose"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("3_y6crt")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeaderRichTextLabel" parent="Panel/MarginContainer/ViewContent" instance=ExtResource("4_ev3jl")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+text = "The player can move [b]outside of the bridges![/b]
+This is normal. In a game, what you see and the physical limits of the world live in two separate layers.
+Computer games use simple geometric shapes to control where a character can move, which greatly improves performance.
+We call these collision shapes, and our bridge currently doesn't have any."
+
+[node name="MainVBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/ViewContent"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="RichTextLabel" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
+layout_mode = 2
+text = "The player can move [b]outside of the bridges![/b]"
+
+[node name="RichTextLabel2" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
+layout_mode = 2
+text = "This is normal. In a game, what you see and the physical limits of the world live in two separate layers."
+
+[node name="RichTextLabel3" parent="Panel/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
+layout_mode = 2
+text = "Computer games use simple geometric shapes to control where a character can move, which greatly improves performance."
+
+[node name="TasksVBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer/ViewContent"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Task" parent="Panel/MarginContainer/ViewContent/TasksVBoxContainer" instance=ExtResource("5_al2df")]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="Panel/MarginContainer/ViewContent"]
+layout_mode = 2
+size_flags_vertical = 8
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_0pees")
+
+[node name="BackButton" type="Button" parent="Panel/MarginContainer/ViewContent/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+focus_mode = 0
+mouse_default_cursor_shape = 2
+shortcut_in_tooltip = false
+text = "BACK"
+flat = true
+
+[node name="StepCountLabel" type="Label" parent="Panel/MarginContainer/ViewContent/PanelContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "5/40"
+horizontal_alignment = 1
+
+[node name="NextButton" type="Button" parent="Panel/MarginContainer/ViewContent/PanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_type_variation = &"NextButton"
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
+shortcut_in_tooltip = false
+text = "NEXT STEP"
+
+[node name="FinishButton" type="Button" parent="Panel/MarginContainer/ViewContent/PanelContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"NextButton"
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
+text = "END TOUR AND CONTINUE LEARNING"
+
+[node name="FooterSpacer" type="Control" parent="Panel/MarginContainer/ViewContent"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="FooterRichTextLabel" type="RichTextLabel" parent="Panel/MarginContainer/ViewContent"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_type_variation = &"FooterRichTextLabel"
+bbcode_enabled = true
+text = "Test text"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+script = ExtResource("6_iitqn")
+
+[node name="ViewClose" type="VBoxContainer" parent="Panel/MarginContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="Panel/MarginContainer/ViewClose"]
+layout_mode = 2
+theme_type_variation = &"LabelTitle"
+text = "Close the tour?"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Label2" type="Label" parent="Panel/MarginContainer/ViewClose"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_nlyrj")
+text = "Your progress will be lost."
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/MarginContainer/ViewClose"]
+layout_mode = 2
+size_flags_vertical = 8
+alignment = 1
+
+[node name="ButtonCloseNo" type="Button" parent="Panel/MarginContainer/ViewClose/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+text = "NO"
+flat = true
+
+[node name="ButtonCloseYes" type="Button" parent="Panel/MarginContainer/ViewClose/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"NextButton"
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
+shortcut_in_tooltip = false
+text = "YES"
+
+[node name="Avatar" parent="Panel" instance=ExtResource("8_oayod")]
+unique_name_in_owner = true
+rotation = -0.261799
+scale = Vector2(0.35, 0.35)

@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3 uid="uid://bpby88c43ifbo"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/debugger/debugger.gd" id="1_l4dkp"]
+
+[node name="Debugger" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_l4dkp")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LabelOverlay" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Overlay controls"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ToggleDimmersCheckButton" type="CheckButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Toggle the visibility of overlays.
+Overlays allow or block mouse input, and outline clickable areas."
+text = "Dimmers"
+
+[node name="DimmersAlphaLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Dimmers Alpha"
+
+[node name="OverlaysAlphaHSlider" type="HSlider" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Controls the opacity of overlay areas that block or allow mouse input."
+max_value = 1.0
+step = 0.01
+value = 0.25
+
+[node name="LabelBubble" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Bubble controls"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ToggleBubbleCheckButton" type="CheckButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+tooltip_text = "Toggle the visibility of overlays.
+Overlays allow or block mouse input, and outline clickable areas."
+text = "Bubble"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LabelTours" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Tours"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="ToursItemList" type="ItemList" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+auto_height = true
+
+[node name="ButtonStartTour" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Start tour"
+
+[node name="ButtonToggleTourVisible" type="CheckButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Toggle the visibility of the currently running tour, which also toggles the visibility of overlays and dimmers."
+button_pressed = true
+text = "Visible"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LabelJump" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Jump to step"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="JumpHBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="JumpSpinBox" type="SpinBox" parent="VBoxContainer/JumpHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+min_value = 1.0
+max_value = 1.0
+value = 1.0
+rounded = true
+allow_greater = true
+allow_lesser = true
+
+[node name="JumpButton" type="Button" parent="VBoxContainer/JumpHBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Jump to the step in the spin box.
+If Is Relative is turned on, move forward or back by this amount of steps."
+text = "Jump"

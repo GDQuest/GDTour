@@ -1,0 +1,65 @@
+[gd_scene load_steps=6 format=3 uid="uid://boy5tvkasxato"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/ui/ui_button_godot_tours.gd" id="1_m0m61"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nq4yk"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 0.835294, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.807843, 0.486275, 0, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0batf"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 0.835294, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.807843, 0.486275, 0, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3flm3"]
+content_margin_left = 8.0
+content_margin_top = 2.0
+content_margin_right = 8.0
+content_margin_bottom = 2.0
+bg_color = Color(1, 0.835294, 0, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_color = Color(0.807843, 0.486275, 0, 1)
+shadow_size = 1
+shadow_offset = Vector2(0, 2)
+
+[sub_resource type="Theme" id="Theme_l356x"]
+Button/colors/font_color = Color(0.415686, 0.0980392, 0, 1)
+Button/colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+Button/colors/font_hover_color = Color(0.619608, 0.262745, 0.00392157, 1)
+Button/colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+Button/colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+Button/font_sizes/font_size = 14
+Button/styles/focus = null
+Button/styles/hover = SubResource("StyleBoxFlat_nq4yk")
+Button/styles/normal = SubResource("StyleBoxFlat_0batf")
+Button/styles/pressed = SubResource("StyleBoxFlat_3flm3")
+
+[node name="UIButtonGodotTours" type="Button"]
+unique_name_in_owner = true
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_l356x")
+theme_override_font_sizes/font_size = 14
+text = "GODOT TOURS"
+script = ExtResource("1_m0m61")

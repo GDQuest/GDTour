@@ -1,0 +1,71 @@
+[gd_scene load_steps=5 format=3 uid="uid://ie322xar0a3k"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/ui/ui_selectable_tour.gd" id="1_mh0ba"]
+[ext_resource type="Texture2D" uid="uid://dmv0g5yqal8s7" path="res://addons/godot_tours/assets/icons/icon_lock.svg" id="2_fpn62"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oh0ml"]
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_6r8a0"]
+
+[node name="UISelectableTour" type="PanelContainer"]
+custom_minimum_size = Vector2(400, 64)
+offset_right = 400.0
+offset_bottom = 64.0
+size_flags_horizontal = 3
+theme_type_variation = &"ButtonSelectableTour"
+theme_override_styles/panel = SubResource("StyleBoxEmpty_oh0ml")
+script = ExtResource("1_mh0ba")
+
+[node name="Button" type="Button" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_type_variation = &"ButtonSelectableTour"
+toggle_mode = true
+button_group = SubResource("ButtonGroup_6r8a0")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="IconLock" type="TextureRect" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("2_fpn62")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LabelSymbol" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.411765, 1, 0.541176, 1)
+theme_override_font_sizes/font_size = 22
+text = "⬤"
+horizontal_alignment = 1
+
+[node name="LabelTitle" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
+text = "101: The Godot Editor"
+
+[node name="LabelFree" type="Label" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_colors/font_color = Color(0.411765, 1, 0.541176, 1)
+theme_override_font_sizes/font_size = 20
+text = "FREE"
+horizontal_alignment = 2

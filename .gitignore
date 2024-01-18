@@ -22,5 +22,5 @@ data_*/
 .glam.d/
 
 # Other
-godot_tours.log
+godot_tours.log*
 .plugged/

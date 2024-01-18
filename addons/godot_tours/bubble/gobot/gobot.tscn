@@ -1,0 +1,944 @@
+[gd_scene load_steps=31 format=3 uid="uid://bgxtydff0olev"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/bubble/gobot/gobot.gd" id="1_0v1f1"]
+[ext_resource type="Shader" path="res://addons/godot_tours/bubble/gobot/assets/gobot_material.gdshader" id="2_2ns2r"]
+[ext_resource type="Texture2D" uid="uid://dhvsj4fjh5h30" path="res://addons/godot_tours/bubble/gobot/assets/gobot_mascot.png" id="2_d0rrb"]
+[ext_resource type="Texture2D" uid="uid://bpgwxmhfauri6" path="res://addons/godot_tours/bubble/gobot/assets/bolt.png" id="3_ahy46"]
+[ext_resource type="Texture2D" uid="uid://csp1wgpwsmqdo" path="res://addons/godot_tours/bubble/gobot/assets/horns.png" id="4_03njk"]
+[ext_resource type="Texture2D" uid="uid://ds6soldasib2v" path="res://addons/godot_tours/bubble/gobot/assets/face.png" id="5_pcg2e"]
+[ext_resource type="Texture2D" uid="uid://yibw16nyfxgu" path="res://addons/godot_tours/bubble/gobot/assets/Jaw.png" id="6_selbd"]
+[ext_resource type="Texture2D" uid="uid://dug4juhbynu3v" path="res://addons/godot_tours/bubble/gobot/assets/eye_default.png" id="7_4dwtu"]
+[ext_resource type="Texture2D" uid="uid://bpe5ej02trd4w" path="res://addons/godot_tours/bubble/gobot/assets/eyebrow_default.png" id="8_pjvjr"]
+[ext_resource type="Texture2D" uid="uid://hair7u2wrsxx" path="res://addons/godot_tours/bubble/gobot/assets/nose.png" id="9_2wekc"]
+[ext_resource type="Texture2D" uid="uid://ddhgq5h4l8us3" path="res://addons/godot_tours/bubble/gobot/assets/eye_closed.png" id="10_bclg8"]
+[ext_resource type="Texture2D" uid="uid://cn2p8bqmv46t4" path="res://addons/godot_tours/bubble/gobot/assets/star_sprite.png" id="10_bvh8p"]
+[ext_resource type="Texture2D" uid="uid://d4am7w4mvulbl" path="res://addons/godot_tours/bubble/gobot/assets/eye_frowned.png" id="11_2udjg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fk05e"]
+shader = ExtResource("2_2ns2r")
+shader_parameter/line_thickness = 10.0
+
+[sub_resource type="Animation" id="Animation_xm3qg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Root:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Root/EyeRAnchor/EyeR/Eye:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_pjvjr")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-4, -42)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Root/EyeLAnchor/EyeL/Eye:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(4, -42)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_pjvjr")]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Root/EyeLAnchor/EyeL/Eye:texture")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_4dwtu")]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:rotation")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Root:scale")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Root/EyeRAnchor/EyeR/Eye:texture")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_4dwtu")]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:rotation")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("../../StarSprite:position")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(69, -19)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("../../StarSprite:rotation")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("../../StarSprite:scale")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("../../StarSprite:modulate")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+tracks/16/type = "value"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath("../../StarSprite:visible")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/17/type = "value"
+tracks/17/imported = false
+tracks/17/enabled = true
+tracks/17/path = NodePath("Root:position")
+tracks/17/interp = 1
+tracks/17/loop_wrap = true
+tracks/17/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(180, 180)]
+}
+tracks/18/type = "value"
+tracks/18/imported = false
+tracks/18/enabled = true
+tracks/18/path = NodePath("../..:tilt_x")
+tracks/18/interp = 1
+tracks/18/loop_wrap = true
+tracks/18/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/19/type = "value"
+tracks/19/imported = false
+tracks/19/enabled = true
+tracks/19/path = NodePath("../..:tilt_y")
+tracks/19/interp = 1
+tracks/19/loop_wrap = true
+tracks/19/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_kv2u0"]
+resource_name = "expression_happy"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Root/EyeRAnchor/EyeR/Eye:texture")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("10_bclg8")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Root/EyeLAnchor/EyeL/Eye:texture")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("10_bclg8")]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(-4, -25), Vector2(-4, -46), Vector2(-4, -52), Vector2(-4, -46)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(4, -25), Vector2(4, -46), Vector2(4, -52), Vector2(4, -46)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../..:tilt_x")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(-2, -2, -2, -2, -2),
+"update": 0,
+"values": [-0.2, 0.3, -0.3, 0.1, 0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("../..:tilt_y")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.4, 0.5),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [0.8, -0.5, 0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.698132]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -0.698132]
+}
+
+[sub_resource type="Animation" id="Animation_1vc05"]
+resource_name = "expression_neutral"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Root/EyeRAnchor/EyeR/Eye:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_4dwtu")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Root/EyeRAnchor/EyeR/Eye:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:texture")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_pjvjr")]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-4, -46)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Root/EyeLAnchor/EyeL/Eye:texture")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("7_4dwtu")]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Root/EyeLAnchor/EyeL/Eye:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_pjvjr")]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(4, -46)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:rotation")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.174533]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:rotation")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-0.174533]
+}
+
+[sub_resource type="Animation" id="Animation_jbvns"]
+resource_name = "expression_surprised"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(0, 1),
+"update": 0,
+"values": [Vector2(4, -25), Vector2(-4, -48)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Root/EyeLAnchor/EyeL/Eyebrow:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(0, 1),
+"update": 0,
+"values": [0.261799, -0.663225]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.1, 0.9), Vector2(0.9, 1.1), Vector2(1, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(0, 1),
+"update": 0,
+"values": [Vector2(-4, -25), Vector2(4, -48)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(0, 1),
+"update": 0,
+"values": [-0.261799, 0.663225]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Root/EyeRAnchor/EyeR/Eye:texture")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("11_2udjg"), ExtResource("7_4dwtu")]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Root/EyeLAnchor/EyeL/Eye:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [ExtResource("11_2udjg"), ExtResource("7_4dwtu")]
+}
+
+[sub_resource type="Animation" id="Animation_kiuqq"]
+resource_name = "idle"
+length = 4.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../..:tilt_x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.5, 2.5, 4.5),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [-0.2, 0.2, -0.2]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..:tilt_y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.6, 1.6, 2.6, 3.6, 4.6),
+"transitions": PackedFloat32Array(-2, -2, -2, -2, -2),
+"update": 0,
+"values": [-0.2, 0.2, -0.2, 0.2, -0.2]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1, 2, 3, 4),
+"transitions": PackedFloat32Array(-2, -2, -2, -2, -2),
+"update": 0,
+"values": [Vector2(180, 178.558), Vector2(180, 172), Vector2(180, 178.558), Vector2(180, 172), Vector2(180, 178.558)]
+}
+
+[sub_resource type="Animation" id="Animation_3uqyx"]
+resource_name = "reaction_wink"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../..:tilt_x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, -1.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../..:tilt_y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.7),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Root:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.7),
+"transitions": PackedFloat32Array(1, -2, -2, -2),
+"update": 0,
+"values": [0.0, -0.261799, -0.261799, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Root/EyeRAnchor/EyeR/Eye:texture")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [ExtResource("7_4dwtu"), ExtResource("10_bclg8"), ExtResource("10_bclg8"), ExtResource("7_4dwtu")]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Root:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(1.1, 0.9), Vector2(1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Root/EyeRAnchor/EyeR/Eyebrow:position")
+tracks/5/interp = 0
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-4, -42), Vector2(-8, -25), Vector2(-4, -42)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../../StarSprite:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.1, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(69, -19), Vector2(96, -19)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("../../StarSprite:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.1, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 2.0944]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("../../StarSprite:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0.1, 0.3, 0.6),
+"transitions": PackedFloat32Array(-2, -2, -2),
+"update": 0,
+"values": [Vector2(0.8, 0.8), Vector2(1, 1), Vector2(0.8, 0.8)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("../../StarSprite:modulate:a")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0.1, 0.125, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 1.0, 0.0]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("../../StarSprite:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_axgnh"]
+_data = {
+"RESET": SubResource("Animation_xm3qg"),
+"expression_happy": SubResource("Animation_kv2u0"),
+"expression_neutral": SubResource("Animation_1vc05"),
+"expression_surprised": SubResource("Animation_jbvns"),
+"idle": SubResource("Animation_kiuqq"),
+"reaction_wink": SubResource("Animation_3uqyx")
+}
+
+[sub_resource type="AnimationNodeAdd2" id="AnimationNodeAdd2_7ne4x"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lxk3r"]
+animation = &"expression_neutral"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lvqjj"]
+animation = &"expression_happy"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_g0tyt"]
+animation = &"expression_surprised"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ps3b2"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeOneShot" id="AnimationNodeOneShot_mscml"]
+filters = ["SubViewport/Root:scale"]
+mix_mode = 1
+fadeout_time = 0.1
+
+[sub_resource type="AnimationNodeTransition" id="AnimationNodeTransition_bta4f"]
+xfade_time = 0.1
+input_0/name = "neutral"
+input_0/auto_advance = false
+input_0/reset = true
+input_1/name = "happy"
+input_1/auto_advance = false
+input_1/reset = true
+input_2/name = "surprised"
+input_2/auto_advance = false
+input_2/reset = true
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_638r0"]
+animation = &"reaction_wink"
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_n4c0l"]
+nodes/Add2/node = SubResource("AnimationNodeAdd2_7ne4x")
+nodes/Add2/position = Vector2(180, -140)
+nodes/Animation/node = SubResource("AnimationNodeAnimation_ps3b2")
+nodes/Animation/position = Vector2(6.34401, -179.551)
+"nodes/Animation 2/node" = SubResource("AnimationNodeAnimation_lxk3r")
+"nodes/Animation 2/position" = Vector2(-300, -20)
+"nodes/Animation 3/node" = SubResource("AnimationNodeAnimation_lvqjj")
+"nodes/Animation 3/position" = Vector2(-300, 100)
+"nodes/Animation 4/node" = SubResource("AnimationNodeAnimation_g0tyt")
+"nodes/Animation 4/position" = Vector2(-300, 220)
+nodes/OneShot/node = SubResource("AnimationNodeOneShot_mscml")
+nodes/OneShot/position = Vector2(400, -140)
+nodes/Transition/node = SubResource("AnimationNodeTransition_bta4f")
+nodes/Transition/position = Vector2(20, 20)
+nodes/WinkOneShot/node = SubResource("AnimationNodeAnimation_638r0")
+nodes/WinkOneShot/position = Vector2(180, 60)
+nodes/output/position = Vector2(600, -140)
+node_connections = [&"Add2", 0, &"Animation", &"Add2", 1, &"Transition", &"OneShot", 0, &"Add2", &"OneShot", 1, &"WinkOneShot", &"Transition", 0, &"Animation 2", &"Transition", 1, &"Animation 3", &"Transition", 2, &"Animation 4", &"output", 0, &"OneShot"]
+
+[node name="Gobot" type="Node2D"]
+script = ExtResource("1_0v1f1")
+metadata/_edit_vertical_guides_ = [-356.0]
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+material = SubResource("ShaderMaterial_fk05e")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -180.0
+offset_right = 180.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(180, 180)
+mouse_filter = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(360, 360)
+render_target_update_mode = 4
+
+[node name="Root" type="Node2D" parent="SubViewportContainer/SubViewport"]
+position = Vector2(180, 180)
+
+[node name="BoltAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root"]
+
+[node name="Bolts" type="Node2D" parent="SubViewportContainer/SubViewport/Root/BoltAnchor"]
+unique_name_in_owner = true
+
+[node name="BoltL" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/BoltAnchor/Bolts"]
+unique_name_in_owner = true
+position = Vector2(-100, 42)
+texture = ExtResource("3_ahy46")
+flip_h = true
+
+[node name="BoltR" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/BoltAnchor/Bolts"]
+unique_name_in_owner = true
+position = Vector2(100, 42)
+texture = ExtResource("3_ahy46")
+
+[node name="HornsAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root"]
+position = Vector2(0, -26)
+
+[node name="Horns" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/HornsAnchor"]
+unique_name_in_owner = true
+texture = ExtResource("4_03njk")
+
+[node name="Head" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root"]
+clip_children = 2
+position = Vector2(0, 16)
+texture = ExtResource("5_pcg2e")
+
+[node name="JawAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root/Head"]
+position = Vector2(0, 83)
+
+[node name="Jaw" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/Head/JawAnchor"]
+unique_name_in_owner = true
+texture = ExtResource("6_selbd")
+
+[node name="EyeRAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root"]
+position = Vector2(43, 13)
+
+[node name="EyeR" type="Node2D" parent="SubViewportContainer/SubViewport/Root/EyeRAnchor"]
+unique_name_in_owner = true
+
+[node name="Eye" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/EyeRAnchor/EyeR"]
+texture = ExtResource("7_4dwtu")
+
+[node name="Eyebrow" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/EyeRAnchor/EyeR"]
+position = Vector2(-4, -42)
+texture = ExtResource("8_pjvjr")
+
+[node name="EyeLAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root"]
+position = Vector2(-43, 13)
+
+[node name="EyeL" type="Node2D" parent="SubViewportContainer/SubViewport/Root/EyeLAnchor"]
+unique_name_in_owner = true
+
+[node name="Eye" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/EyeLAnchor/EyeL"]
+texture = ExtResource("7_4dwtu")
+flip_h = true
+
+[node name="Eyebrow" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/EyeLAnchor/EyeL"]
+position = Vector2(4, -42)
+texture = ExtResource("8_pjvjr")
+flip_h = true
+
+[node name="NoseAnchor" type="Node2D" parent="SubViewportContainer/SubViewport/Root"]
+position = Vector2(0, 28)
+
+[node name="Nose" type="Sprite2D" parent="SubViewportContainer/SubViewport/Root/NoseAnchor"]
+unique_name_in_owner = true
+texture = ExtResource("9_2wekc")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="SubViewportContainer/SubViewport"]
+libraries = {
+"": SubResource("AnimationLibrary_axgnh")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
+libraries = {
+"": SubResource("AnimationLibrary_axgnh")
+}
+tree_root = SubResource("AnimationNodeBlendTree_n4c0l")
+anim_player = NodePath("../AnimationPlayer")
+parameters/Add2/add_amount = 1.0
+parameters/OneShot/active = false
+parameters/OneShot/internal_active = false
+parameters/OneShot/request = 0
+parameters/Transition/current_state = "neutral"
+parameters/Transition/transition_request = ""
+parameters/Transition/current_index = 0
+
+[node name="Reference" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0.462745)
+texture = ExtResource("2_d0rrb")
+
+[node name="StarSprite" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(69, -19)
+texture = ExtResource("10_bvh8p")

@@ -6,18 +6,18 @@ extends EditorPlugin
 const TOUR_LIST_FILE_PATH := "res://godot_tours.tres"
 const SINGLE_WINDOW_MODE_PROPERTY := "interface/editor/single_window_mode"
 
-const Utils := preload("core/utils.gd")
-const EditorInterfaceAccess := preload("core/editor_interface_access.gd")
-const Tour := preload("core/tour.gd")
-const Overlays := preload("core/overlays/overlays.gd")
-const Debugger := preload("core/debugger/debugger.gd")
-const TranslationParser := preload("core/translation/translation_parser.gd")
-const TranslationService := preload("core/translation/translation_service.gd")
-const UIWelcomeMenu := preload("ui_welcome_menu.gd")
+const Utils := preload("utils.gd")
+const EditorInterfaceAccess := preload("editor_interface_access.gd")
+const Tour := preload("tour.gd")
+const Overlays := preload("overlays/overlays.gd")
+const Debugger := preload("debugger/debugger.gd")
+const TranslationParser := preload("translation/translation_parser.gd")
+const TranslationService := preload("translation/translation_service.gd")
+const UIWelcomeMenu := preload("ui/ui_welcome_menu.gd")
 
-const UI_DEBUGGER_DOCK_SCENE := preload("core/debugger/debugger.tscn")
-const UI_WELCOME_MENU_SCENE = preload("ui_welcome_menu.tscn")
-const UI_BUTTON_GODOT_TOURS = preload("ui_button_godot_tours.tscn")
+const DebuggerPackedScene := preload("debugger/debugger.tscn")
+const UIWelcomeMenuPackedScene = preload("ui/ui_welcome_menu.tscn")
+const UIButtonGodotToursPackedScene = preload("ui/ui_button_godot_tours.tscn")
 
 var plugin_path: String = get_script().resource_path.get_base_dir()
 var translation_parser := TranslationParser.new()
@@ -49,10 +49,9 @@ func _enter_tree() -> void:
 	for _frame in range(10):
 		await get_tree().process_frame
 
-	_tour_paths.assign(tour_list.tours.map(
-		func get_tour_path(tour_entry) -> String:
-			return tour_entry.tour_path
-	))
+	_tour_paths.assign(
+		tour_list.tours.map(func get_tour_path(tour_entry) -> String: return tour_entry.tour_path)
+	)
 
 	await get_tree().physics_frame
 	get_viewport().mode = Window.MODE_MAXIMIZED
@@ -84,10 +83,12 @@ func _add_top_bar_button() -> void:
 	if tour_list == null:
 		return
 
-	_button_top_bar = UI_BUTTON_GODOT_TOURS.instantiate()
+	_button_top_bar = UIButtonGodotToursPackedScene.instantiate()
 	_button_top_bar.setup()
 	editor_interface_access.run_bar.add_sibling(_button_top_bar)
-	_button_top_bar.get_parent().move_child(_button_top_bar, editor_interface_access.run_bar.get_index())
+	_button_top_bar.get_parent().move_child(
+		_button_top_bar, editor_interface_access.run_bar.get_index()
+	)
 	_button_top_bar.pressed.connect(_show_welcome_menu)
 
 
@@ -98,17 +99,13 @@ func _show_welcome_menu() -> void:
 
 	_button_top_bar.hide()
 
-	welcome_menu = UI_WELCOME_MENU_SCENE.instantiate()
+	welcome_menu = UIWelcomeMenuPackedScene.instantiate()
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
 	welcome_menu.setup(tour_list)
-	welcome_menu.tour_start_requested.connect(func start_tour(tour_path: String) -> void:
-		welcome_menu.queue_free()
-		welcome_menu = null
-		tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
-		tour.ended.connect(_button_top_bar.show)
-	)
+	welcome_menu.tour_start_requested.connect(start_tour)
+	welcome_menu.tour_reset_requested.connect(reset_tour)
 	welcome_menu.closed.connect(_button_top_bar.show)
 
 
@@ -145,7 +142,7 @@ func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
 		return
 
 	const key := "internationalization/locale/translations_pot_files"
-	var tour_base_script_file_path := plugin_path.path_join("core").path_join("tour.gd")
+	var tour_base_script_file_path := plugin_path.path_join("tour.gd")
 	var pot_files_setting := ProjectSettings.get_setting(key, PackedStringArray())
 	for file_path in [tour_base_script_file_path] + _tour_paths:
 		var is_file_path_in: bool = file_path in pot_files_setting
@@ -160,8 +157,10 @@ func ensure_pot_generation(plugin_path: String, do_clean_up := false) -> void:
 ## Toggles the debugger dock. If it's not present, it's added to the upper-left dock slot.
 func toggle_debugger() -> void:
 	if debugger == null:
-		debugger = UI_DEBUGGER_DOCK_SCENE.instantiate()
-		debugger.setup(plugin_path, editor_interface_access, overlays, translation_service, tour, _tour_paths)
+		debugger = DebuggerPackedScene.instantiate()
+		debugger.setup(
+			plugin_path, editor_interface_access, overlays, translation_service, tour, _tour_paths
+		)
 
 	if debugger.is_inside_tree():
 		remove_control_from_docks(debugger)
@@ -183,7 +182,43 @@ func toggle_debugger() -> void:
 ## TourMetadata. Finds and loads the tours.
 func get_tours():
 	if not FileAccess.file_exists(TOUR_LIST_FILE_PATH):
-		push_warning("Godot Tours: no tours found. Create a GodotTourList resource file named '%s' to list and register tours." % TOUR_LIST_FILE_PATH)
+		push_warning(
+			(
+				"Godot Tours: no tours found. Create a GodotTourList resource file named '%s' to list and register tours."
+				% TOUR_LIST_FILE_PATH
+			)
+		)
 		return null
 
 	return load(TOUR_LIST_FILE_PATH)
+
+
+func start_tour(tour_path: String) -> void:
+	welcome_menu.queue_free()
+	welcome_menu = null
+	tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
+	tour.ended.connect(_button_top_bar.show)
+
+
+func reset_tour(tour_path: String) -> void:
+	const PREFIX := &"res://"
+
+	var tour_dir_path := "%s/" % tour_path.get_base_dir()
+	var tour_file_paths := Utils.fs_find("*", tour_dir_path).filter(
+		func(p: String) -> bool: return not (p.get_extension() == "import" or p == tour_path)
+	)
+
+	for tour_file_path: String in tour_file_paths:
+		var destination_file_path := PREFIX.path_join(tour_file_path.replace(tour_dir_path, ""))
+
+		var destination_dir_path := destination_file_path.get_base_dir()
+		DirAccess.make_dir_recursive_absolute(destination_dir_path)
+
+		var extension := tour_file_path.get_extension()
+		if extension in ["gd", "tscn", "tres"]:
+			var contents := FileAccess.get_file_as_string(tour_file_path)
+			contents = contents.replace(tour_dir_path, destination_dir_path)
+			FileAccess.open(destination_file_path, FileAccess.WRITE).store_string(contents)
+		else:
+			DirAccess.copy_absolute(tour_file_path, destination_file_path)
+	EditorInterface.get_resource_filesystem().scan()

@@ -1,9 +1,9 @@
 ## Integration test for the tour framework. Runs many of the tour APIs and uses asserts to verify the results.
 ## Because of the nature of interactive tours and the complex interactions with the Godot editor, we can't rely on
 ## unit tests to verify the results. This is why we have this integration test.
-extends "res://addons/godot_tours/core/tour.gd"
+extends "../../addons/godot_tours/tour.gd"
 
-const Highlight := preload("../../addons/godot_tours/core/overlays/highlight/highlight.gd")
+const Highlight := preload("../../addons/godot_tours/overlays/highlight/highlight.gd")
 
 const HIGHLIGHT_GROUP := "highlight"
 
@@ -17,7 +17,7 @@ func get_highlights() -> Array[Highlight]:
 
 
 func _build() -> void:
-	var TestTourBubblePackedScene := load("res://tours/test_tour/test_tour_bubble.tscn")
+	var TestTourBubblePackedScene := load("res://test_tour_bubble.tscn")
 	swap_bubble(TestTourBubblePackedScene)
 	auto_next()
 	complete_step()
@@ -26,7 +26,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	var file_path := "res://tours/test_tour/test_tour_2d.tscn"
+	var file_path := "res://test_tour_2d.tscn"
 	scene_open(file_path)
 	queue_command(func() -> void:
 		var name := "TestTour2D"
@@ -222,7 +222,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	file_path = "res://tours/test_tour/test_video.ogv"
+	file_path = "res://test_video.ogv"
 	var stream := load(file_path)
 	queue_command(func() -> void: bubble.add_video(stream))
 	queue_command(func() -> void:
@@ -447,7 +447,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	file_path = "res://tours/test_tour/test_tour_2d.gd"
+	file_path = "res://test_tour_2d.gd"
 	var script := load(file_path)
 	context_set_script()
 	queue_command(EditorInterface.edit_script.bind(script))
