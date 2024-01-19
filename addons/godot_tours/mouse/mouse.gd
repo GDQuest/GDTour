@@ -8,6 +8,7 @@ extends CanvasGroup
 const DEFAULT_PRESS_TEXTURE := preload("../assets/icons/white_circle.png")
 
 var first_from := Callable()
+var last_to := Callable()
 var operations: Array[Callable] = []
 var editor_scale: float = EditorInterface.get_editor_scale()
 
@@ -22,7 +23,7 @@ func _ready() -> void:
 
 
 func play() -> void:
-	if operations.is_empty() or first_from.is_null():
+	if operations.is_empty() or (first_from.is_null() and last_to.is_null()):
 		return
 	const ON_DURATION := 0.2
 	const OFF_DURATION := 0.1
@@ -39,8 +40,10 @@ func play() -> void:
 
 
 func add_move_operation(from: Callable, to: Callable) -> void:
+	last_to = to
 	if first_from.is_null():
 		first_from = from
+
 	var speed := 400 * editor_scale
 	operations.push_back(func() -> void:
 		tween.tween_method(
@@ -54,10 +57,10 @@ func add_move_operation(from: Callable, to: Callable) -> void:
 
 
 func add_press_operation(texture: CompressedTexture2D = null) -> void:
-	const ON_DURATION := 0.2
-
 	if texture == null:
 		texture = DEFAULT_PRESS_TEXTURE
+
+	const ON_DURATION := 0.2
 
 	operations.push_back(func() -> void:
 		press_sprite.texture = texture
@@ -72,17 +75,23 @@ func add_release_operation() -> void:
 	)
 
 
-func add_click_operation(times := 1) -> void:
+func add_click_operation(loops := 1) -> void:
 	const ON_DURATION := 0.2
 	const OFF_DURATION := 0.1
-	for _time in range(times):
+	for _loop in range(loops):
 		operations.push_back(func() -> void:
 			tween.tween_property(press_sprite, "scale", Vector2.ONE, ON_DURATION).from(Vector2.ZERO)
 			tween.tween_property(press_sprite, "scale", Vector2.ZERO, OFF_DURATION)
 		)
 
 
-func add_bounce_operation(at: Callable, loops := 2) -> void:
+func add_bounce_operation(loops := 2, at := Callable()) -> void:
+	if not at.is_null():
+		last_to = at
+
+	if first_from.is_null():
+		first_from = at
+
 	const WAIT := 0.3
 
 	const SCALE_Y := 0.7
@@ -98,7 +107,7 @@ func add_bounce_operation(at: Callable, loops := 2) -> void:
 			tween.tween_property(pointer_sprite, "scale:y", 1.0, SCALE_DURATION).from(SCALE_Y)
 			tween.parallel().tween_method(
 				func(param: float) -> void:
-					var at_vector: Vector2 = at.call()
+					var at_vector: Vector2 = last_to.call()
 					global_position = at_vector.lerp(at_vector + amplitude, param),
 				0.0,
 				1.0,
@@ -106,7 +115,7 @@ func add_bounce_operation(at: Callable, loops := 2) -> void:
 			).set_trans(Tween.TRANS_SINE)
 			tween.tween_method(
 				func(param: float) -> void:
-					var at_vector: Vector2 = at.call()
+					var at_vector: Vector2 = last_to.call()
 					global_position = (at_vector + amplitude).lerp(at_vector, param),
 				0.0,
 				1.0,

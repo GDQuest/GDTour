@@ -535,11 +535,11 @@ func mouse_click_drag_by_callable(from: Callable, to: Callable, press_texture: C
 	)
 
 
-func mouse_bounce(at: Callable) -> void:
+func mouse_bounce(loops := 2, at := Callable()) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
 		await delay_process_frame()
-		mouse.add_bounce_operation(at),
+		mouse.add_bounce_operation(loops, at),
 	)
 
 
@@ -557,10 +557,10 @@ func mouse_release() -> void:
 	)
 
 
-func mouse_click(times := 1) -> void:
+func mouse_click(loops := 1) -> void:
 	queue_command(func() -> void:
 		ensure_mouse()
-		mouse.add_click_operation(times)
+		mouse.add_click_operation(loops)
 	)
 
 
