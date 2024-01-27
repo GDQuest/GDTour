@@ -105,7 +105,13 @@ func _show_welcome_menu() -> void:
 	EditorInterface.get_base_control().add_child(welcome_menu)
 	welcome_menu.setup(tour_list)
 	welcome_menu.tour_start_requested.connect(start_tour)
-	welcome_menu.tour_reset_requested.connect(reset_tour)
+	welcome_menu.tour_reset_requested.connect(func reset_tour(tour_path: String) -> void:
+		var was_reset_successful := _reset_tour_files(tour_path)
+		if was_reset_successful:
+			welcome_menu.show_reset_success()
+		else:
+			welcome_menu.show_reset_failure()
+	)
 	welcome_menu.closed.connect(_button_top_bar.show)
 
 
@@ -200,12 +206,16 @@ func start_tour(tour_path: String) -> void:
 	tour.ended.connect(_button_top_bar.show)
 
 
-func reset_tour(tour_path: String) -> void:
+## Finds GDScript, tscn, and tres files in the tour source directory, next to the tour's .gd file, and copies them to the root directory.
+## Returns true if the operation was successful, false otherwise.
+## We assume that files in the tour source directory are the starting files required by the tour. All assets and other files you don't want to copy or overwrite should be in a separate subdirectory (example: "res://assets", "res://scenes"...).
+func _reset_tour_files(tour_path: String) -> bool:
+	var was_reset_successful := true
 	const PREFIX := &"res://"
 
 	var tour_dir_path := "%s/" % tour_path.get_base_dir()
 	var tour_file_paths := Utils.fs_find("*", tour_dir_path).filter(
-		func(p: String) -> bool: return not (p.get_extension() == "import" or p == tour_path)
+		func(path: String) -> bool: return not (path.get_extension() == "import" or path == tour_path)
 	)
 
 	for tour_file_path: String in tour_file_paths:
@@ -218,7 +228,21 @@ func reset_tour(tour_path: String) -> void:
 		if extension in ["gd", "tscn", "tres"]:
 			var contents := FileAccess.get_file_as_string(tour_file_path)
 			contents = contents.replace(tour_dir_path, destination_dir_path)
-			FileAccess.open(destination_file_path, FileAccess.WRITE).store_string(contents)
+			var file_access := FileAccess.open(destination_file_path, FileAccess.WRITE)
+			if file_access == null:
+				push_error(
+					"Godot Tours: could not open file '%s' for writing. Resetting the tour '%s' was not successful." % [destination_file_path, tour_path]
+				)
+				was_reset_successful = false
+				break
+			file_access.store_string(contents)
 		else:
-			DirAccess.copy_absolute(tour_file_path, destination_file_path)
+			var error := DirAccess.copy_absolute(tour_file_path, destination_file_path)
+			if error != OK:
+				push_error(
+					"Godot Tours: could not copy folder '%s' to '%s'. Resetting the tour '%s' was not successful." % [tour_file_path, destination_file_path, tour_path]
+				)
+				was_reset_successful = false
+				break
 	EditorInterface.get_resource_filesystem().scan()
+	return was_reset_successful
