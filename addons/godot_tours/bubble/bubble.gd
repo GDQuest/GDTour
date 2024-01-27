@@ -58,6 +58,11 @@ var avatar_tween_rotation: Tween = null
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	self.translation_service = translation_service
 	self.step_count = step_count
+	
+	# We call this function that updates the position and size of the bubble.
+	# RichTextLabel nodes added to the bubble can cause it to resize after 0, 1, or 2 frames. It's not reliable
+	# and depends on the computer. So, it's best to let the panel container node tell us when it's been resized.
+	panel.minimum_size_changed.connect(refresh)
 
 
 ## [b]Virtual[/b] method for reacting to the tour step change. See ["addons/godot_tours/tour.gd"]
@@ -137,7 +142,6 @@ func move_and_anchor(
 	self.at = at
 	self.margin = margin
 	self.offset_vector = offset_vector
-	refresh()
 
 
 ## Sets the avatar location at the top of the bubble. Check [member avatar_at] for details on the parameter.
@@ -176,13 +180,11 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 
 
 ## Refreshes the position and size of the bubble and its avatar as necessary.
+## Connected to the [member minimum_size_changed] signal of the [member panel].
 func refresh() -> void:
 	if control == null:
 		return
 
-	# We delay for one frame because it can take that amount of time for RichTextLabel nodes to update their state.
-	# Without this, the bubble can end up being too tall.
-	await get_tree().process_frame
 	panel.reset_size()
 	var at_offset := {
 		At.TOP_LEFT: margin * Vector2.ONE,
