@@ -163,7 +163,6 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("4_joepv")
 text = "Do you want to reset %s?
 This will reset the files to the tour starting point, overwriting your changes."
-horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/ViewResetConfirmation"]

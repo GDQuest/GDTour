@@ -57,6 +57,7 @@ func setup(tour_list: GodotTourList) -> void:
 		button_reset_ok.hide()
 		button_reset_no.show()
 		button_reset_yes.show()
+		label_reset_title.text = tr("Reset the tour?")
 		label_reset_explanation.text = tr("Do you want to reset \"%s\"?" % get_selectable_tour().title)
 		label_reset_explanation.text += "\n" + tr("This will reset the files to the tour starting point, overwriting your changes.")
 	)
