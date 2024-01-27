@@ -45,6 +45,9 @@ func setup(translation_service: TranslationService, step_count: int) -> void:
 
 
 func _ready() -> void:
+	if not Engine.is_editor_hint() or owner == self:
+		return
+
 	back_button.pressed.connect(func() -> void: back_button_pressed.emit())
 	next_button.pressed.connect(func() -> void: next_button_pressed.emit())
 	button_close.pressed.connect(func() -> void:

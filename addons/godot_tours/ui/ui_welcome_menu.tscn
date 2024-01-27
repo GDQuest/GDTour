@@ -56,7 +56,6 @@ theme_override_constants/margin_bottom = 40
 
 [node name="ViewMenu" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 alignment = 1
 
@@ -143,6 +142,7 @@ mouse_filter = 2
 
 [node name="ViewResetConfirmation" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 mouse_filter = 2
 alignment = 1

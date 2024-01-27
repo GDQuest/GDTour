@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://boy5tvkasxato"]
+[gd_scene load_steps=7 format=3 uid="uid://boy5tvkasxato"]
 
+[ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/bubble/assets/fonts/mukta_bold.ttf" id="1_k0khj"]
 [ext_resource type="Script" path="res://addons/godot_tours/ui/ui_button_godot_tours.gd" id="1_m0m61"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nq4yk"]
@@ -51,6 +52,7 @@ Button/colors/font_hover_color = Color(0.619608, 0.262745, 0.00392157, 1)
 Button/colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
 Button/colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
 Button/font_sizes/font_size = 14
+Button/fonts/font = ExtResource("1_k0khj")
 Button/styles/focus = null
 Button/styles/hover = SubResource("StyleBoxFlat_nq4yk")
 Button/styles/normal = SubResource("StyleBoxFlat_0batf")
