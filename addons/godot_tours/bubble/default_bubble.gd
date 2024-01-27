@@ -59,7 +59,7 @@ func _ready() -> void:
 		view_close.hide()
 	)
 	button_close_yes.pressed.connect(func() -> void: close_requested.emit())
-	finish_button.pressed.connect(func() -> void: close_requested.emit())
+	finish_button.pressed.connect(func() -> void: finish_requested.emit())
 	for node in [header_rich_text_label, main_v_box_container, tasks_v_box_container, footer_rich_text_label, footer_spacer]:
 		node.visible = false
 
@@ -183,3 +183,8 @@ func _add_debug_shortcuts() -> void:
 	next_button.shortcut = load("res://addons/godot_tours/bubble/shortcut_debug_button_next.tres")
 	back_button.shortcut = load("res://addons/godot_tours/bubble/shortcut_debug_button_back.tres")
 	button_close_yes.shortcut = load("res://addons/godot_tours/bubble/shortcut_debug_button_close.tres")
+
+
+## [b]Virtual[/b] method to change the text of the next button.
+func set_finish_button_text(text: String) -> void:
+	finish_button.text = text

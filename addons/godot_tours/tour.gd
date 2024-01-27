@@ -22,8 +22,10 @@ extends RefCounted
 
 ## Emitted when the tour moves to the next or previous [member step_commands].
 signal step_changed(step_index: int)
-## Emitted when the tour is closed or the user completes the last [member step_commands].
+## Emitted when the user completes the last [member step_commands].
 signal ended
+## Emitted when the user closes the tour.
+signal closed
 
 ## Represents one command to execute in a step_commands. All commands are executed in the order they are added.
 ## Use the [member queue_command] function to create a [code]Command[/code] object and add it to
@@ -126,6 +128,11 @@ func load_bubble(BubblePackedScene: PackedScene = null) -> void:
 	bubble.back_button_pressed.connect(back)
 	bubble.next_button_pressed.connect(next)
 	bubble.close_requested.connect(func() -> void:
+		clean_up()
+		toggle_visible(false)
+		closed.emit()
+	)
+	bubble.finish_requested.connect(func() -> void:
 		clean_up()
 		toggle_visible(false)
 		ended.emit()

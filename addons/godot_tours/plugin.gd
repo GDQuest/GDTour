@@ -29,6 +29,8 @@ var welcome_menu: UIWelcomeMenu = null
 
 ## Resource of type godot_tour_list.gd. Contains an array of tour entries.
 var tour_list = get_tours()
+## Index of the currently running tour in the tour list.
+var _current_tour_index := 0
 ## File paths to the tours.
 var _tour_paths: Array[String] = []
 
@@ -199,11 +201,25 @@ func get_tours():
 	return load(TOUR_LIST_FILE_PATH)
 
 
-func start_tour(tour_path: String) -> void:
-	welcome_menu.queue_free()
-	welcome_menu = null
+func start_tour(tour_index: int) -> void:
+	if welcome_menu != null:
+		welcome_menu.queue_free()
+		welcome_menu = null
+	var tour_path: String = tour_list.tours[tour_index].tour_path
 	tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
-	tour.ended.connect(_button_top_bar.show)
+	if _current_tour_index < tour_list.tours.size() - 1:
+		tour.bubble.set_finish_button_text("Continue to the next tour")
+
+	tour.closed.connect(_button_top_bar.show)
+	tour.ended.connect(_on_tour_ended)
+
+
+func _on_tour_ended() -> void:
+	if _current_tour_index < tour_list.tours.size() - 1:
+		_current_tour_index += 1
+		start_tour(_current_tour_index)
+	else:
+		_button_top_bar.show()
 
 
 ## Finds GDScript, tscn, and tres files in the tour source directory, next to the tour's .gd file, and copies them to the root directory.

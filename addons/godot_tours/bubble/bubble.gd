@@ -9,6 +9,9 @@ signal back_button_pressed
 signal next_button_pressed
 ## Emitted when the user confirms wanting to quit the tour.
 signal close_requested
+## Emitted when the user confirms wanting to finish the tour (for example, when they finish the last step).
+signal finish_requested
+
 
 const Task := preload("task/task.gd")
 const EditorInterfaceAccess := preload("../editor_interface_access.gd")
@@ -113,6 +116,11 @@ func set_header(text: String) -> void:
 
 ## [b]Virtual[/b] method to change the footer text.
 func set_footer(text: String) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to change the text of the next button.
+func set_finish_button_text(text: String) -> void:
 	pass
 
 

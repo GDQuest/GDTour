@@ -2,7 +2,7 @@
 extends CanvasLayer
 
 ## Emitted when the start learning button_start is pressed.
-signal tour_start_requested(tour_path: String)
+signal tour_start_requested(tour_index: int)
 signal tour_reset_requested(tour_path: String)
 ## Emitted when the menu is closed.
 signal closed
@@ -49,7 +49,7 @@ func setup(tour_list: GodotTourList) -> void:
 		queue_free()
 	)
 	button_start.pressed.connect(func request_tour() -> void:
-		tour_start_requested.emit(get_selectable_tour().tour_path)
+		tour_start_requested.emit(get_selectable_tour().get_index())
 	)
 	button_reset_selected.pressed.connect(func open_reset_menu() -> void:
 		view_reset_confirmation.show()
