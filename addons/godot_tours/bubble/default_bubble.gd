@@ -93,7 +93,6 @@ func clear() -> void:
 	set_footer("")
 	set_background(null)
 	clear_elements_and_tasks()
-	refresh()
 
 
 func clear_elements_and_tasks() -> void:

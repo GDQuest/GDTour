@@ -18,7 +18,7 @@ const ThemeUtils := preload("../ui/theme_utils.gd")
 
 const TaskPackedScene: PackedScene = preload("task/task.tscn")
 
-const TWEEN_DURATION := 0.1
+const TWEEN_DURATION := 0.25
 
 ## Location to place and anchor the bubble relative to a given Control node [b]inside its rectangle[/b]. Used in the
 ## function [method move_and_anchor] and by the [member at] variable.
@@ -162,20 +162,22 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	}
 	var new_avatar_rotation: float = target_rotation_degrees[at]
 
+	const TWEEN_DURATION_AVATAR := 0.15
+
 	if not avatar.position.is_equal_approx(new_avatar_position):
 		if avatar_tween_position != null:
 			avatar_tween_position.kill()
-		avatar_tween_position = create_tween().set_ease(Tween.EASE_IN)
+		avatar_tween_position = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		avatar_tween_position.tween_property(
-			avatar, "position", new_avatar_position, TWEEN_DURATION
+			avatar, "position", new_avatar_position, TWEEN_DURATION_AVATAR
 		)
 
 	if not avatar.position.is_equal_approx(new_avatar_position):
 		if avatar_tween_rotation != null:
 			avatar_tween_rotation.kill()
-		avatar_tween_rotation = create_tween().set_ease(Tween.EASE_IN)
+		avatar_tween_rotation = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		avatar_tween_rotation.tween_property(
-			avatar, "rotation_degrees", new_avatar_rotation, TWEEN_DURATION
+			avatar, "rotation_degrees", new_avatar_rotation, TWEEN_DURATION_AVATAR
 		)
 
 
@@ -202,7 +204,7 @@ func refresh() -> void:
 	if not panel.global_position.is_equal_approx(new_global_position):
 		if tween != null:
 			tween.kill()
-		tween = create_tween().set_ease(Tween.EASE_IN)
+		tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		tween.tween_property(panel, "global_position", new_global_position, TWEEN_DURATION)
 	set_avatar_at(avatar_at)
 
