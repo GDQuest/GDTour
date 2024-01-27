@@ -308,7 +308,35 @@ func context_set_asset_lib() -> void:
 
 
 func bubble_set_title(title_text: String) -> void:
-	queue_command(func() -> void: bubble.set_title(title_text))
+	queue_command(func bubble_set_title() -> void: bubble.set_title(title_text))
+
+
+func bubble_add_text(text: Array[String]) -> void:
+	queue_command(func bubble_add_text() -> void: bubble.add_text(text))
+
+
+func bubble_add_texture(texture: Texture2D) -> void:
+	queue_command(func bubble_add_texture() -> void: bubble.add_texture(texture))
+
+
+func bubble_add_code(lines: Array[String]) -> void:
+	queue_command(func bubble_add_code() -> void: bubble.add_code(lines))
+
+
+func bubble_add_video(stream: VideoStream) -> void:
+	queue_command(func bubble_add_video() -> void: bubble.add_video(stream))
+
+
+func bubble_set_header(text: String) -> void:
+	queue_command(func bubble_set_header() -> void: bubble.set_header(text))
+
+
+func bubble_set_footer(text: String) -> void:
+	queue_command(func bubble_set_footer() -> void: bubble.set_footer(text))
+
+
+func bubble_set_background(texture: Texture2D) -> void:
+	queue_command(func bubble_set_background() -> void: bubble.set_background(texture))
 
 
 # TODO: test?
@@ -646,7 +674,7 @@ func get_tilemap_global_rect_pixels(tilemap_node: TileMap) -> Rect2:
 	return rect
 
 
-func get_control_center(control: Control) -> Vector2:
+func get_control_global_center(control: Control) -> Vector2:
 	return control.get_global_rect().get_center()
 
 

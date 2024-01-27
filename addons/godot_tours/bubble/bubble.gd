@@ -71,13 +71,49 @@ func clear() -> void:
 	pass
 
 
-## [b]Virtual[/b] method to set the bubble title if applicable.
+## [b]Virtual[/b] method to set the bubble title.
 func set_title(title_text: String) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to insert lines of text.
+func add_text(text: Array[String]) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to insert a texture image.
+func add_texture(texture: Texture2D) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to insert a video.
+func add_video(video: VideoStream) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to insert a code snippet.
+func add_code(code: Array[String]) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to change the displayed image.
+func set_background(texture: Texture2D) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to change the header text.
+func set_header(text: String) -> void:
+	pass
+
+
+## [b]Virtual[/b] method to change the footer text.
+func set_footer(text: String) -> void:
 	pass
 
 
 ## [b]Virtual[/b] method to add a task.
 func add_task(
+
 	description: String,
 	repeat: int,
 	repeat_callable: Callable,
