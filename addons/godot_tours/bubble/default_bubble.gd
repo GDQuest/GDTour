@@ -76,7 +76,7 @@ func on_tour_step_changed(index: int) -> void:
 	finish_button.visible = false
 	if index == 0:
 		back_button.visible = false
-		next_button.visible = true
+		next_button.visible = tasks_v_box_container.get_child_count() == 0
 		next_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER | Control.SIZE_EXPAND
 	elif index == step_count - 1:
 		next_button.visible = false
