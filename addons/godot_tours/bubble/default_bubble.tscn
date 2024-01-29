@@ -1,10 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://b3tpnkc5xu2o"]
+[gd_scene load_steps=9 format=3 uid="uid://b3tpnkc5xu2o"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/bubble/default_bubble.gd" id="1_q308r"]
 [ext_resource type="Theme" uid="uid://cx2cxgbadh7fg" path="res://addons/godot_tours/bubble/assets/bubble_theme.tres" id="2_mkok2"]
 [ext_resource type="Texture2D" uid="uid://bidxqlunyylhn" path="res://addons/godot_tours/bubble/assets/close.svg" id="3_y6crt"]
 [ext_resource type="PackedScene" uid="uid://wd822miy3aij" path="res://addons/godot_tours/bubble/rich_text_label/rich_text_label.tscn" id="4_ev3jl"]
-[ext_resource type="PackedScene" uid="uid://b5junnl76yqmo" path="res://addons/godot_tours/bubble/task/task.tscn" id="5_al2df"]
 [ext_resource type="Script" path="res://addons/godot_tours/bubble/rich_text_label/rich_text_label.gd" id="6_iitqn"]
 [ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/bubble/assets/fonts/poppins_regular.ttf" id="7_nlyrj"]
 [ext_resource type="PackedScene" uid="uid://bgxtydff0olev" path="res://addons/godot_tours/bubble/gobot/gobot.tscn" id="8_oayod"]
@@ -115,9 +114,6 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 mouse_filter = 2
-
-[node name="Task" parent="Panel/MarginContainer/ViewContent/TasksVBoxContainer" instance=ExtResource("5_al2df")]
-layout_mode = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="Panel/MarginContainer/ViewContent"]
 layout_mode = 2
