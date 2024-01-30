@@ -200,13 +200,20 @@ func get_tours():
 
 	return load(TOUR_LIST_FILE_PATH)
 
+var previous_tour = null
 
 func start_tour(tour_index: int) -> void:
 	if welcome_menu != null:
 		welcome_menu.queue_free()
 		welcome_menu = null
+
+	if tour != null and is_instance_valid(tour):
+		tour.queue_free()
+		tour = null
+
 	var tour_path: String = tour_list.tours[tour_index].tour_path
 	tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
+	EditorInterface.get_base_control().add_child(tour)
 	if _current_tour_index < tour_list.tours.size() - 1:
 		tour.bubble.set_finish_button_text("Continue to the next tour")
 

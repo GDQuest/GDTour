@@ -18,7 +18,7 @@
 ## 2. Call [method complete_step] to complete and save the current [code]step_commands[/code] as a new.
 ## [br][br]
 ## See the provided demo tour for an example.
-extends RefCounted
+extends Node
 
 ## Emitted when the tour moves to the next or previous [member step_commands].
 signal step_changed(step_index: int)
@@ -128,13 +128,14 @@ func load_bubble(BubblePackedScene: PackedScene = null) -> void:
 	bubble.back_button_pressed.connect(back)
 	bubble.next_button_pressed.connect(next)
 	bubble.close_requested.connect(func() -> void:
-		clean_up()
 		toggle_visible(false)
 		closed.emit()
+		clean_up()
 	)
 	bubble.finish_requested.connect(func() -> void:
-		clean_up()
 		toggle_visible(false)
+		clean_up()
+		await get_tree().process_frame
 		ended.emit()
 	)
 	step_changed.connect(bubble.on_tour_step_changed)
