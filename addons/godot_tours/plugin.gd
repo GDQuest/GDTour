@@ -6,6 +6,7 @@ extends EditorPlugin
 const TOUR_LIST_FILE_PATH := "res://godot_tours.tres"
 const SINGLE_WINDOW_MODE_PROPERTY := "interface/editor/single_window_mode"
 
+const GodotTourList := preload("godot_tour_list.gd")
 const Utils := preload("utils.gd")
 const EditorInterfaceAccess := preload("editor_interface_access.gd")
 const Tour := preload("tour.gd")
@@ -28,7 +29,7 @@ var overlays: Overlays = null
 var welcome_menu: UIWelcomeMenu = null
 
 ## Resource of type godot_tour_list.gd. Contains an array of tour entries.
-var tour_list = get_tours()
+var tour_list := get_tours()
 ## Index of the currently running tour in the tour list.
 var _current_tour_index := 0
 ## File paths to the tours.
@@ -188,7 +189,7 @@ func toggle_debugger() -> void:
 
 ## Looks for a godot_tours.tres file at the root of the project. This file should contain an array of
 ## TourMetadata. Finds and loads the tours.
-func get_tours():
+func get_tours() -> GodotTourList:
 	if not FileAccess.file_exists(TOUR_LIST_FILE_PATH):
 		push_warning(
 			(
@@ -197,10 +198,8 @@ func get_tours():
 			)
 		)
 		return null
-
 	return load(TOUR_LIST_FILE_PATH)
 
-var previous_tour = null
 
 func start_tour(tour_index: int) -> void:
 	if welcome_menu != null:
@@ -211,6 +210,7 @@ func start_tour(tour_index: int) -> void:
 		tour.queue_free()
 		tour = null
 
+	_current_tour_index = tour_index
 	var tour_path: String = tour_list.tours[tour_index].tour_path
 	tour = load(tour_path).new(editor_interface_access, overlays, translation_service)
 	EditorInterface.get_base_control().add_child(tour)
@@ -223,8 +223,7 @@ func start_tour(tour_index: int) -> void:
 
 func _on_tour_ended() -> void:
 	if _current_tour_index < tour_list.tours.size() - 1:
-		_current_tour_index += 1
-		start_tour(_current_tour_index)
+		start_tour(_current_tour_index + 1)
 	else:
 		_button_top_bar.show()
 
