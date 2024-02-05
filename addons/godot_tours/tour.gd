@@ -202,7 +202,12 @@ func scene_open(path: String) -> void:
 	if not FileAccess.file_exists(path) and path.get_extension() != "tscn":
 		warn("[b]'path(=%s)'[/b] doesn't exist or has wrong extension" % path, "scene_open")
 		return
-	queue_command(EditorInterface.open_scene_from_path, [path])
+	queue_command(func() -> void:
+		if path in EditorInterface.get_open_scenes():
+			EditorInterface.reload_scene_from_path(path)
+		else:
+			EditorInterface.open_scene_from_path(path)
+	)
 
 
 func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
