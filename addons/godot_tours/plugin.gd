@@ -68,6 +68,7 @@ func _enter_tree() -> void:
 
 	translation_service = TranslationService.new(_tour_paths, editor_settings)
 	editor_interface_access = EditorInterfaceAccess.new()
+
 	overlays = Overlays.new(editor_interface_access)
 	EditorInterface.get_base_control().add_child(overlays)
 
@@ -240,6 +241,8 @@ func _reset_tour_files(tour_path: String) -> bool:
 		func(path: String) -> bool: return not (path.get_extension() == "import" or path == tour_path)
 	)
 
+	var open_scene_paths := EditorInterface.get_open_scenes()
+	var reload_scene_paths: Array[String] = []
 	for tour_file_path: String in tour_file_paths:
 		var destination_file_path := PREFIX.path_join(tour_file_path.replace(tour_dir_path, ""))
 
@@ -258,6 +261,8 @@ func _reset_tour_files(tour_path: String) -> bool:
 				was_reset_successful = false
 				break
 			file_access.store_string(contents)
+			if destination_file_path in open_scene_paths:
+				reload_scene_paths.push_back(destination_file_path)
 		else:
 			var error := DirAccess.copy_absolute(tour_file_path, destination_file_path)
 			if error != OK:
@@ -266,5 +271,11 @@ func _reset_tour_files(tour_path: String) -> bool:
 				)
 				was_reset_successful = false
 				break
+
 	EditorInterface.get_resource_filesystem().scan()
+	while EditorInterface.get_resource_filesystem().is_scanning():
+		pass
+
+	for scene_path: String in reload_scene_paths:
+		EditorInterface.reload_scene_from_path(scene_path)
 	return was_reset_successful

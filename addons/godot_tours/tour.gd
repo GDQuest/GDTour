@@ -248,6 +248,36 @@ func tabs_set_to_title(tabs: TabBar, title: String) -> void:
 		tabs_set_to_index(tabs, index)
 
 
+func tabs_set_by_control(control: Control) -> void:
+	const FUNC_NAME := "tabs_set_to_control"
+	if control == null or (control != null and not control.get_parent() is TabContainer):
+		warn("[b]'control(=%s)'[/b] is 'null' or parent is not TabContainer." % [control], FUNC_NAME)
+		return
+
+	var tab_container: TabContainer = control.get_parent()
+	var tab_idx := find_tabs_control(tab_container, control)
+	if tab_idx == -1:
+		warn("[b]'control(=%s)'[/b] is not a child of [b]'[%s]'[/b]." % [control, tab_container], FUNC_NAME)
+	else:
+		tabs_set_to_index(tab_container.get_tab_bar(), tab_idx)
+
+
+func tileset_tabs_set_by_control(control: Control) -> void:
+	var index := interface.tileset_panels.find(control)
+	if index == -1:
+		warn("[b]'control(=%s)'[/] must be found in '[b]interface.tilset_controls[/b]'" % [control], "tileset_set_to_control")
+	else:
+		tabs_set_to_index(interface.tileset_tabs, index)
+
+
+func tilemap_tabs_set_by_control(control: Control) -> void:
+	var index := interface.tilemap_panels.find(control)
+	if index == -1:
+		warn("[b]'control(=%s)'[/] must be found in '[b]interface.tilmap_controls[/b]'" % [control], "tilemap_set_to_control")
+	else:
+		tabs_set_to_index(interface.tilemap_tabs, index)
+
+
 func tree_activate_by_prefix(tree: Tree, prefix: String) -> void:
 	queue_command(func() -> void:
 		if tree == interface.node_dock_signals_tree and interface.signals_dialog_window.visible:
@@ -401,8 +431,8 @@ func bubble_add_task_set_tab_to_index(tabs: TabBar, index: int, description := "
 	if index < 0 or index >= tabs.tab_count:
 		warn("[b]'index(=%d)'[/b] not in [b]'range(0, tabs.tab_count(=%d))'[/b]" % [index, tabs.tab_count], "bubble_add_task_set_tab_to_index")
 		return
-	var which_tabs: String = "[b]%s[/b] tabs" % interface.tabs_text.get(tabs, "")
-	description = gtr("Set %s to tab with index [b]%d[/b].") % [which_tabs, index] if description.is_empty() else description
+	var title := tabs.get_tab_title(index)
+	description = gtr("Change to the [b]%s[/b] tab.") % [title] if description.is_empty() else description
 	bubble_add_task(description, 1, func(_task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate)
 
 
@@ -412,9 +442,34 @@ func bubble_add_task_set_tab_to_title(tabs: TabBar, title: String, description :
 		var titles := range(tabs.tab_count).map(func(index: int) -> String: return tabs.get_tab_title(index))
 		warn("[b]'title(=%s)'[/b] not found in tabs [b]'[%s]'[/b]" % [title, ", ".join(titles)], "bubble_add_task_set_tab_to_title")
 	else:
-		var which_tabs: String = "[b]%s[/b] tabs" % interface.tabs_text.get(tabs, "")
-		description = gtr("Change the tab to [b]%s[/b].") % [title] if description.is_empty() else description
 		bubble_add_task_set_tab_to_index(tabs, index, description)
+
+
+func bubble_add_task_set_tab_by_control(control: Control, description := "") -> void:
+	if control == null or (control != null and not control.get_parent() is TabContainer):
+		warn("[b]'control(=%s)'[/b] is 'null' or parent is not TabContainer." % [control], "bubble_add_task_set_tab_to_title")
+		return
+
+	var tab_container: TabContainer = control.get_parent()
+	var index := find_tabs_control(tab_container, control)
+	var tabs := tab_container.get_tab_bar()
+	bubble_add_task_set_tab_to_index(tabs, index, description)
+
+
+func bubble_add_task_set_tileset_tab_by_control(control: Control, description := "") -> void:
+	var index := interface.tileset_panels.find(control)
+	if index == -1:
+		warn("[b]'control(=%s)'[/b] must be found in '[b]interface.tilset_controls[/b]'" % [control], "bubble_add_task_set_tileset_tab_by_control")
+	else:
+		bubble_add_task_set_tab_to_index(interface.tileset_tabs, index, description)
+
+
+func bubble_add_task_set_tilemap_tab_by_control(control: Control, description := "") -> void:
+	var index := interface.tilemap_panels.find(control)
+	if index == -1:
+		warn("[b]'control(=%s)'[/] must be found in '[b]interface.tilmap_controls[/b]'" % [control], "bubble_add_task_set_tilemap_tab_by_control")
+	else:
+		bubble_add_task_set_tab_to_index(interface.tilemap_tabs, index, description)
 
 
 func bubble_add_task_select_node(node_name: String) -> void:
@@ -707,6 +762,15 @@ func find_tabs_title(tabs: TabBar, title: String) -> int:
 		if title == tab_title or tabs == interface.main_screen_tabs and "%s(*)" % title == tab_title:
 			result = index
 			break
+	return result
+
+
+func find_tabs_control(tab_container: TabContainer, control: Control) -> int:
+	var result := -1
+	var predicate := func(idx: int) -> bool: return tab_container.get_tab_control(idx) == control
+	for tab_idx in range(tab_container.get_tab_count()).filter(predicate):
+		result = tab_idx
+		break
 	return result
 
 

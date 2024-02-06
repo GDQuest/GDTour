@@ -183,10 +183,10 @@ func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> vo
 ## for [code]play_flash[/code].
 func highlight_inspector_properties(names: Array[StringName], play_flash := false) -> void:
 	for name in names:
-		var property: EditorProperty = Utils.find_child(
+		var property: EditorProperty = Utils.find_child_by_type(
 			interface.inspector_editor,
 			"EditorProperty",
-			"",
+			true,
 			func(ep: EditorProperty) -> bool: return ep.get_edited_property() == name,
 		)
 		if property != null:
@@ -272,7 +272,7 @@ func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 ## Highlights either the whole [code]tabs[/code] [TabBar] if [code]index == -1[/code] or the given [TabContainer] tab
 ## by [code]index[/code].
 func highlight_tab_index(tabs: Control, index := -1, play_flash := true) -> void:
-	var tab_bar: TabBar = Utils.find_child(tabs, "TabBar") if tabs is TabContainer else tabs
+	var tab_bar: TabBar = Utils.find_child_by_type(tabs, "TabBar") if tabs is TabContainer else tabs
 	var dimmer := ensure_get_dimmer_for(tab_bar)
 	if dimmer == null or tab_bar == null or index < -1 or index >= tab_bar.tab_count:
 		return

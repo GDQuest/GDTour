@@ -6,6 +6,7 @@ class Helper:
 const SEP := "/"
 
 
+## Finds files matching the String.match [code]pattern[/code] in the given directory [code]path[/code], recursively.
 static func fs_find(pattern: String = "*", path: String = "res://") -> Array[String]:
 	var result: Array[String] = []
 	var is_file := not pattern.ends_with(SEP)
@@ -46,10 +47,11 @@ static func find_children_by_path(from: Node, paths: Array[String]) -> Array[Nod
 	return result
 
 
-static func find_child(from: Node, type: String, pattern := "", predicate := Helper.noop) -> Node:
+## Returns the first child of parent_node with the given type.
+static func find_child_by_type(from: Node, type: String, is_recursive := true, predicate := Helper.noop) -> Node:
 	if from == null:
 		return null
-	var result := from.find_children(pattern, type, true, false)
+	var result := from.find_children("", type, is_recursive, false)
 	if not result.is_empty() and predicate != Helper.noop:
 		result = result.filter(predicate)
 	return null if result.is_empty() else result[0]
@@ -93,54 +95,3 @@ static func find_tree_item_by_name(tree: Tree, name: String) -> TreeItem:
 		if item.get_child_count() > 0:
 			stack += item.get_children()
 	return result
-
-
-## Finds files matching the String.match pattern in the given directory path, recursively.
-static func find_files_recursively_by_match_pattern(pattern := "*", path := "res://") -> Array[String]:
-	var result: Array[String] = []
-	var is_file := not pattern.ends_with(SEP)
-
-	var dir := DirAccess.open(path)
-	if DirAccess.get_open_error() != OK:
-		printerr("ERROR: could not open [%s]" % path)
-		return result
-
-	if dir.list_dir_begin() != OK:
-		printerr("ERROR: could not list contents of [%s]" % path)
-		return result
-
-	path = dir.get_next()
-	while path.is_valid_filename():
-		var new_path: String = dir.get_current_dir().path_join(path)
-		if dir.current_is_dir():
-			if path.match(pattern.rstrip(SEP)) and not is_file:
-				result.push_back(new_path)
-			result += find_files_recursively_by_match_pattern(pattern, new_path)
-		elif path.match(pattern):
-			result.push_back(new_path)
-		path = dir.get_next()
-
-	return result
-
-
-## Finds files with the given file_extension in the directory directory_path.
-static func find_files_in_directory(directory_path: String, file_extension: String) -> Array[String]:
-	var file_names := DirAccess.get_files_at(directory_path)
-	var file_paths: Array[String] = []
-	for file_name in file_names:
-		if file_name.get_extension() != file_extension:
-			continue
-		file_paths.append(directory_path.path_join(file_name))
-	return file_paths
-
-
-## Returns the first child of parent_node with the given type.
-static func get_child_by_type(parent_node: Control, type: String) -> Control:
-	for child in parent_node.get_children():
-		if child.get_class() == type:
-			return child
-	return null
-
-
-static func unlines(lines: Array[String]) -> String:
-	return "\n".join(lines)
