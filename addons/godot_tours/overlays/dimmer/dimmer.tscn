@@ -1,14 +1,27 @@
-[gd_scene load_steps=2 format=3 uid="uid://bp0jk65vdkenb"]
+[gd_scene load_steps=3 format=3 uid="uid://bp0jk65vdkenb"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/overlays/dimmer/dimmer.gd" id="1_30fag"]
 
-[node name="Dimmer" type="CanvasGroup" groups=["dimmer"]]
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_cvwys"]
+blend_mode = 3
+
+[node name="Dimmer" type="SubViewportContainer" groups=["dimmer"]]
 self_modulate = Color(1, 1, 1, 0.6)
+material = SubResource("CanvasItemMaterial_cvwys")
+offset_right = 1920.0
+offset_bottom = 1011.0
+mouse_filter = 2
+stretch = true
 script = ExtResource("1_30fag")
 
-[node name="FilmColorRect" type="ColorRect" parent="."]
+[node name="SubViewport" type="SubViewport" parent="."]
+handle_input_locally = false
+size = Vector2i(1920, 1011)
+render_target_update_mode = 4
+
+[node name="FilmColorRect" type="ColorRect" parent="SubViewport"]
 unique_name_in_owner = true
 offset_right = 1920.0
 offset_bottom = 1011.0
 mouse_default_cursor_shape = 8
-color = Color(0, 0, 0, 1)
+color = Color(0.6, 0.6, 0.6, 1)
