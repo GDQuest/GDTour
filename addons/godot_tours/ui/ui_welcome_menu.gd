@@ -116,7 +116,7 @@ func show_reset_success() -> void:
 func show_reset_failure() -> void:
 	label_reset_title.text = tr("Reset failed")
 	label_reset_explanation.text = tr("The tour \"%s\" could not be reset. Try closing and reopening Godot or restarting your computer and try resetting again." % get_selectable_tour().title)
-	label_reset_explanation.text += "\n" + tr("If the problem persists, please check the errors in the Output bottom panel and let us know!")	
+	label_reset_explanation.text += "\n" + tr("If the problem persists, please check the errors in the Output bottom panel and let us know!")
 	button_reset_no.hide()
 	button_reset_yes.hide()
 	button_reset_ok.show()

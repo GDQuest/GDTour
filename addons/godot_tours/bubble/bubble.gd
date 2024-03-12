@@ -12,7 +12,6 @@ signal close_requested
 ## Emitted when the user confirms wanting to finish the tour (for example, when they finish the last step).
 signal finish_requested
 
-
 const Task := preload("task/task.gd")
 const EditorInterfaceAccess := preload("../editor_interface_access.gd")
 const TranslationService := preload("../translation/translation_service.gd")
@@ -61,7 +60,7 @@ var avatar_tween_rotation: Tween = null
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	self.translation_service = translation_service
 	self.step_count = step_count
-	
+
 	# We call this function that updates the position and size of the bubble.
 	# RichTextLabel nodes added to the bubble can cause it to resize after 0, 1, or 2 frames. It's not reliable
 	# and depends on the computer. So, it's best to let the panel container node tell us when it's been resized.
@@ -126,7 +125,6 @@ func set_finish_button_text(text: String) -> void:
 
 ## [b]Virtual[/b] method to add a task.
 func add_task(
-
 	description: String,
 	repeat: int,
 	repeat_callable: Callable,

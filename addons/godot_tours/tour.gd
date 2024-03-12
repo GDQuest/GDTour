@@ -399,7 +399,10 @@ func bubble_add_task_press_button(button: Button, description := "") -> void:
 	bubble_add_task(
 		description,
 		1,
-		func(task: Task) -> int: return 1 if task.is_done() or button.button_pressed else 0,
+		func(task: Task) -> int:
+			if not button.pressed.is_connected(task._on_button_pressed_hack):
+				button.pressed.connect(task._on_button_pressed_hack.bind(button))
+			return 1 if task.is_done() or button.button_pressed else 0,
 		noop_error_predicate,
 	)
 

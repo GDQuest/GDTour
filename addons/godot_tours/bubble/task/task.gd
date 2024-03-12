@@ -78,6 +78,22 @@ func setup(
 		checkbox.custom_minimum_size *= EditorInterface.get_editor_scale()
 
 
+# The `button.button_pressed` state isn't properly set when the button isn't a toggle button.
+# We can't reliably check in the `repeat_callable` if `button.button_pressed` is true unless
+# we connect `button.pressed` signal to this hack function.
+func _on_button_pressed_hack(button: BaseButton) -> void:
+	if button.toggle_mode:
+		return
+
+	# Toggle mode hack so we can check `button.button_pressed` in task `_process()`
+	if not button.button_pressed:
+		button.toggle_mode = true
+		button.set_pressed_no_signal(true)
+		await get_tree().process_frame
+		await get_tree().process_frame
+		button.toggle_mode = false
+
+
 func _process(_delta: float) -> void:
 	if repeat_callable.is_null() or error_predicate.is_null():
 		return
