@@ -38,6 +38,18 @@ enum At {
 ## Location of the Avatar along the top edge of the bubble.
 enum AvatarAt { LEFT, CENTER, RIGHT }
 
+const GROW_DIRECTIONS := {
+	At.TOP_LEFT: {h = Control.GROW_DIRECTION_END, v = Control.GROW_DIRECTION_END},
+	At.TOP_RIGHT: {h = Control.GROW_DIRECTION_BEGIN, v = Control.GROW_DIRECTION_END},
+	At.BOTTOM_RIGHT: {h = Control.GROW_DIRECTION_BEGIN, v = Control.GROW_DIRECTION_BEGIN},
+	At.BOTTOM_LEFT: {h = Control.GROW_DIRECTION_END, v = Control.GROW_DIRECTION_BEGIN},
+	At.CENTER_LEFT: {h = Control.GROW_DIRECTION_END, v = Control.GROW_DIRECTION_BOTH},
+	At.TOP_CENTER: {h = Control.GROW_DIRECTION_BOTH, v = Control.GROW_DIRECTION_END},
+	At.BOTTOM_CENTER: {h = Control.GROW_DIRECTION_BOTH, v = Control.GROW_DIRECTION_BEGIN},
+	At.CENTER_RIGHT: {h = Control.GROW_DIRECTION_BEGIN, v = Control.GROW_DIRECTION_BOTH},
+	At.CENTER: {h = Control.GROW_DIRECTION_BOTH, v = Control.GROW_DIRECTION_BOTH},
+}
+
 var at := At.CENTER  ## Bubble location relative to a given Control node. See [enum At] for details.
 var avatar_at := AvatarAt.LEFT  ## Avatar location relative to the bubble. See [enum AvatarAt] for details.
 
@@ -148,6 +160,9 @@ func move_and_anchor(
 	self.at = at
 	self.margin = margin
 	self.offset_vector = offset_vector
+	panel.grow_horizontal = GROW_DIRECTIONS[at].h
+	panel.grow_vertical = GROW_DIRECTIONS[at].v
+	panel.reset_size()
 
 
 ## Sets the avatar location at the top of the bubble. Check [member avatar_at] for details on the parameter.
@@ -193,7 +208,6 @@ func refresh() -> void:
 	if control == null:
 		return
 
-	panel.reset_size()
 	var at_offset := {
 		At.TOP_LEFT: margin * Vector2.ONE,
 		At.TOP_CENTER: Vector2((control.size.x - panel.size.x) / 2.0, 0.0) + margin * Vector2.DOWN,
@@ -206,6 +220,7 @@ func refresh() -> void:
 		At.CENTER_RIGHT: Vector2(1.0, 0.5) * (control.size - panel.size) + margin * Vector2.LEFT,
 		At.CENTER: (control.size - panel.size) / 2.0,
 	}
+
 	var new_global_position: Vector2 = control.global_position + at_offset[at] + offset_vector
 	if not panel.global_position.is_equal_approx(new_global_position):
 		if tween != null:

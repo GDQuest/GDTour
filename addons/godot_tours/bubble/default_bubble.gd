@@ -47,10 +47,10 @@ func setup(translation_service: TranslationService, step_count: int) -> void:
 func _ready() -> void:
 	if not Engine.is_editor_hint() or EditorInterface.get_edited_scene_root() == self:
 		return
-	
+
 	# Clear tasks etc. in case we have some for testing in the scene.
 	clear_elements_and_tasks()
-	
+
 	back_button.pressed.connect(func() -> void: back_button_pressed.emit())
 	next_button.pressed.connect(func() -> void: next_button_pressed.emit())
 	button_close.pressed.connect(func() -> void:
