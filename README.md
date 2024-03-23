@@ -25,9 +25,15 @@ A tour is a GDScript file that extends `res://addons/godot_tours/tour.gd`.
 To learn how to use the framework and create a tour, we invite you to check out the open-source tour [101 - The Godot Editor](https://github.com/gdquest-demos/godot-tours-101-the-godot-editor). You can use it as a reference to build your own tours.
 
 Also, we invite you to open the file `res://addons/godot_tours/tour.gd` to learn more about how the system works and see all of the functions provided to build tours.
+
 ## Registering tours
 
 To register a tour in the menu that appears upon opening the Godot project, you need to create a resource file named `godot_tours.tres` at the root of the Godot project. It should extend the file `res://addons/godot_tours/godot_tour_list.gd`.
+
+## Translating tours
+
+Godot Tours supports translations in the Portable Object (PO) format. To learn how to translate tours, please refer to the [documentation on translating Godot tours](documentation/translating_godot_tours.md).
+
 ## Features overview
 
 Godot Tours comes with these features, in the `core` folder of the addon:
