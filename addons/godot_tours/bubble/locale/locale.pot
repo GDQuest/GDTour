@@ -6,3 +6,18 @@ msgstr ""
 
 msgid "BACK"
 msgstr ""
+
+msgid "END TOUR AND CONTINUE LEARNING"
+msgstr ""
+
+msgid "NO"
+msgstr ""
+
+msgid "YES"
+msgstr ""
+
+msgid "Close the tour?"
+msgstr ""
+
+msgid "Your progress will be lost."
+msgstr ""
