@@ -34,8 +34,8 @@ const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
 
 @onready var step_count_label: Label = %StepCountLabel
 
-@onready var view_close_label: Label = %Panel/MarginContainer/ViewClose/Label
-@onready var view_close_label2: Label = %Panel/MarginContainer/ViewClose/Label2
+@onready var view_close_label: Label = %LabelCloseTour
+@onready var view_close_label2: Label = %LabelProgressLost
 
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	super(translation_service, step_count)

@@ -193,14 +193,16 @@ visible = false
 layout_mode = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="Panel/MarginContainer/ViewClose"]
+[node name="LabelCloseTour" type="Label" parent="Panel/MarginContainer/ViewClose"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"LabelTitle"
 text = "Close the tour?"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="Label2" type="Label" parent="Panel/MarginContainer/ViewClose"]
+[node name="LabelProgressLost" type="Label" parent="Panel/MarginContainer/ViewClose"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_fonts/font = ExtResource("7_nlyrj")
 text = "Your progress will be lost."
