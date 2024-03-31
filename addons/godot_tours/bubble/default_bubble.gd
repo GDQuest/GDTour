@@ -34,6 +34,8 @@ const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
 
 @onready var step_count_label: Label = %StepCountLabel
 
+@onready var view_close_label: Label = %Panel/MarginContainer/ViewClose/Label
+@onready var view_close_label2: Label = %Panel/MarginContainer/ViewClose/Label2
 
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	super(translation_service, step_count)
@@ -41,6 +43,11 @@ func setup(translation_service: TranslationService, step_count: int) -> void:
 	update_locale({
 		back_button: {text = "BACK"},
 		next_button: {text = "NEXT STEP"},
+		finish_button: {text = "END TOUR AND CONTINUE LEARNING"},
+		button_close_no: {text = "NO"},
+		button_close_yes: {text = "YES"},
+		view_close_label: {text = "Close the tour?"},
+		view_close_label2: {text = "Your progress will be lost."},
 	})
 
 
