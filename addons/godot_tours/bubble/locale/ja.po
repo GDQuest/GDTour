@@ -1,0 +1,33 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4.2\n"
+
+msgid "NEXT STEP"
+msgstr "次へ"
+
+msgid "BACK"
+msgstr "戻る"
+
+msgid "END TOUR AND CONTINUE LEARNING"
+msgstr "ツアーを終了して学習を続ける"
+
+msgid "NO"
+msgstr "いいえ"
+
+msgid "YES"
+msgstr "はい"
+
+msgid "Close the tour?"
+msgstr "ツアーを終了しますか？"
+
+msgid "Your progress will be lost."
+msgstr "終了するとここまでの進捗は失われます。"
