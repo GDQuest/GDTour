@@ -1,7 +1,7 @@
 @tool
 extends CanvasLayer
 
-## Emitted when the start learning button_start is pressed.
+## Emitted when the start learning button_start_learning is pressed.
 signal tour_start_requested(tour_index: int)
 signal tour_reset_requested(tour_path: String)
 ## Emitted when the menu is closed.
@@ -12,11 +12,13 @@ const UISelectableTour = preload("ui_selectable_tour.gd")
 const GodotTourEntry = preload("../godot_tour_entry.gd")
 const GodotTourList = preload("../godot_tour_list.gd")
 const Tour := preload("../tour.gd")
+const Utils := preload("../utils.gd")
+const TranslationService := preload("../translation/translation_service.gd")
 
 const UISelectableTourPackedScene = preload("ui_selectable_tour.tscn")
 
 @onready var control: Control = %Control
-@onready var button_start: Button = %ButtonStartLearning
+@onready var button_start_learning: Button = %ButtonStartLearning
 @onready var button_reset_selected: TextureButton = %ButtonResetSelected
 @onready var tours_column: VBoxContainer = %ToursColumn
 @onready var button_close: Button = %ButtonClose
@@ -43,12 +45,19 @@ func _ready() -> void:
 	button_reset_yes.show()
 
 
-func setup(tour_list: GodotTourList) -> void:
+func setup(translation_service: TranslationService, tour_list: GodotTourList) -> void:
+	Utils.update_locale(translation_service, {
+		label_title: {text = "Welcome to Godot Tour!"},
+		button_start_learning: {text = "START LEARNING"},
+		button_reset_no: {text = "NO"},
+		button_reset_yes: {text = "YES"},
+	})
+
 	button_close.pressed.connect(func emit_closed_and_free() -> void:
 		closed.emit()
 		queue_free()
 	)
-	button_start.pressed.connect(func request_tour() -> void:
+	button_start_learning.pressed.connect(func request_tour() -> void:
 		tour_start_requested.emit(get_selectable_tour().get_index())
 	)
 	button_reset_selected.pressed.connect(func open_reset_menu() -> void:
@@ -82,10 +91,10 @@ func setup(tour_list: GodotTourList) -> void:
 	if Engine.is_editor_hint() and owner != self:
 		var editor_scale := EditorInterface.get_editor_scale()
 		panel_container.custom_minimum_size.x *= editor_scale
-		for node: Control in [label_title, button_start, button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, label_reset_explanation, label_reset_title]:
+		for node: Control in [label_title, button_start_learning, button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, label_reset_explanation, label_reset_title]:
 			ThemeUtils.scale_font_size(node)
 		ThemeUtils.scale_margin_container_margins(margin_container)
-		for button: BaseButton in [button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, button_start]:
+		for button: BaseButton in [button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, button_start_learning]:
 			button.custom_minimum_size *= editor_scale
 
 	if tours_column.get_child_count() > 0:

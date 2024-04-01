@@ -2,10 +2,12 @@
 @tool
 extends "bubble.gd"
 
-const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
+const Utils := preload("../utils.gd")
+
 const CodeEditPackedScene := preload("code_edit.tscn")
 const TextureRectPackedScene := preload("texture_rect.tscn")
 const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
+const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
 
 ## Separation between paragraphs of text and elements in the main content in pixels.
 @export var paragraph_separation := 12:
@@ -34,20 +36,20 @@ const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
 
 @onready var step_count_label: Label = %StepCountLabel
 
-@onready var view_close_label: Label = %LabelCloseTour
-@onready var view_close_label2: Label = %LabelProgressLost
+@onready var label_close_tour: Label = %LabelCloseTour
+@onready var label_progress_lost: Label = %LabelProgressLost
 
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	super(translation_service, step_count)
 	update_step_count_display(0)
-	update_locale({
+	Utils.update_locale(translation_service, {
 		back_button: {text = "BACK"},
 		next_button: {text = "NEXT STEP"},
 		finish_button: {text = "END TOUR AND CONTINUE LEARNING"},
 		button_close_no: {text = "NO"},
 		button_close_yes: {text = "YES"},
-		view_close_label: {text = "Close the tour?"},
-		view_close_label2: {text = "Your progress will be lost."},
+		label_close_tour: {text = "Close the tour?"},
+		label_progress_lost: {text = "Your progress will be lost."},
 	})
 
 

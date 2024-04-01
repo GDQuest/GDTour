@@ -228,21 +228,3 @@ func refresh() -> void:
 		tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 		tween.tween_property(panel, "global_position", new_global_position, TWEEN_DURATION)
 	set_avatar_at(avatar_at)
-
-
-## Updates the locale of any key for the nodes given as keys in the [code]locales[/code] parameter.
-##
-## [codeblock]
-## # `locales` schema:
-## locales = {
-##     node1: { prop1 = "text1", ...},
-##     ...
-## }
-## [/codeblock]
-##
-## See ["addons/godot_tours/bubble/default_bubble.gd"] [code]setup[/code] function for an example usage.
-func update_locale(locales: Dictionary) -> void:
-	for node in locales:
-		var dict: Dictionary = locales[node]
-		for key in dict:
-			node.set(key, translation_service.get_bubble_message(dict[key]))

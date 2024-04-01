@@ -1,0 +1,32 @@
+msgid "NEXT STEP"
+msgstr ""
+
+msgid "BACK"
+msgstr ""
+
+msgid "END TOUR AND CONTINUE LEARNING"
+msgstr ""
+
+msgid "NO"
+msgstr ""
+
+msgid "YES"
+msgstr ""
+
+msgid "Close the tour?"
+msgstr ""
+
+msgid "Your progress will be lost."
+msgstr ""
+
+msgid "Welcome to Godot Tour!"
+msgstr ""
+
+msgid "START LEARNING"
+msgstr ""
+
+msgid "Reset the tour?"
+msgstr ""
+
+msgid "Do you want to reset %s?\nThis will reset the files to the tour starting point, overwriting your changes."
+msgstr ""

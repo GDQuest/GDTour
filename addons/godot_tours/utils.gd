@@ -2,6 +2,7 @@ class Helper:
 	static func noop() -> void:
 		pass
 
+const TranslationService := preload("translation/translation_service.gd")
 
 const SEP := "/"
 
@@ -95,3 +96,21 @@ static func find_tree_item_by_name(tree: Tree, name: String) -> TreeItem:
 		if item.get_child_count() > 0:
 			stack += item.get_children()
 	return result
+
+
+## Updates the locale of any key for the nodes given as keys in the [code]locales[/code] parameter.
+##
+## [codeblock]
+## # `locales` schema:
+## locales = {
+##     node1: { prop1 = "text1", ...},
+##     ...
+## }
+## [/codeblock]
+##
+## See ["addons/godot_tours/bubble/default_bubble.gd"] [code]setup[/code] function for an example usage.
+static func update_locale(translation_service: TranslationService, locales: Dictionary) -> void:
+	for node in locales:
+		var dict: Dictionary = locales[node]
+		for key in dict:
+			node.set(key, translation_service.get_ui_message(dict[key]))

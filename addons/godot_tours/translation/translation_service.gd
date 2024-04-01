@@ -1,8 +1,8 @@
 const Utils := preload("../utils.gd")
 
 const LOCALE_DIR := "locale"
-const BUBBLE_DIR := "bubble"
-const BUBBLE_KEY := "bubble"
+const UI_DIR := "ui"
+const UI_KEY := "ui"
 
 var tour_key := ""
 var locale := ""
@@ -48,8 +48,8 @@ func get_tour_plural_message(
 	return get_plural_message(tour_key, src_message, src_plural_message, n, context)
 
 
-func get_bubble_message(src_message: StringName, context: StringName = "") -> String:
-	return get_message(BUBBLE_KEY, src_message, context)
+func get_ui_message(src_message: StringName, context: StringName = "") -> String:
+	return get_message(UI_KEY, src_message, context)
 
 
 func get_resource_path(path: String) -> String:
@@ -69,7 +69,7 @@ func load_translations(tours_path: Array[String]) -> void:
 		. resource_path
 		. get_base_dir()
 		. get_base_dir()
-		. path_join(BUBBLE_DIR)
+		. path_join(UI_DIR)
 		. path_join(LOCALE_DIR)
 	)
 	load_translations_dir(locale_dir_path)

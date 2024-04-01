@@ -107,7 +107,7 @@ func _show_welcome_menu() -> void:
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
-	welcome_menu.setup(tour_list)
+	welcome_menu.setup(translation_service, tour_list)
 	welcome_menu.tour_start_requested.connect(start_tour)
 	welcome_menu.tour_reset_requested.connect(func reset_tour(tour_path: String) -> void:
 		var was_reset_successful := _reset_tour_files(tour_path)
