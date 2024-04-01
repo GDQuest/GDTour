@@ -13,6 +13,7 @@
 
 # Imported translations (automatically generated from CSV files)
 *.translation
+*.mo
 
 # Mono-specific ignores
 .mono/
