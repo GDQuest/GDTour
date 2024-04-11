@@ -2,20 +2,24 @@ extends SceneTree
 
 const Utils := preload("../gdquest_sparkly_bag/sparkly_bag_utils.gd")
 
+const MD_BUBBLE_TITLE := "##"
+const MD_CALL := ">"
 const HEADER := """
 extends "../../addons/godot_tours/tour.gd"
 
 func _build() -> void:
 """
 const CALLS := {
-	complete_step = "\tcomplete_step()",
+	generic = "\t%s(%s)",
+	bubble_move_and_anchor = "\t%s(interface.%s, Bubble.At.%s)",
 	bubble_set_title = """\tbubble_set_title(%s)""",
 	bubble_add_text = """\tbubble_add_text([%s])""",
-	gtr = """gtr("%s")"""
+	bubble_add_task_press_button = """\t%s(interface.%s)""",
+	complete_step = "\tcomplete_step()",
+	scene_open = """\t%s("%s")""",
+	gtr = """gtr("%s")""",
+	note = "\t# %s: %s",
 }
-
-const MD_BUBBLE_TITLE := "##"
-const MD_BUBBLE_ACTION := ">"
 
 
 func _init() -> void:
@@ -28,14 +32,15 @@ func _init() -> void:
 
 func convert_to_test(md_file_path: String) -> void:
 	var regex_md_bold := RegEx.create_from_string(r"(\*\*)(.+?)(\*\*)")
+	var regex_md_scene := RegEx.create_from_string(r"[^\s]+\.tscn")
 
+	var calls := []
 	var bubble_text_lines: Array[String] = []
-
 	var tour_contents: Array[String] = [HEADER.strip_edges()]
 
 	var md_file := FileAccess.open(md_file_path, FileAccess.READ)
 	var lines: Array[String] = []
-	lines.assign(md_file.get_as_text().strip_edges().split("\n"))
+	lines.assign(strip_lines_edges(md_file.get_as_text().strip_edges().split("\n")))
 
 	var bubble_title: String = (
 		to_bubble_title(lines.front())
@@ -48,8 +53,8 @@ func convert_to_test(md_file_path: String) -> void:
 		if line.begins_with(MD_BUBBLE_TITLE):
 			new_bubble_title = to_bubble_title(line)
 
-		elif line.begins_with(MD_BUBBLE_ACTION):
-			pass
+		elif line.begins_with(MD_CALL):
+			calls.push_back(to_call(line))
 
 		else:
 			line = regex_md_bold.sub(line, "[b]$2[/b]", true)
@@ -57,6 +62,9 @@ func convert_to_test(md_file_path: String) -> void:
 
 		if bubble_title != new_bubble_title:
 			tour_contents.push_back(CALLS.bubble_set_title % call_gtr(bubble_title))
+			for call in calls:
+				var call_fmt: String = CALLS.get(call.function, CALLS.generic)
+				tour_contents.push_back(call_fmt % ([call.function] + call.parameters))
 			var bubble_text := ", ".join(strip_lines_edges(bubble_text_lines).map(call_gtr))
 			if not bubble_text.is_empty():
 				tour_contents.push_back(CALLS.bubble_add_text % bubble_text)
@@ -65,21 +73,33 @@ func convert_to_test(md_file_path: String) -> void:
 
 			bubble_title = new_bubble_title
 			bubble_text_lines = []
+			calls = []
 
 	var tour_file_path := "%s.gd" % md_file_path.get_basename()
 	var tour_file := FileAccess.open(tour_file_path, FileAccess.WRITE)
 	tour_file.store_string(join_lines(tour_contents, true, false))
 
 
-func to_bubble_title(s: String) -> String:
-	return s.replace(MD_BUBBLE_TITLE, "").strip_edges()
+func to_bubble_title(line: String) -> String:
+	return line.lstrip(MD_BUBBLE_TITLE).strip_edges()
+
+
+func to_call(s: String) -> Dictionary:
+	var result := {function = "", parameters = []}
+	var strip_edges := func(s: String) -> String: return s.strip_edges()
+	var extraction: Array = Array(s.lstrip(MD_CALL).split(":")).map(strip_edges)
+	result.function = extraction.front().to_lower()
+	result.parameters = Array(extraction.back().split(",")).map(strip_edges)
+	if result.function == "bubble_move_and_anchor":
+		result.parameters.push_back(result.parameters.pop_back().to_upper())
+	return result
 
 
 func call_gtr(s: String) -> String:
 	return '""' if s.is_empty() else CALLS.gtr % sanitize(s)
 
 
-func join_lines(lines: Array[String], do_strip_left := true, do_strip_right := true) -> String:
+func join_lines(lines: Array, do_strip_left := true, do_strip_right := true) -> String:
 	return "\n".join(lines).strip_edges(do_strip_left, do_strip_right)
 
 
