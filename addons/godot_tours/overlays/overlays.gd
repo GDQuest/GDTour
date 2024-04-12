@@ -187,7 +187,7 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 			interface.inspector_editor,
 			"EditorProperty",
 			true,
-			func(ep: EditorProperty) -> bool: return ep.get_edited_property() == name,
+			func(ep: EditorProperty) -> bool: return ep.get_edited_property() == name
 		)
 		if property != null:
 			# Unfold parent sections recursively if necessary.

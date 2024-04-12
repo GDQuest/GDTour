@@ -82,6 +82,11 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	self.translation_service = translation_service
 	translation_service.update_tour_key(get_script().resource_path)
 
+	for key in EVENTS:
+		var action: StringName = "tour_%s" % key
+		InputMap.add_action(action)
+		InputMap.action_add_event(action, EVENTS[key])
+
 	# Applies the default layout so every tour starts from the same UI state.
 	interface.restore_default_layout()
 	_build()
@@ -98,6 +103,11 @@ func _build() -> void:
 
 
 func clean_up() -> void:
+	for key in EVENTS:
+		var action: StringName = "tour_%s" % key
+		if InputMap.has_action(action):
+			InputMap.erase_action(action)
+
 	clear_mouse()
 	log.clean_up()
 	if is_instance_valid(bubble):
@@ -408,12 +418,7 @@ func bubble_add_task_press_button(button: Button, description := "") -> void:
 
 
 func bubble_add_task_toggle_button(button: Button, is_toggled := true, description := "") -> void:
-	var text: String = description
-	if text.is_empty():
-		if button.text.is_empty():
-			text = button.tooltip_text
-		else:
-			text = button.text
+	var text := button.tooltip_text if button.text.is_empty() else button.text
 	text = text.replace(".", "")
 
 	if not button.toggle_mode:
@@ -421,7 +426,9 @@ func bubble_add_task_toggle_button(button: Button, is_toggled := true, descripti
 		return
 
 	const TOGGLE_MAP := {true: "ON", false: "OFF"}
-	description = gtr("Turn the [b]%s[/b] button %s.") % [text, TOGGLE_MAP[is_toggled]]
+	if description.is_empty():
+		description = gtr("Turn the [b]%s[/b] button %s.") % [text, TOGGLE_MAP[is_toggled]]
+
 	bubble_add_task(
 		description,
 		1,
@@ -477,7 +484,7 @@ func bubble_add_task_set_tilemap_tab_by_control(control: Control, description :=
 
 func bubble_add_task_select_node(node_name: String) -> void:
 	bubble_add_task(
-		"Select the [b]" + node_name + "[/b] node in the [b]Scene Dock[/b].",
+		gtr("Select the [b] %s [/b] node in the [b]Scene Dock[/b].") % node_name,
 		1,
 		func task_select_node(_task: Task) -> int:
 			var scene_root: Node = EditorInterface.get_edited_scene_root()
@@ -496,11 +503,10 @@ func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, descript
 		if description.is_empty():
 			description = gtr(
 				"""Set [b]%s[/b] to [code]%s[/code]"""
-				% [
+				) % [
 					label_text,
 					"x".join(ranges.keys().map(func(r: Range) -> String: return str(snappedf(ranges[r], r.step)))),
 				]
-			)
 		bubble_add_task(
 			description,
 			1,

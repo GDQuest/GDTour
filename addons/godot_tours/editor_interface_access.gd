@@ -45,7 +45,9 @@ var canvas_item_editor_toolbar_smart_snap_button: Button = null
 var canvas_item_editor_toolbar_grid_button: Button = null
 var canvas_item_editor_toolbar_snap_options_button: Button = null
 var canvas_item_editor_toolbar_lock_button: Button = null
+var canvas_item_editor_toolbar_unlock_button: Button = null
 var canvas_item_editor_toolbar_group_button: Button = null
+var canvas_item_editor_toolbar_ungroup_button: Button = null
 var canvas_item_editor_toolbar_skeleton_options_button: Button = null
 ## Parent container of the zoom buttons in the top-left of the 2D editor.
 var canvas_item_editor_zoom_widget: Control = null
@@ -57,12 +59,32 @@ var canvas_item_editor_zoom_button_reset: Button = null
 ## Increase zoom button in the top-left of the 2D viewport.
 var canvas_item_editor_zoom_button_increase: Button = null
 var spatial_editor: Control = null
+var spatial_editor_node_viewports: Array[Control] = []
+var spatial_editor_preview_check_boxes: Array[CheckBox] = []
 var spatial_editor_cameras: Array[Camera3D] = []
 var spatial_editor_surface: Control = null
+var spatial_editor_toolbar: Control = null
+var spatial_editor_toolbar_select_button: Button = null
+var spatial_editor_toolbar_move_button: Button = null
+var spatial_editor_toolbar_rotate_button: Button = null
+var spatial_editor_toolbar_scale_button: Button = null
+var spatial_editor_toolbar_selectable_button: Button = null
+var spatial_editor_toolbar_lock_button: Button = null
+var spatial_editor_toolbar_unlock_button: Button = null
+var spatial_editor_toolbar_group_button: Button = null
+var spatial_editor_toolbar_ungroup_button: Button = null
+var spatial_editor_toolbar_local_button: Button = null
+var spatial_editor_toolbar_snap_options_button: Button = null
+var spatial_editor_toolbar_camera_button: Button = null
+var spatial_editor_toolbar_sun_button: Button = null
+var spatial_editor_toolbar_environment_button: Button = null
+var spatial_editor_toolbar_sun_environment_button: Button = null
+var spatial_editor_toolbar_transform_menu_button: MenuButton = null
+var spatial_editor_toolbar_view_menu_button: MenuButton = null
+
 var script_editor: ScriptEditor = null
 ## Parent node of the script editor, used to pop out the editor and controls the script editor's
-## visibility
-## Used to check if students are in the scripting context.
+## visibility. Used to check if students are in the scripting context.
 var script_editor_window_wrapper: Node = null
 var script_editor_top_bar: HBoxContainer = null
 var script_editor_items: ItemList = null
@@ -219,7 +241,9 @@ func _init() -> void:
 	canvas_item_editor_toolbar_grid_button = canvas_item_editor_toolbar_buttons[9]
 	canvas_item_editor_toolbar_snap_options_button = canvas_item_editor_toolbar_buttons[10]
 	canvas_item_editor_toolbar_lock_button = canvas_item_editor_toolbar_buttons[11]
+	canvas_item_editor_toolbar_unlock_button = canvas_item_editor_toolbar_buttons[12]
 	canvas_item_editor_toolbar_group_button = canvas_item_editor_toolbar_buttons[13]
+	canvas_item_editor_toolbar_ungroup_button = canvas_item_editor_toolbar_buttons[14]
 	canvas_item_editor_toolbar_skeleton_options_button = canvas_item_editor_toolbar_buttons[15]
 
 	canvas_item_editor_zoom_widget = Utils.find_child_by_type(
@@ -243,10 +267,38 @@ func _init() -> void:
 	snap_options_scale_step_controls.assign(snap_options.get_child(4).get_children())
 
 	spatial_editor = Utils.find_child_by_type(main_screen, "Node3DEditor")
+	spatial_editor_node_viewports.assign(
+		spatial_editor.find_children("", "Node3DEditorViewport", true, false)
+	)
+	spatial_editor_preview_check_boxes.assign(
+		spatial_editor.find_children("", "CheckBox", true, false)
+	)
 	spatial_editor_cameras.assign(spatial_editor.find_children("", "Camera3D", true, false))
 	spatial_editor_surface = (
 		Utils.find_child_by_type(spatial_editor, "ViewportNavigationControl").get_parent()
 	)
+	spatial_editor_toolbar = spatial_editor.get_child(0).get_child(0).get_child(0)
+	var spatial_editor_toolbar_buttons := spatial_editor_toolbar.find_children(
+		"", "Button", false, false
+	)
+	spatial_editor_toolbar_select_button = spatial_editor_toolbar_buttons[0]
+	spatial_editor_toolbar_move_button = spatial_editor_toolbar_buttons[1]
+	spatial_editor_toolbar_rotate_button = spatial_editor_toolbar_buttons[2]
+	spatial_editor_toolbar_scale_button = spatial_editor_toolbar_buttons[3]
+	spatial_editor_toolbar_selectable_button = spatial_editor_toolbar_buttons[4]
+	spatial_editor_toolbar_lock_button = spatial_editor_toolbar_buttons[5]
+	spatial_editor_toolbar_unlock_button = spatial_editor_toolbar_buttons[6]
+	spatial_editor_toolbar_group_button = spatial_editor_toolbar_buttons[7]
+	spatial_editor_toolbar_ungroup_button = spatial_editor_toolbar_buttons[8]
+	spatial_editor_toolbar_local_button = spatial_editor_toolbar_buttons[9]
+	spatial_editor_toolbar_snap_options_button = spatial_editor_toolbar_buttons[10]
+	spatial_editor_toolbar_camera_button = spatial_editor_toolbar_buttons[11]
+	spatial_editor_toolbar_sun_button = spatial_editor_toolbar_buttons[12]
+	spatial_editor_toolbar_environment_button = spatial_editor_toolbar_buttons[13]
+	spatial_editor_toolbar_sun_environment_button = spatial_editor_toolbar_buttons[14]
+	spatial_editor_toolbar_transform_menu_button = spatial_editor_toolbar_buttons[15]
+	spatial_editor_toolbar_view_menu_button = spatial_editor_toolbar_buttons[16]
+
 	script_editor = EditorInterface.get_script_editor()
 	script_editor_window_wrapper = script_editor.get_parent()
 	script_editor_code_panel = script_editor.get_child(0).get_child(1).get_child(1)
