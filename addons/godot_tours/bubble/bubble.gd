@@ -65,7 +65,7 @@ var tween: Tween = null
 var avatar_tween_position: Tween = null
 var avatar_tween_rotation: Tween = null
 
-@onready var panel: Control = %Panel
+@onready var panel_container: Control = %PanelContainer
 @onready var avatar: Node2D = %Avatar
 
 
@@ -162,8 +162,8 @@ func move_and_anchor(
 	self.at = at
 	self.margin = margin
 	self.offset_vector = offset_vector
-	panel.grow_horizontal = GROW_DIRECTIONS[at].h
-	panel.grow_vertical = GROW_DIRECTIONS[at].v
+	panel_container.grow_horizontal = GROW_DIRECTIONS[at].h
+	panel_container.grow_vertical = GROW_DIRECTIONS[at].v
 
 
 ## Sets the avatar location at the top of the bubble. Check [member avatar_at] for details on the parameter.
@@ -172,8 +172,8 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	var editor_scale := EditorInterface.get_editor_scale()
 	var at_offset := {
 		AvatarAt.LEFT: Vector2(-8.0, -6.0) * editor_scale,
-		AvatarAt.CENTER: Vector2(panel.size.x / 2.0, -8.0 * editor_scale),
-		AvatarAt.RIGHT: Vector2(panel.size.x + 3.0 * editor_scale, -8.0 * editor_scale),
+		AvatarAt.CENTER: Vector2(panel_container.size.x / 2.0, -8.0 * editor_scale),
+		AvatarAt.RIGHT: Vector2(panel_container.size.x + 3.0 * editor_scale, -8.0 * editor_scale),
 	}
 	var new_avatar_position: Vector2 = at_offset[at]
 
@@ -209,24 +209,31 @@ func refresh() -> void:
 	if control == null:
 		return
 
-	panel.reset_size()
+	panel_container.reset_size()
 	var at_offset := {
 		At.TOP_LEFT: margin * Vector2.ONE,
-		At.TOP_CENTER: Vector2((control.size.x - panel.size.x) / 2.0, 0.0) + margin * Vector2.DOWN,
-		At.TOP_RIGHT: Vector2(control.size.x - panel.size.x, 0.0) + margin * Vector2(-1.0, 1.0),
-		At.BOTTOM_RIGHT: control.size - panel.size - margin * Vector2.ONE,
-		At.BOTTOM_CENTER: Vector2(0.5, 1.0) * (control.size - panel.size) + margin * Vector2.UP,
-		At.BOTTOM_LEFT: Vector2(0.0, control.size.y - panel.size.y) + margin * Vector2(1.0, -1.0),
+		At.TOP_CENTER:
+		Vector2((control.size.x - panel_container.size.x) / 2.0, 0.0) + margin * Vector2.DOWN,
+		At.TOP_RIGHT:
+		Vector2(control.size.x - panel_container.size.x, 0.0) + margin * Vector2(-1.0, 1.0),
+		At.BOTTOM_RIGHT: control.size - panel_container.size - margin * Vector2.ONE,
+		At.BOTTOM_CENTER:
+		Vector2(0.5, 1.0) * (control.size - panel_container.size) + margin * Vector2.UP,
+		At.BOTTOM_LEFT:
+		Vector2(0.0, control.size.y - panel_container.size.y) + margin * Vector2(1.0, -1.0),
 		At.CENTER_LEFT:
-		Vector2(0.0, (control.size.y - panel.size.y) / 2.0) + margin * Vector2.RIGHT,
-		At.CENTER_RIGHT: Vector2(1.0, 0.5) * (control.size - panel.size) + margin * Vector2.LEFT,
-		At.CENTER: (control.size - panel.size) / 2.0,
+		Vector2(0.0, (control.size.y - panel_container.size.y) / 2.0) + margin * Vector2.RIGHT,
+		At.CENTER_RIGHT:
+		Vector2(1.0, 0.5) * (control.size - panel_container.size) + margin * Vector2.LEFT,
+		At.CENTER: (control.size - panel_container.size) / 2.0,
 	}
 
 	var new_global_position: Vector2 = control.global_position + at_offset[at] + offset_vector
-	if not panel.global_position.is_equal_approx(new_global_position):
+	if not panel_container.global_position.is_equal_approx(new_global_position):
 		if tween != null:
 			tween.kill()
 		tween = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
-		tween.tween_property(panel, "global_position", new_global_position, TWEEN_DURATION)
+		tween.tween_property(
+			panel_container, "global_position", new_global_position, TWEEN_DURATION
+		)
 	set_avatar_at(avatar_at)

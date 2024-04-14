@@ -59,10 +59,10 @@ var canvas_item_editor_zoom_button_reset: Button = null
 ## Increase zoom button in the top-left of the 2D viewport.
 var canvas_item_editor_zoom_button_increase: Button = null
 var spatial_editor: Control = null
-var spatial_editor_node_viewports: Array[Control] = []
+var spatial_editor_surfaces: Array[Control] = []
+var spatial_editor_viewports: Array[Control] = []
 var spatial_editor_preview_check_boxes: Array[CheckBox] = []
 var spatial_editor_cameras: Array[Camera3D] = []
-var spatial_editor_surface: Control = null
 var spatial_editor_toolbar: Control = null
 var spatial_editor_toolbar_select_button: Button = null
 var spatial_editor_toolbar_move_button: Button = null
@@ -267,16 +267,19 @@ func _init() -> void:
 	snap_options_scale_step_controls.assign(snap_options.get_child(4).get_children())
 
 	spatial_editor = Utils.find_child_by_type(main_screen, "Node3DEditor")
-	spatial_editor_node_viewports.assign(
+	spatial_editor_viewports.assign(
 		spatial_editor.find_children("", "Node3DEditorViewport", true, false)
 	)
 	spatial_editor_preview_check_boxes.assign(
 		spatial_editor.find_children("", "CheckBox", true, false)
 	)
 	spatial_editor_cameras.assign(spatial_editor.find_children("", "Camera3D", true, false))
-	spatial_editor_surface = (
-		Utils.find_child_by_type(spatial_editor, "ViewportNavigationControl").get_parent()
-	)
+	var surfaces := {}
+	for surface in spatial_editor.find_children("", "ViewportNavigationControl", true, false).map(
+		func(c: Control) -> Control: return c.get_parent()
+	):
+		surfaces[surface] = null
+	spatial_editor_surfaces.assign(surfaces.keys())
 	spatial_editor_toolbar = spatial_editor.get_child(0).get_child(0).get_child(0)
 	var spatial_editor_toolbar_buttons := spatial_editor_toolbar.find_children(
 		"", "Button", false, false

@@ -78,11 +78,13 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 	if play_flash:
 		highlight.flash()
 
-	highlight.setup(control, rect_getter, dimmer, _highlight_style_scaled)
+	highlight.setup(rect_getter, dimmer, _highlight_style_scaled)
+	highlight.controls.push_back(control)
 	if overlaps.is_empty() and control is TabBar:
 		control.tab_changed.connect(highlight.refresh_tabs)
 	elif not overlaps.is_empty():
 		for other_highlight: Highlight in overlaps:
+			highlight.controls.append_array(other_highlight.controls)
 			highlight.rect_getters.append_array(other_highlight.rect_getters)
 			other_highlight.queue_free()
 	control.draw.connect(highlight.refresh)

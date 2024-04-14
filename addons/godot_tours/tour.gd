@@ -533,7 +533,7 @@ func bubble_set_avatar_at(at: Bubble.AvatarAt) -> void:
 ## you can call this function with a [code]size[/code] of [constant Vector2.ZERO] on the following
 ## [member step_commands] to let the bubble automatically control its size again.
 func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
-	queue_command(func() -> void: bubble.panel.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
+	queue_command(func() -> void: bubble.panel_container.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
 
 
 func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:

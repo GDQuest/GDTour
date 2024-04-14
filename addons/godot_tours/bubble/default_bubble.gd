@@ -76,8 +76,8 @@ func _ready() -> void:
 		node.visible = false
 
 	var editor_scale := EditorInterface.get_editor_scale()
-	panel.theme = ThemeUtils.generate_scaled_theme(panel.theme)
-	panel.custom_minimum_size *= editor_scale
+	panel_container.theme = ThemeUtils.generate_scaled_theme(panel_container.theme)
+	panel_container.custom_minimum_size *= editor_scale
 	button_close.custom_minimum_size *= editor_scale
 	avatar.scale = avatar.scale_start * editor_scale
 	paragraph_separation *= editor_scale
@@ -125,6 +125,9 @@ func add_element(element: Control, data: Variant) -> void:
 		element.stream = data
 		element.finished.connect(element.play)
 		element.play()
+		var texture: Texture2D = element.get_video_texture()
+		element.custom_minimum_size.x = main_v_box_container.size.x
+		element.custom_minimum_size.y = element.custom_minimum_size.x * texture.get_height() / texture.get_width()
 
 
 func set_title(title_text: String) -> void:

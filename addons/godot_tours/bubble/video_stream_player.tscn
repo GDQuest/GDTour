@@ -3,3 +3,4 @@
 [node name="VideoStreamPlayer" type="VideoStreamPlayer"]
 size_flags_horizontal = 4
 size_flags_vertical = 4
+expand = true

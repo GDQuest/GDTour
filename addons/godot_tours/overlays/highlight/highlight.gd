@@ -6,15 +6,14 @@ extends Panel
 
 const Dimmer := preload("../dimmer/dimmer.gd")
 
-var rect_getters: Array[Callable] = []
 var dimmer_mask: ColorRect = null
-var control: Control = null
+var controls: Array[Control] = []
+var rect_getters: Array[Callable] = []
 
 @onready var flash_area: ColorRect = %FlashArea
 
 
-func setup(control: Control, rect_getter: Callable, dimmer: Dimmer, stylebox: StyleBoxFlat) -> void:
-	self.control = control
+func setup(rect_getter: Callable, dimmer: Dimmer, stylebox: StyleBoxFlat) -> void:
 	self.dimmer_mask = dimmer.add_mask()
 	self.rect_getters.push_back(rect_getter)
 	refresh.call_deferred()
@@ -43,7 +42,7 @@ func refresh() -> void:
 			)
 	global_position = rect.position
 	custom_minimum_size = rect.size
-	visible = rect != Rect2() and control.is_visible_in_tree()
+	visible = rect != Rect2() and controls.any(control_is_visible_in_tree)
 	dimmer_mask.global_position = global_position
 	dimmer_mask.size = custom_minimum_size
 	dimmer_mask.visible = visible
@@ -52,3 +51,7 @@ func refresh() -> void:
 
 func refresh_tabs(_index: int) -> void:
 	refresh()
+
+
+func control_is_visible_in_tree(c: Control) -> bool:
+	return c.is_visible_in_tree()

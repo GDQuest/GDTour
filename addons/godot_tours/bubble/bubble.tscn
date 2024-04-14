@@ -7,7 +7,7 @@
 [node name="Bubble" type="CanvasLayer"]
 script = ExtResource("1_oyoy5")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(512, 174)
 anchors_preset = 8
@@ -23,7 +23,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("2_biru1")
 
-[node name="Avatar" parent="Panel" instance=ExtResource("7_2u8aa")]
+[node name="Avatar" parent="PanelContainer" instance=ExtResource("7_2u8aa")]
 unique_name_in_owner = true
 rotation = -0.261799
 scale = Vector2(0.35, 0.35)
