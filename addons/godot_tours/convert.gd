@@ -62,12 +62,12 @@ func convert_to_test(md_file_path: String) -> void:
 
 		if bubble_title != new_bubble_title:
 			tour_contents.push_back(CALLS.bubble_set_title % call_gtr(bubble_title))
-			for call in calls:
-				var call_fmt: String = CALLS.get(call.function, CALLS.generic)
-				tour_contents.push_back(call_fmt % ([call.function] + call.parameters))
 			var bubble_text := ", ".join(strip_lines_edges(bubble_text_lines).map(call_gtr))
 			if not bubble_text.is_empty():
 				tour_contents.push_back(CALLS.bubble_add_text % bubble_text)
+			for call in calls:
+				var call_fmt: String = CALLS.get(call.function, CALLS.generic)
+				tour_contents.push_back(call_fmt % ([call.function] + call.parameters))
 			tour_contents.push_back(CALLS.complete_step)
 			tour_contents.push_back("")
 
