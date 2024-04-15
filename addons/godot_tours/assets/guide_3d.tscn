@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxefaevg616la"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/assets/guide_3d.gd" id="1_nq5ae"]
+
+[node name="Guide3D" type="CSGBox3D"]
+script = ExtResource("1_nq5ae")

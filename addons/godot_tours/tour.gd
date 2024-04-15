@@ -50,7 +50,9 @@ const Task := preload("bubble/task/task.gd")
 const Mouse := preload("mouse/mouse.gd")
 const TranslationService := preload("translation/translation_service.gd")
 const FlashArea := preload("overlays/flash_area/flash_area.gd")
+const Guide3D := preload("assets/guide_3d.gd")
 
+const Guide3DPackedScene := preload("assets/guide_3d.tscn")
 const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 
 const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'step_commands(=%d)'[/b]."
@@ -109,6 +111,7 @@ func clean_up() -> void:
 			InputMap.erase_action(action)
 
 	clear_mouse()
+	clear_guides()
 	log.clean_up()
 	if is_instance_valid(bubble):
 		bubble.queue_free()
@@ -187,6 +190,7 @@ func complete_step() -> void:
 		Command.new(overlays.clean_up),
 		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
+		Command.new(clear_guides),
 	]
 	step_commands.push_back(Command.new(play_mouse))
 	steps.push_back(step_start + step_commands)
@@ -240,6 +244,31 @@ func scene_toggle_lock_nodes_by_path(paths: Array[String] = [], is_locked := tru
 
 func scene_deselect_all_nodes() -> void:
 	queue_command(editor_selection.clear)
+
+
+## Adds a `Guide3D` child node to the currently edited scene root at the given [code]at[/code]
+## global position to help guide the student for node placement when following a tour.
+func scene_add_guide_3d(at: Vector3) -> void:
+	queue_command(func add_position_guide() -> void:
+		var scene_root := EditorInterface.get_edited_scene_root()
+		if scene_root == null:
+			return
+
+		var guide: Guide3D = Guide3DPackedScene.instantiate()
+		scene_root.add_child(guide)
+		guide.global_position = at
+	)
+
+
+## Frees the `Guide3D` nodes from the currently edited scene.
+func clear_guides() -> void:
+	var scene_root := EditorInterface.get_edited_scene_root()
+	if scene_root == null:
+		return
+
+	for guide in scene_root.get_children().filter(func(n: Node) -> bool: return n is Guide3D):
+		guide.queue_free()
+	
 
 
 func tabs_set_to_index(tabs: TabBar, index: int) -> void:
