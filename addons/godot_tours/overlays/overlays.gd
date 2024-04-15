@@ -184,16 +184,14 @@ func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> vo
 ## Highlights Inspector dock properties by (programmatic) [code]name[/code]. See [method highlight_tree_items]
 ## for [code]play_flash[/code].
 func highlight_inspector_properties(names: Array[StringName], play_flash := false) -> void:
-	for name in names:
-		var property: EditorProperty = Utils.find_child_by_type(
-			interface.inspector_editor,
-			"EditorProperty",
-			true,
-			func(ep: EditorProperty) -> bool: return ep.get_edited_property() == name
-		)
-		if property != null:
+	var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
+	for n in names:
+		var predicate_first := func predicate_first(p: EditorProperty) -> bool:
+			return p.get_edited_property() == n
+
+		for property: EditorProperty in properties.filter(predicate_first):
 			# Unfold parent sections recursively if necessary.
-			var current_parent: Node = property.get_parent()
+			var current_parent := property.get_parent()
 			var last_section = null
 			const MAX_ITERATION_COUNT := 10
 			for i in MAX_ITERATION_COUNT:
@@ -203,17 +201,20 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 				if current_parent == interface.inspector_editor:
 					break
 
-			if last_section:
+			if last_section != null:
 				await last_section.draw
-
 			interface.inspector_editor.ensure_control_visible(property)
-			var dimmer := ensure_get_dimmer_for(interface.inspector_dock)
-			var rect_getter := func() -> Rect2:
+
+		var dimmer := ensure_get_dimmer_for(interface.inspector_dock)
+		var rect_getter := func inspector_property_rect_getter() -> Rect2:
+			properties = interface.inspector_editor.find_children("", "EditorProperty", true, false)
+			for property: EditorProperty in properties.filter(predicate_first):
 				var rect := property.get_global_rect()
 				rect.position.x = interface.inspector_editor.global_position.x
 				rect.size.x = interface.inspector_editor.size.x
 				return rect
-			add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
+			return Rect2()
+		add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
 
 
 ## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]
