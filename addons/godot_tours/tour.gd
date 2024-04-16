@@ -248,7 +248,7 @@ func scene_deselect_all_nodes() -> void:
 
 ## Adds a `Guide3D` child node to the currently edited scene root at the given [code]at[/code]
 ## global position to help guide the student for node placement when following a tour.
-func scene_add_guide_3d(at: Vector3) -> void:
+func scene_add_guide_3d(at := Vector3.ZERO, size := Vector3.ONE, alpha := 0.4) -> void:
 	queue_command(func add_position_guide() -> void:
 		var scene_root := EditorInterface.get_edited_scene_root()
 		if scene_root == null:
@@ -256,7 +256,9 @@ func scene_add_guide_3d(at: Vector3) -> void:
 
 		var guide: Guide3D = Guide3DPackedScene.instantiate()
 		scene_root.add_child(guide)
-		guide.global_position = at
+		guide.position = at
+		guide.size = size
+		guide.material.albedo_color.a = alpha
 	)
 
 

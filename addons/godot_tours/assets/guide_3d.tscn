@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://bxefaevg616la"]
+[gd_scene load_steps=3 format=3 uid="uid://bxefaevg616la"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/assets/guide_3d.gd" id="1_nq5ae"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b8ix2"]
+resource_local_to_scene = true
+transparency = 1
+cull_mode = 2
+no_depth_test = true
+albedo_color = Color(1, 0.925, 0.788, 0.4)
+
 [node name="Guide3D" type="CSGBox3D"]
+top_level = true
+material = SubResource("StandardMaterial3D_b8ix2")
 script = ExtResource("1_nq5ae")
