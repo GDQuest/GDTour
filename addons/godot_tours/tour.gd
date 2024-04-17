@@ -362,13 +362,17 @@ func canvas_item_editor_flash_area(rect: Rect2) -> void:
 
 # TODO: test?
 func spatial_editor_focus() -> void:
-	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
+	queue_command(func() -> void:
+		for surface in interface.spatial_editor_surfaces:
+			if surface.is_inside_tree():
+				surface.gui_input.emit(EVENTS.f)
+	)
 
 
 # TODO: test?
 func spatial_editor_focus_node_by_paths(paths: Array[String]) -> void:
 	scene_select_nodes_by_path(paths)
-	queue_command(func() -> void: interface.spatial_editor_surface.gui_input.emit(EVENTS.f))
+	spatial_editor_focus()
 
 
 func context_set(type: String) -> void:
@@ -518,8 +522,8 @@ func bubble_add_task_select_node(node_name: String) -> void:
 		gtr("Select the [b] %s [/b] node in the [b]Scene Dock[/b].") % node_name,
 		1,
 		func task_select_node(_task: Task) -> int:
-			var scene_root: Node = EditorInterface.get_edited_scene_root()
-			var target_node: Node = scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
+			var scene_root := EditorInterface.get_edited_scene_root()
+			var target_node := scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
 			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
 			return 1 if selected_nodes.size() == 1 and selected_nodes.front() == target_node else 0,
 	)
@@ -544,6 +548,45 @@ func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, descript
 			func set_ranges(_task: Task) -> int:
 				return 1 if ranges.keys().all(func(r: Range) -> bool: return r.value == ranges[r]) else 0,
 		)
+
+
+func bubble_add_task_set_node_property(node_name: String, property_name: String, property_value: Variant, description := "") -> void:
+	if description.is_empty():
+		description = gtr("""Set [b]%s[/b]'s [b]%s[/b] property to [b]%s[/b]""" % [node_name, property_name.capitalize(), str(property_value)])
+	bubble_add_task(description, 1, func set_node_property(_task: Task) -> int:
+		var scene_root := EditorInterface.get_edited_scene_root()
+		var node := scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
+		var node_property := node.get(property_name)
+		var is_equal := false
+		if property_value is Vector2 or property_value is Vector2i or property_value is Vector3 or property_value is Vector3i or property_value is Vector4 or property_value is Vector4i or property_value is Rect2 or property_value is Transform2D or property_value is Plane or property_value is Quaternion or property_value is AABB or property_value is Basis or property_value is Transform3D or property_value is Color:
+			is_equal = node_property.is_equal_approx(property_value)
+		elif property_value is float:
+			is_equal_approx(node_property, property_value)
+		return 1 if node != null and node.get(property_name) == property_value else 0
+	)
+
+
+func bubble_add_task_open_scene(path: String, description := "") -> void:
+	if description.is_empty():
+		description = gtr("""Open the [b]%s[/b] scene""" % path.get_file())
+	bubble_add_task(description, 1, func open_scene(_task: Task) -> int:
+		var current_tab := interface.main_screen_tabs.current_tab
+		var current_tab_title = interface.main_screen_tabs.get_tab_title(current_tab)
+		return 1 if path in EditorInterface.get_open_scenes() and current_tab_title == path.get_file().get_basename() else 0
+	)
+
+
+func bubble_add_task_expand_inspector_property(property_name: String, description := "") -> void:
+	if description.is_empty():
+		description = gtr("""Expand the [b]%s[/b] property in the [b]Inspector[/b]""" % property_name.capitalize())
+	bubble_add_task(description, 1, func expand_property(_task: Task) -> int:
+		var result := 0
+		var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
+		for property: EditorProperty in properties:
+			if property.is_class("EditorPropertyResource") and property.get_edited_property() == property_name and property.get_child_count() > 1:
+				result = 1
+		return result
+	)
 
 
 ## Moves and anchors the bubble relative to the given control.

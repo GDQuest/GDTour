@@ -58,8 +58,10 @@ var canvas_item_editor_zoom_button_lower: Button = null
 var canvas_item_editor_zoom_button_reset: Button = null
 ## Increase zoom button in the top-left of the 2D viewport.
 var canvas_item_editor_zoom_button_increase: Button = null
+
 var spatial_editor: Control = null
 var spatial_editor_surfaces: Array[Control] = []
+var spatial_editor_surfaces_menu_buttons: Array[MenuButton] = []
 var spatial_editor_viewports: Array[Control] = []
 var spatial_editor_preview_check_boxes: Array[CheckBox] = []
 var spatial_editor_cameras: Array[Camera3D] = []
@@ -74,7 +76,7 @@ var spatial_editor_toolbar_unlock_button: Button = null
 var spatial_editor_toolbar_group_button: Button = null
 var spatial_editor_toolbar_ungroup_button: Button = null
 var spatial_editor_toolbar_local_button: Button = null
-var spatial_editor_toolbar_snap_options_button: Button = null
+var spatial_editor_toolbar_snap_button: Button = null
 var spatial_editor_toolbar_camera_button: Button = null
 var spatial_editor_toolbar_sun_button: Button = null
 var spatial_editor_toolbar_environment_button: Button = null
@@ -186,6 +188,11 @@ var bottom_button_tilemap: Button = null
 var bottom_button_tileset: Button = null
 var bottom_buttons: Array[Button] = []
 
+var scene_import_settings_window: ConfirmationDialog = null
+var scene_import_settings: VBoxContainer = null
+var scene_import_settings_ok_button: Button = null
+var scene_import_settings_cancel_button: Button = null
+
 
 func _init() -> void:
 	base_control = EditorInterface.get_base_control()
@@ -280,6 +287,10 @@ func _init() -> void:
 	):
 		surfaces[surface] = null
 	spatial_editor_surfaces.assign(surfaces.keys())
+	for surface in spatial_editor_surfaces:
+		spatial_editor_surfaces_menu_buttons.append_array(
+			surface.find_children("", "MenuButton", true, false)
+		)
 	spatial_editor_toolbar = spatial_editor.get_child(0).get_child(0).get_child(0)
 	var spatial_editor_toolbar_buttons := spatial_editor_toolbar.find_children(
 		"", "Button", false, false
@@ -294,7 +305,7 @@ func _init() -> void:
 	spatial_editor_toolbar_group_button = spatial_editor_toolbar_buttons[7]
 	spatial_editor_toolbar_ungroup_button = spatial_editor_toolbar_buttons[8]
 	spatial_editor_toolbar_local_button = spatial_editor_toolbar_buttons[9]
-	spatial_editor_toolbar_snap_options_button = spatial_editor_toolbar_buttons[10]
+	spatial_editor_toolbar_snap_button = spatial_editor_toolbar_buttons[10]
 	spatial_editor_toolbar_camera_button = spatial_editor_toolbar_buttons[11]
 	spatial_editor_toolbar_sun_button = spatial_editor_toolbar_buttons[12]
 	spatial_editor_toolbar_environment_button = spatial_editor_toolbar_buttons[13]
@@ -424,7 +435,12 @@ func _init() -> void:
 	tileset_patterns_panel = tileset.get_child(0).get_child(2)
 	tileset_panels = [tileset_tiles_panel, tileset_patterns_panel]
 
-	for window in [signals_dialog_window, node_create_window]:
+	scene_import_settings_window = Utils.find_child_by_type(base_control, "SceneImportSettings")
+	scene_import_settings = scene_import_settings_window.get_child(0)
+	scene_import_settings_cancel_button = scene_import_settings_window.get_cancel_button()
+	scene_import_settings_ok_button = scene_import_settings_window.get_ok_button()
+
+	for window in [signals_dialog_window, node_create_window, scene_import_settings_window]:
 		window_toggle_tour_mode(window, true)
 
 
