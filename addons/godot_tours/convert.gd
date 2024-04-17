@@ -31,6 +31,14 @@ func _init() -> void:
 
 
 func convert_to_test(md_file_path: String) -> void:
+	var tour_file_path := "%s.gd" % md_file_path.get_basename()
+	print_rich(
+		"\n[color=blue]Generating[/color] '%s' from '%s'..." % [tour_file_path, md_file_path]
+	)
+	if FileAccess.file_exists(tour_file_path):
+		print_rich("'%s' already exists. [color=yellow]SKIP[/color]..." % tour_file_path)
+		return
+
 	var regex_md_bold := RegEx.create_from_string(r"(\*\*)(.+?)(\*\*)")
 	var regex_md_scene := RegEx.create_from_string(r"[^\s]+\.tscn")
 
@@ -75,7 +83,6 @@ func convert_to_test(md_file_path: String) -> void:
 			bubble_text_lines = []
 			calls = []
 
-	var tour_file_path := "%s.gd" % md_file_path.get_basename()
 	var tour_file := FileAccess.open(tour_file_path, FileAccess.WRITE)
 	tour_file.store_string(join_lines(tour_contents, true, false))
 
@@ -92,6 +99,8 @@ func to_call(s: String) -> Dictionary:
 	result.parameters = Array(extraction.back().split(",")).map(strip_edges)
 	if result.function == "bubble_move_and_anchor":
 		result.parameters.push_back(result.parameters.pop_back().to_upper())
+	elif result.function == "note" or not result.function in CALLS:
+		result.parameters = [", ".join(result.parameters)]
 	return result
 
 
