@@ -238,7 +238,7 @@ func _reset_tour_files(tour_path: String) -> bool:
 
 	var tour_dir_path := "%s/" % tour_path.get_base_dir()
 	var tour_file_paths := Utils.fs_find("*", tour_dir_path).filter(
-		func(path: String) -> bool: return not (path.get_extension() == "import" or path == tour_path)
+		func(path: String) -> bool: return not (path.get_extension() == "import" or path.get_extension() == "md" or path == tour_path)
 	)
 
 	var open_scene_paths := EditorInterface.get_open_scenes()
