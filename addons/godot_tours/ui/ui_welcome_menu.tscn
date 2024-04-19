@@ -1,9 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://bhu2wc07q7fxk"]
+[gd_scene load_steps=5 format=3 uid="uid://bhu2wc07q7fxk"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/ui/ui_welcome_menu.gd" id="1_kfmbk"]
 [ext_resource type="Theme" uid="uid://7hcgepakmhxl" path="res://addons/godot_tours/ui/theme_welcome_menu.tres" id="2_0icf0"]
 [ext_resource type="Texture2D" uid="uid://cb4s7cxc5wtdv" path="res://addons/godot_tours/assets/icons/reload.svg" id="3_rgtlm"]
-[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/bubble/assets/fonts/poppins_regular.ttf" id="4_joepv"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1q4hb"]
 
@@ -156,13 +155,15 @@ text = "Reset the tour?"
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="LabelResetExplanation" type="Label" parent="Control/PanelContainer/MarginContainer/ViewResetConfirmation"]
+[node name="LabelResetExplanation" type="RichTextLabel" parent="Control/PanelContainer/MarginContainer/ViewResetConfirmation"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-theme_override_fonts/font = ExtResource("4_joepv")
-text = "Do you want to reset %s?
+bbcode_enabled = true
+text = "Do you want to reset [b]%s[/b]?
 This will reset the files to the tour starting point, overwriting your changes."
+fit_content = true
+scroll_active = false
 autowrap_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Control/PanelContainer/MarginContainer/ViewResetConfirmation"]

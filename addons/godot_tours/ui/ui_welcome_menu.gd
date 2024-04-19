@@ -30,7 +30,7 @@ const UISelectableTourPackedScene = preload("ui_selectable_tour.tscn")
 # Nodes for reset view and confirmation
 @onready var view_menu: VBoxContainer = %ViewMenu
 @onready var view_reset_confirmation: VBoxContainer = %ViewResetConfirmation
-@onready var label_reset_explanation: Label = %LabelResetExplanation
+@onready var label_reset_explanation: RichTextLabel = %LabelResetExplanation
 @onready var button_reset_no: Button = %ButtonResetNo
 @onready var button_reset_yes: Button = %ButtonResetYes
 @onready var label_reset_title: Label = %LabelResetTitle
@@ -67,7 +67,7 @@ func setup(translation_service: TranslationService, tour_list: GodotTourList) ->
 		button_reset_no.show()
 		button_reset_yes.show()
 		label_reset_title.text = tr("Reset the tour?")
-		label_reset_explanation.text = tr("Do you want to reset \"%s\"?" % get_selectable_tour().title)
+		label_reset_explanation.text = tr("Do you want to reset [b]%s[/b]?" % get_selectable_tour().title)
 		label_reset_explanation.text += "\n" + tr("This will reset the files to the tour starting point, overwriting your changes.")
 	)
 	button_reset_no.pressed.connect(func open_welcome_menu() -> void:
@@ -89,10 +89,11 @@ func setup(translation_service: TranslationService, tour_list: GodotTourList) ->
 
 	# Scale with editor scale
 	if Engine.is_editor_hint() and owner != self:
+		control.theme = ThemeUtils.generate_scaled_theme(control.theme)
+		for node: Control in [label_title, button_start_learning]:
+			ThemeUtils.scale_font_size(node)
 		var editor_scale := EditorInterface.get_editor_scale()
 		panel_container.custom_minimum_size.x *= editor_scale
-		for node: Control in [label_title, button_start_learning, button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, label_reset_explanation, label_reset_title]:
-			ThemeUtils.scale_font_size(node)
 		ThemeUtils.scale_margin_container_margins(margin_container)
 		for button: BaseButton in [button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, button_start_learning]:
 			button.custom_minimum_size *= editor_scale
@@ -114,7 +115,7 @@ func toggle_dimmer(is_on := true) -> void:
 ## Called by the plugin after a tour has been reset.
 func show_reset_success() -> void:
 	label_reset_title.text = tr("Reset successful")
-	label_reset_explanation.text = tr("The tour \"%s\" has been reset to its starting point." % get_selectable_tour().title)
+	label_reset_explanation.text = tr("The tour [b]%s[/b] has been reset to its starting point." % get_selectable_tour().title)
 	label_reset_explanation.text += "\n" + tr("You may need to close and reopen Godot scenes to see the changes.")
 	button_reset_no.hide()
 	button_reset_yes.hide()
@@ -124,7 +125,7 @@ func show_reset_success() -> void:
 ## Called by the plugin after a tour has been reset.
 func show_reset_failure() -> void:
 	label_reset_title.text = tr("Reset failed")
-	label_reset_explanation.text = tr("The tour \"%s\" could not be reset. Try closing and reopening Godot or restarting your computer and try resetting again." % get_selectable_tour().title)
+	label_reset_explanation.text = tr("The tour [b]%s[/] could not be reset. Try closing and reopening Godot or restarting your computer and try resetting again." % get_selectable_tour().title)
 	label_reset_explanation.text += "\n" + tr("If the problem persists, please check the errors in the Output bottom panel and let us know!")
 	button_reset_no.hide()
 	button_reset_yes.hide()
