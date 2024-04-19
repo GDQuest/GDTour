@@ -66,6 +66,7 @@ const EVENTS := {
 var index := -1: set = set_index
 var steps: Array[Array] = []
 var step_commands: Array[Command] = []
+var guides: Dictionary = {}
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -82,6 +83,7 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	self.interface = interface
 	self.overlays = overlays
 	self.translation_service = translation_service
+	interface.run_bar.stop_pressed.connect(_close_bottom_panel)
 	translation_service.update_tour_key(get_script().resource_path)
 
 	for key in EVENTS:
@@ -227,9 +229,11 @@ func scene_open(path: String) -> void:
 func scene_select_nodes_by_path(paths: Array[String] = []) -> void:
 	scene_deselect_all_nodes()
 	queue_command(func() -> void:
-		var nodes := Utils.find_children_by_path(EditorInterface.get_edited_scene_root(), paths)
+		var scene_root := EditorInterface.get_edited_scene_root()
+		var nodes := ([scene_root] if scene_root.name in paths else []) + Utils.find_children_by_path(scene_root, paths)
 		for node in nodes:
 			editor_selection.add_node(node)
+			EditorInterface.edit_node(node)
 	)
 
 
@@ -246,31 +250,15 @@ func scene_deselect_all_nodes() -> void:
 	queue_command(editor_selection.clear)
 
 
-## Adds a `Guide3D` child node to the currently edited scene root at the given [code]at[/code]
-## global position to help guide the student for node placement when following a tour.
-func scene_add_guide_3d(at := Vector3.ZERO, size := Vector3.ONE, alpha := 0.4) -> void:
-	queue_command(func add_position_guide() -> void:
-		var scene_root := EditorInterface.get_edited_scene_root()
-		if scene_root == null:
-			return
-
-		var guide: Guide3D = Guide3DPackedScene.instantiate()
-		scene_root.add_child(guide)
-		guide.position = at
-		guide.size = size
-		guide.material.albedo_color.a = alpha
-	)
-
-
 ## Frees the `Guide3D` nodes from the currently edited scene.
 func clear_guides() -> void:
 	var scene_root := EditorInterface.get_edited_scene_root()
 	if scene_root == null:
 		return
 
-	for guide in scene_root.get_children().filter(func(n: Node) -> bool: return n is Guide3D):
+	for guide in guides.values():
 		guide.queue_free()
-	
+	guides = {}
 
 
 func tabs_set_to_index(tabs: TabBar, index: int) -> void:
@@ -517,15 +505,17 @@ func bubble_add_task_set_tilemap_tab_by_control(control: Control, description :=
 		bubble_add_task_set_tab_to_index(interface.tilemap_tabs, index, description)
 
 
-func bubble_add_task_select_node(node_name: String) -> void:
+func bubble_add_task_select_nodes_by_path(node_paths: Array[String]) -> void:
 	bubble_add_task(
-		gtr("Select the [b] %s [/b] node in the [b]Scene Dock[/b].") % node_name,
+		gtr("Select the %s %s in the [b]Scene Dock[/b].") % [", ".join(node_paths.map(func(s: String) -> String: return "[b]%s[/b]" % s.get_file())), "node" if node_paths.size() == 1 else "nodes"],
 		1,
 		func task_select_node(_task: Task) -> int:
 			var scene_root := EditorInterface.get_edited_scene_root()
-			var target_node := scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
+			var nodes := get_scene_nodes_by_path(node_paths)
+			nodes.sort_custom(sort_ascending_by_path)
 			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
-			return 1 if selected_nodes.size() == 1 and selected_nodes.front() == target_node else 0,
+			selected_nodes.sort_custom(sort_ascending_by_path)
+			return 1 if nodes == selected_nodes else 0
 	)
 
 
@@ -552,36 +542,43 @@ func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, descript
 
 func bubble_add_task_set_node_property(node_name: String, property_name: String, property_value: Variant, description := "") -> void:
 	if description.is_empty():
-		description = gtr("""Set [b]%s[/b]'s [b]%s[/b] property to [b]%s[/b]""") % [node_name, property_name.capitalize(), str(property_value)]
+		description = gtr("""Set [b]%s[/b]'s [b]%s[/b] property to [b]%s[/b]""") % [node_name, property_name.capitalize(), str(property_value).get_file()]
 	bubble_add_task(description, 1, func set_node_property(_task: Task) -> int:
 		var scene_root := EditorInterface.get_edited_scene_root()
 		var node := scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
 		if node == null:
 			return 0
+
 		var node_property := node.get(property_name)
 		var is_equal := false
 		if (
-			property_value is Vector2 or
-			property_value is Vector2i or
-			property_value is Vector3 or
-			property_value is Vector3i or
-			property_value is Vector4 or
-			property_value is Vector4i or
-			property_value is Rect2 or
-			property_value is Transform2D or
-			property_value is Plane or
-			property_value is Quaternion or
-			property_value is AABB or
-			property_value is Basis or
-			property_value is Transform3D or
-			property_value is Color
+			node_property is Vector2 or
+			node_property is Vector2i or
+			node_property is Vector3 or
+			node_property is Vector3i or
+			node_property is Vector4 or
+			node_property is Vector4i or
+			node_property is Rect2 or
+			node_property is Transform2D or
+			node_property is Plane or
+			node_property is Quaternion or
+			node_property is AABB or
+			node_property is Basis or
+			node_property is Transform3D or
+			node_property is Color
 		):
 			is_equal = node_property.is_equal_approx(property_value)
-		elif property_value is float:
+		elif node_property is float:
 			is_equal = is_equal_approx(node_property, property_value)
+		elif node_property is Node:
+			is_equal = node_property == get_scene_node_by_path(property_value)
 		else:
 			is_equal = node_property == property_value
-		return 1 if is_equal else 0
+
+		var result := 1 if is_equal else 0
+		if mouse != null:
+			mouse.visible = result == 0
+		return result
 	)
 
 
@@ -597,7 +594,7 @@ func bubble_add_task_open_scene(path: String, description := "") -> void:
 
 func bubble_add_task_expand_inspector_property(property_name: String, description := "") -> void:
 	if description.is_empty():
-		description = gtr("""Expand the property [b]%s[/b] in the [b]Inspector[/b] dock""") % property_name.capitalize()
+		description = gtr("""Expand the property [b]%s[/b] in the [b]Inspector[/b]""") % property_name.capitalize()
 	bubble_add_task(description, 1, func expand_property(_task: Task) -> int:
 		var result := 0
 		var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
@@ -605,6 +602,62 @@ func bubble_add_task_expand_inspector_property(property_name: String, descriptio
 			if property.is_class("EditorPropertyResource") and property.get_edited_property() == property_name and property.get_child_count() > 1:
 				result = 1
 		return result
+	)
+
+
+func bubble_add_task_node_to_guide(node_name: String, at := Vector3.ZERO, offset := Vector3.ZERO, size := Vector3.ONE, rotation := Vector3.ZERO, alpha := 0.2, description := "") -> void:
+	if description.is_empty():
+		description = gtr("""Move [b]%s[/b] inside the guide box""") % node_name
+
+	queue_command(func() -> void:
+		var scene_root := EditorInterface.get_edited_scene_root()
+		var guide := Guide3DPackedScene.instantiate()
+		guides[node_name] = guide
+		scene_root.add_child(guide)
+		guide.position = at
+		guide.rotation = rotation
+		guide.csgbox.position = offset
+		guide.csgbox.size = size
+		guide.csgbox.material.albedo_color.a = alpha
+	)
+	bubble_add_task(description, 1, func node_to_guide(_task: Task) -> int:
+		var scene_root := EditorInterface.get_edited_scene_root()
+		var node: Node3D = scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
+		var guide: Guide3D = guides.get(node_name, null)
+		return 1 if node != null and guide != null and node.global_position.is_equal_approx(guide.position) and node.global_rotation.is_equal_approx(guide.rotation) else 0
+	)
+
+
+func bubble_add_task_instantiate_scene(file_path: String, node_name: String, parent_node_name: String, description := "") -> void:
+	if description.is_empty():
+		description = gtr("Instantiate the [b]%s[/b] scene as a child of [b]%s[/b]") % [file_path.get_file(), parent_node_name]
+	bubble_add_task(
+		description,
+		1,
+		func instantiate_platform_goal(_task: Task) -> int:
+			var scene_root := EditorInterface.get_edited_scene_root()
+			var parent := scene_root if parent_node_name == scene_root.name else scene_root.find_child(parent_node_name)
+			var node := parent.get_node_or_null(node_name)
+			var result := 1 if node != null and node.scene_file_path == file_path else 0
+			if mouse != null:
+				mouse.visible = result == 0
+			return result
+	)
+
+
+func bubble_add_task_focus_node(node_name: String, description := "") -> void:
+	if description.is_empty():
+		description = gtr("""Focus the [b]%s[/b] node""" % node_name)
+	bubble_add_task(
+		description,
+		1,
+		func focus_camera_task(task: Task) -> int:
+			var scene_root := EditorInterface.get_edited_scene_root()
+			var node := scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
+			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
+			var is_node_selected := node in selected_nodes
+			var is_focus_on_node := interface.spatial_editor_surfaces.any(control_has_focus) and Input.is_action_just_pressed("tour_f")
+			return 1 if task.is_done() or is_node_selected and is_focus_on_node else 0
 	)
 
 
@@ -697,6 +750,19 @@ func highlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index 
 				camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
 			)
 		overlays.add_highlight_to_control(interface.spatial_editor_surface, rect_getter, play_flash),
+	)
+
+
+# FIXME: follow scroll and parametrize to highlight a previoew other than "material" property.
+func highlight_material_preview() -> void:
+	queue_command(func highlight_preview() -> void:
+		interface.inspector_editor.scroll_vertical = 0
+		var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
+		for property: EditorProperty in properties:
+			if property.is_class("EditorPropertyResource") and property.get_edited_property() == "material" and property.get_child_count() > 1:
+				var controls: Array[Control] = []
+				controls.assign(property.find_children("", "MaterialEditor", true, false))
+				overlays.highlight_controls(controls)
 	)
 
 
@@ -844,6 +910,16 @@ func get_tilemap_global_rect_pixels(tilemap_node: TileMap) -> Rect2:
 	return rect
 
 
+func get_inspector_property_center(name: String) -> Vector2:
+	var result := Vector2.ZERO
+	var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
+	var predicate_first := func predicate_first(p: EditorProperty) -> bool: return p.get_edited_property() == name
+	for property: EditorProperty in properties.filter(predicate_first):
+		result = property.get_global_rect().get_center()
+	return result
+
+
+
 func get_control_global_center(control: Control) -> Vector2:
 	return control.get_global_rect().get_center()
 
@@ -922,3 +998,13 @@ func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
 func delay_process_frame(frames := 1) -> void:
 	for _frame in range(frames):
 		await interface.base_control.get_tree().process_frame
+
+
+func control_has_focus(c: Control) -> bool: return c.has_focus()
+
+
+func sort_ascending_by_path(a: Node, b: Node) -> bool: return str(a.get_path()) < str(b.get_path())
+
+
+func _close_bottom_panel() -> void:
+	interface.bottom_button_output.button_pressed = false

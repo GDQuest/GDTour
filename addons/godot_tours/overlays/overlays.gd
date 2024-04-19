@@ -192,7 +192,6 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 		for property: EditorProperty in properties.filter(predicate_first):
 			# Unfold parent sections recursively if necessary.
 			var current_parent := property.get_parent()
-			var last_section = null
 			const MAX_ITERATION_COUNT := 10
 			for i in MAX_ITERATION_COUNT:
 				if current_parent.get_class() == "EditorInspectorSection":
@@ -200,9 +199,6 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 				current_parent = current_parent.get_parent()
 				if current_parent == interface.inspector_editor:
 					break
-
-			if last_section != null:
-				await last_section.draw
 			interface.inspector_editor.ensure_control_visible(property)
 
 		var dimmer := ensure_get_dimmer_for(interface.inspector_dock)
