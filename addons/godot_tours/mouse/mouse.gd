@@ -3,7 +3,7 @@
 ## Call functions add_*_operation() to queue animations, then call play() to run the animations.
 ## See tour.gd for utility functions that simplify usage of the mouse cursor.
 @tool
-extends CanvasGroup
+extends CanvasLayer
 
 const DEFAULT_PRESS_TEXTURE := preload("../assets/icons/white_circle.png")
 
@@ -12,6 +12,7 @@ var last_to := Callable()
 var operations: Array[Callable] = []
 var editor_scale: float = EditorInterface.get_editor_scale()
 
+@onready var canvas_group: CanvasGroup = %CanvasGroup
 @onready var pointer_sprite: Sprite2D = %PointerSprite2D
 @onready var press_sprite: Sprite2D = %PressSprite2D
 @onready var tween := create_tween()
@@ -31,12 +32,12 @@ func play() -> void:
 
 	tween.kill()
 	tween = create_tween().set_loops().set_ease(Tween.EASE_OUT)
-	tween.tween_callback(func() -> void: global_position = first_from.call())
-	tween.tween_property(self, "modulate:a", 1.0, ON_DURATION)
+	tween.tween_callback(func() -> void: canvas_group.global_position = first_from.call())
+	tween.tween_property(canvas_group, "modulate:a", 1.0, ON_DURATION)
 	for operation in operations:
 		operation.call()
 	tween.tween_interval(WAIT)
-	tween.tween_property(self, "modulate:a", 0.0, OFF_DURATION)
+	tween.tween_property(canvas_group, "modulate:a", 0.0, OFF_DURATION)
 
 
 func add_move_operation(from: Callable, to: Callable) -> void:
@@ -44,14 +45,17 @@ func add_move_operation(from: Callable, to: Callable) -> void:
 	if first_from.is_null():
 		first_from = from
 
-	var speed := 400 * editor_scale
+	var distance: float = from.call().distance_to(to.call())
+	var min_speed := 400
+	var max_speed := 1200
+	var speed := remap(max(1.0, distance - 400.0), 0.0, EditorInterface.get_base_control().size.x * 0.75, min_speed, max_speed) * editor_scale
 	operations.push_back(func() -> void:
 		tween.tween_method(
 			func(param: float) -> void:
-				global_position = from.call().lerp(to.call(), param),
+				canvas_group.global_position = from.call().lerp(to.call(), param),
 			0.0,
 			1.0,
-			from.call().distance_to(to.call()) / speed
+			distance / speed
 		)
 	)
 
@@ -108,7 +112,7 @@ func add_bounce_operation(loops := 2, at := Callable()) -> void:
 			tween.parallel().tween_method(
 				func(param: float) -> void:
 					var at_vector: Vector2 = last_to.call()
-					global_position = at_vector.lerp(at_vector + amplitude, param),
+					canvas_group.global_position = at_vector.lerp(at_vector + amplitude, param),
 				0.0,
 				1.0,
 				UP_DURATION,
@@ -116,7 +120,7 @@ func add_bounce_operation(loops := 2, at := Callable()) -> void:
 			tween.tween_method(
 				func(param: float) -> void:
 					var at_vector: Vector2 = last_to.call()
-					global_position = (at_vector + amplitude).lerp(at_vector, param),
+					canvas_group.global_position = (at_vector + amplitude).lerp(at_vector, param),
 				0.0,
 				1.0,
 				DOWN_DURATION,

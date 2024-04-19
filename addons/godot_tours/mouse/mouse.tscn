@@ -4,19 +4,23 @@
 [ext_resource type="Texture2D" uid="uid://x62xms6s656a" path="res://addons/godot_tours/assets/icons/white_circle.png" id="2_odi3x"]
 [ext_resource type="Texture2D" uid="uid://dwjvpjb2kpbip" path="res://addons/godot_tours/mouse/mouse_texture.png" id="3_bgpww"]
 
-[node name="Mouse" type="CanvasGroup"]
+[node name="Mouse" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1_bmo3f")
+
+[node name="CanvasGroup" type="CanvasGroup" parent="."]
+unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0)
 top_level = true
 z_index = 999
 scale = Vector2(0.4, 0.4)
-script = ExtResource("1_bmo3f")
 
-[node name="PressSprite2D" type="Sprite2D" parent="."]
+[node name="PressSprite2D" type="Sprite2D" parent="CanvasGroup"]
 unique_name_in_owner = true
 scale = Vector2(1e-05, 1e-05)
 texture = ExtResource("2_odi3x")
 
-[node name="PointerSprite2D" type="Sprite2D" parent="."]
+[node name="PointerSprite2D" type="Sprite2D" parent="CanvasGroup"]
 unique_name_in_owner = true
 texture = ExtResource("3_bgpww")
 centered = false
