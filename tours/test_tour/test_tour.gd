@@ -273,7 +273,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	bubble_add_task_select_node("NodeToEdit")
+	bubble_add_task_select_nodes_by_path(["TestTour2D/NodeToEdit"])
 	queue_command(func() -> void:
 		editor_selection.clear()
 		editor_selection.add_node(EditorInterface.get_edited_scene_root().find_child("NodeToEdit"))
