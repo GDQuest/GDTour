@@ -884,7 +884,7 @@ func get_tree_item_center_by_path(tree: Tree, path: String, button_index := -1) 
 		return result
 	for item in Utils.filter_tree_items(root, func(ti: TreeItem) -> bool: return path == Utils.get_tree_item_path(ti)):
 		var rect := tree.get_global_transform() * tree.get_item_area_rect(item, 0, button_index)
-		rect.position.y -= tree.get_scroll().y
+		rect.position -= tree.get_scroll()
 		result = rect.get_center()
 		break
 	return result
@@ -898,7 +898,7 @@ func get_tree_item_center_by_name(tree: Tree, name: String) -> Vector2:
 
 	var item := Utils.find_tree_item_by_name(tree, name)
 	var rect := tree.get_global_transform() * tree.get_item_area_rect(item, 0)
-	rect.position.y -= tree.get_scroll().y
+	rect.position -= tree.get_scroll()
 	result = rect.get_center()
 	return result
 
@@ -916,6 +916,7 @@ func get_inspector_property_center(name: String) -> Vector2:
 	var predicate_first := func predicate_first(p: EditorProperty) -> bool: return p.get_edited_property() == name
 	for property: EditorProperty in properties.filter(predicate_first):
 		result = property.get_global_rect().get_center()
+		break
 	return result
 
 

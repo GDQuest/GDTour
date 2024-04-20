@@ -92,7 +92,6 @@ We call these collision shapes, and our bridge currently doesn't have any."
 
 [node name="MainVBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/ViewContent"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12

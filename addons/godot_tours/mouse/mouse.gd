@@ -19,7 +19,7 @@ var editor_scale: float = EditorInterface.get_editor_scale()
 
 
 func _ready() -> void:
-	scale *= editor_scale
+	canvas_group.scale *= editor_scale
 	tween.kill()
 
 
@@ -55,7 +55,7 @@ func add_move_operation(from: Callable, to: Callable) -> void:
 				canvas_group.global_position = from.call().lerp(to.call(), param),
 			0.0,
 			1.0,
-			distance / speed
+			max(distance / speed, 0.5)
 		)
 	)
 
