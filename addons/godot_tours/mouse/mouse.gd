@@ -47,7 +47,7 @@ func add_move_operation(from: Callable, to: Callable) -> void:
 
 	var distance: float = from.call().distance_to(to.call())
 	var min_speed := 400
-	var max_speed := 1200
+	var max_speed := 1000
 	var speed := remap(max(1.0, distance - 400.0), 0.0, EditorInterface.get_base_control().size.x * 0.75, min_speed, max_speed) * editor_scale
 	operations.push_back(func() -> void:
 		tween.tween_method(
