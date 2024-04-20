@@ -604,27 +604,69 @@ func bubble_add_task_expand_inspector_property(property_name: String, descriptio
 		return result
 	)
 
+## Used to tell [method bubble_add_task_node_to_guide] to check if the node position perfectly matches the guide's position or if it's just in the guide box's bounding box.
+enum Guide3DCheckMode {
+	## The node's position must be the same as the guide's position, or within a small margin of error.
+	POSITION,
+	## The node's position must be within the guide box's bounding box.
+	IN_BOUNDING_BOX
+}
 
-func bubble_add_task_node_to_guide(node_name: String, at := Vector3.ZERO, offset := Vector3.ZERO, size := Vector3.ONE, rotation := Vector3.ZERO, alpha := 0.2, description := "") -> void:
-	if description.is_empty():
-		description = gtr("""Move [b]%s[/b] inside the guide box""") % node_name
+## Parameters to add a task to move a node to a specific position. The location to move to is represented by a transparent guide box.
+## Used by the function [method bubble_add_task_node_to_guide].
+class Guide3DTaskParameters:
+	## The name of the node to check.
+	var node_name: String
+	var global_position: Vector3
+	## The offset of the guide box relative to the node's position.
+	## This is useful when the checked node's origin is not at the center of the object.
+	var box_offset := Vector3.ZERO
+	## The size of the guide box in meters.
+	var box_size := Vector3.ONE
+	## The mode to check the node's position. See [enum Guide3DCheckMode] for more information.
+	var check_mode: Guide3DCheckMode = Guide3DCheckMode.POSITION
+	## The margin of error to check the node's position, in meters. Only used when [member check_mode] is set to [constant Guide3DCheckMode.POSITION]
+	var position_margin := 0.1
+	## The description of the task. If not set, the function generates the description automatically.
+	var description_override := ""
+
+	func _init(p_node_name: String, p_global_position: Vector3, p_check_mode := Guide3DCheckMode.POSITION) -> void:
+		self.node_name = p_node_name
+		self.global_position = p_global_position
+		self.check_mode = p_check_mode
+
+## Adds a task to move a given node to a specific position or within a box. The location to move to is represented by a transparent guide box.
+func bubble_add_task_node_to_guide(parameters: Guide3DTaskParameters) -> void:
+	if parameters.description_override.is_empty():
+		parameters.description_override = gtr("""Move [b]%s[/b] inside the guide box""") % parameters.node_name
 
 	queue_command(func() -> void:
 		var scene_root := EditorInterface.get_edited_scene_root()
 		var guide := Guide3DPackedScene.instantiate()
-		guides[node_name] = guide
+		guides[parameters.node_name] = guide
+		guide.global_position = parameters.global_position
+		guide.box_offset = parameters.box_offset
+		guide.size = parameters.box_size
 		scene_root.add_child(guide)
-		guide.position = at
-		guide.rotation = rotation
-		guide.csgbox.position = offset
-		guide.csgbox.size = size
-		guide.csgbox.material.albedo_color.a = alpha
 	)
-	bubble_add_task(description, 1, func node_to_guide(_task: Task) -> int:
+	bubble_add_task(parameters.description_override, 1, func node_to_guide(_task: Task) -> int:
 		var scene_root := EditorInterface.get_edited_scene_root()
-		var node: Node3D = scene_root if node_name == scene_root.name else scene_root.find_child(node_name)
-		var guide: Guide3D = guides.get(node_name, null)
-		return 1 if node != null and guide != null and node.global_position.is_equal_approx(guide.position) and node.global_rotation.is_equal_approx(guide.rotation) else 0
+		var node: Node3D = null 
+		if parameters.node_name == scene_root.name:
+			node = scene_root
+		else:
+			node = scene_root.find_child(parameters.node_name)
+		var guide: Guide3D = guides.get(parameters.node_name, null)
+
+		var does_match := node != null and guide != null
+		if parameters.check_mode == Guide3DCheckMode.POSITION:
+			does_match = does_match and node.global_position.distance_to(guide.global_position) < parameters.position_margin
+		elif parameters.check_mode == Guide3DCheckMode.IN_BOUNDING_BOX:
+			var aabb := guide.get_aabb()
+			aabb.position += guide.global_position
+			does_match = does_match and aabb.has_point(node.global_position)
+
+		return 1 if does_match else 0
 	)
 
 
