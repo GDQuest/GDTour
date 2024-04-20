@@ -103,7 +103,7 @@ func add_text(text: Array[String]) -> void:
 
 
 ## [b]Virtual[/b] method to insert a texture image.
-func add_texture(texture: Texture2D) -> void:
+func add_texture(texture: Texture2D, max_height := 0.0) -> void:
 	pass
 
 

@@ -391,8 +391,10 @@ func bubble_add_text(text: Array[String]) -> void:
 	queue_command(func bubble_add_text() -> void: bubble.add_text(text))
 
 
-func bubble_add_texture(texture: Texture2D) -> void:
-	queue_command(func bubble_add_texture() -> void: bubble.add_texture(texture))
+func bubble_add_texture(texture: Texture2D, max_height := 0.0) -> void:
+	queue_command(func bubble_add_texture() -> void:
+		bubble.add_texture(texture, max_height * EditorInterface.get_editor_scale())
+	)
 
 
 func bubble_add_code(lines: Array[String]) -> void:

@@ -120,7 +120,9 @@ func add_element(element: Control, data: Variant) -> void:
 	if element is RichTextLabel or element is CodeEdit:
 		element.text = data
 	elif element is TextureRect:
-		element.texture = data
+		element.texture = data.texture
+		if "max_height" in data:
+			element.max_height = data.max_height
 	elif element is VideoStreamPlayer:
 		element.stream = data
 		element.finished.connect(element.play)
@@ -144,10 +146,14 @@ func add_code(code: Array[String]) -> void:
 		add_element(CodeEditPackedScene.instantiate(), snippet)
 
 
-func add_texture(texture: Texture2D) -> void:
+func add_texture(texture: Texture2D, max_height := 0.0) -> void:
 	if texture == null:
 		return
-	add_element(TextureRectPackedScene.instantiate(), texture)
+	var texture_rect := TextureRectPackedScene.instantiate()
+	var data := {"texture": texture}
+	if max_height > 0.0:
+		data["max_height"] = max_height
+	add_element(texture_rect, data)
 
 
 func add_video(stream: VideoStream) -> void:

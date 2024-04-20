@@ -6,5 +6,5 @@
 offset_right = 40.0
 offset_bottom = 40.0
 expand_mode = 1
-stretch_mode = 4
+stretch_mode = 5
 script = ExtResource("1_ofbqh")

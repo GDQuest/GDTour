@@ -96,18 +96,6 @@ layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 12
 
-[node name="RichTextLabel" parent="PanelContainer/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
-layout_mode = 2
-text = "The player can move [b]outside of the bridges![/b]"
-
-[node name="RichTextLabel2" parent="PanelContainer/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
-layout_mode = 2
-text = "This is normal. In a game, what you see and the physical limits of the world live in two separate layers."
-
-[node name="RichTextLabel3" parent="PanelContainer/MarginContainer/ViewContent/MainVBoxContainer" instance=ExtResource("4_ev3jl")]
-layout_mode = 2
-text = "Computer games use simple geometric shapes to control where a character can move, which greatly improves performance."
-
 [node name="TasksVBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/ViewContent"]
 unique_name_in_owner = true
 visible = false
