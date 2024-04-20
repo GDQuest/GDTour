@@ -1,7 +1,10 @@
-[gd_scene format=3 uid="uid://ujd7chtlh3wb"]
+[gd_scene load_steps=2 format=3 uid="uid://ujd7chtlh3wb"]
+
+[ext_resource type="Script" path="res://addons/godot_tours/bubble/texture_rect.gd" id="1_ofbqh"]
 
 [node name="TextureRect" type="TextureRect"]
 offset_right = 40.0
 offset_bottom = 40.0
 expand_mode = 1
 stretch_mode = 4
+script = ExtResource("1_ofbqh")
