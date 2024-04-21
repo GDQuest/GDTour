@@ -507,9 +507,12 @@ func bubble_add_task_set_tilemap_tab_by_control(control: Control, description :=
 		bubble_add_task_set_tab_to_index(interface.tilemap_tabs, index, description)
 
 
-func bubble_add_task_select_nodes_by_path(node_paths: Array[String]) -> void:
+func bubble_add_task_select_nodes_by_path(node_paths: Array[String], description_override := "") -> void:
+	var description := description_override
+	if description.is_empty():
+		description = gtr("Select the %s %s in the [b]Scene Dock[/b].") % [", ".join(node_paths.map(func(s: String) -> String: return "[b]%s[/b]" % s.get_file())), "node" if node_paths.size() == 1 else "nodes"]
 	bubble_add_task(
-		gtr("Select the %s %s in the [b]Scene Dock[/b].") % [", ".join(node_paths.map(func(s: String) -> String: return "[b]%s[/b]" % s.get_file())), "node" if node_paths.size() == 1 else "nodes"],
+		description,
 		1,
 		func task_select_node(_task: Task) -> int:
 			var scene_root := EditorInterface.get_edited_scene_root()
