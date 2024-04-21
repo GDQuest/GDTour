@@ -15,6 +15,7 @@ disable_fog = true
 albedo_color = Color(0.105882, 0.592157, 0.87451, 0.4)
 
 [sub_resource type="BoxMesh" id="BoxMesh_refqc"]
+resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_y1av2")
 
 [node name="Guide3D" type="Node3D"]
