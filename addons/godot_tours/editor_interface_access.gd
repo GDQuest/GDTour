@@ -113,6 +113,7 @@ var scene_dock: VBoxContainer = null
 var scene_dock_button_add: Button = null
 var scene_tree: Tree = null
 var import_dock: VBoxContainer = null
+var select_node_window: ConfirmationDialog = null
 
 var node_create_window: ConfirmationDialog = null
 var node_create_panel: HSplitContainer = null
@@ -192,6 +193,8 @@ var scene_import_settings_window: ConfirmationDialog = null
 var scene_import_settings: VBoxContainer = null
 var scene_import_settings_ok_button: Button = null
 var scene_import_settings_cancel_button: Button = null
+
+var windows: Array[ConfirmationDialog] = []
 
 
 func _init() -> void:
@@ -341,6 +344,7 @@ func _init() -> void:
 	scene_tabs = Utils.find_child_by_type(scene_dock.get_parent(), "TabBar")
 	var scene_tree_editor := Utils.find_child_by_type(scene_dock, "SceneTreeEditor")
 	scene_tree = Utils.find_child_by_type(scene_tree_editor, "Tree")
+	select_node_window = Utils.find_child_by_type(base_control, "SceneTreeDialog")
 	import_dock = Utils.find_child_by_type(base_control, "ImportDock")
 
 	# Left Bottom
@@ -440,16 +444,17 @@ func _init() -> void:
 	scene_import_settings_cancel_button = scene_import_settings_window.get_cancel_button()
 	scene_import_settings_ok_button = scene_import_settings_window.get_ok_button()
 
-	for window in [signals_dialog_window, node_create_window, scene_import_settings_window]:
+	windows.assign([signals_dialog_window, node_create_window, scene_import_settings_window])
+	for window in windows:
 		window_toggle_tour_mode(window, true)
 
 
 func clean_up() -> void:
-	for window in [signals_dialog_window, node_create_window]:
+	for window in windows:
 		window_toggle_tour_mode(window, false)
 
 
-func window_toggle_tour_mode(window: Window, is_in_tour: bool) -> void:
+func window_toggle_tour_mode(window: ConfirmationDialog, is_in_tour: bool) -> void:
 	window.dialog_close_on_escape = not is_in_tour
 	window.transient = is_in_tour
 	window.exclusive = not is_in_tour

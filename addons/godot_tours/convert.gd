@@ -56,7 +56,9 @@ func convert_to_test(md_file_path: String) -> void:
 		else ""
 	)
 
-	for line in lines:
+	var line_count := lines.size()
+	for i in range(line_count):
+		var line := lines[i]
 		var new_bubble_title := bubble_title
 		if line.begins_with(MD_BUBBLE_TITLE):
 			new_bubble_title = to_bubble_title(line)
@@ -68,7 +70,7 @@ func convert_to_test(md_file_path: String) -> void:
 			line = regex_md_bold.sub(line, "[b]$2[/b]", true)
 			bubble_text_lines.push_back(line)
 
-		if bubble_title != new_bubble_title:
+		if bubble_title != new_bubble_title or i == line_count - 1:
 			tour_contents.push_back(CALLS.bubble_set_title % call_gtr(bubble_title))
 			var bubble_text := ", ".join(strip_lines_edges(bubble_text_lines).map(call_gtr))
 			if not bubble_text.is_empty():
