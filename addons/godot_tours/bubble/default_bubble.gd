@@ -54,6 +54,7 @@ func setup(translation_service: TranslationService, step_count: int) -> void:
 
 
 func _ready() -> void:
+	super()
 	if not Engine.is_editor_hint() or EditorInterface.get_edited_scene_root() == self:
 		return
 
@@ -76,10 +77,7 @@ func _ready() -> void:
 		node.visible = false
 
 	var editor_scale := EditorInterface.get_editor_scale()
-	panel_container.theme = ThemeUtils.generate_scaled_theme(panel_container.theme)
-	panel_container.custom_minimum_size *= editor_scale
 	button_close.custom_minimum_size *= editor_scale
-	avatar.scale = avatar.scale_start * editor_scale
 	paragraph_separation *= editor_scale
 
 

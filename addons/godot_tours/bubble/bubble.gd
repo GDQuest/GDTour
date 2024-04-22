@@ -65,13 +65,25 @@ var tween: Tween = null
 var avatar_tween_position: Tween = null
 var avatar_tween_rotation: Tween = null
 
-@onready var panel_container: Control = %PanelContainer
+@onready var panel_container: PanelContainer = $PanelContainer
 @onready var avatar: Node2D = %Avatar
 
 
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	self.translation_service = translation_service
 	self.step_count = step_count
+
+
+func _ready() -> void:
+	if not Engine.is_editor_hint() or EditorInterface.get_edited_scene_root() == self:
+		return
+
+	var editor_scale := EditorInterface.get_editor_scale()
+	avatar.scale = avatar.scale_start * editor_scale
+	panel_container.custom_minimum_size *= editor_scale
+	if panel_container.theme:
+		panel_container.theme = ThemeUtils.request_system_font(panel_container.theme)
+		panel_container.theme = ThemeUtils.generate_scaled_theme(panel_container.theme)
 
 
 func _process(delta: float) -> void:

@@ -1,6 +1,9 @@
 ## Functions to process UI Theme properties. In particular, provides functions to scale theme values with the editor scale.
 @tool
 
+# TODO: update when `request_system_font()` is ready, e.g. with `["ja"]` etc.
+const SYSTEM_FONT_LANGUAGES := []
+
 
 ## Gets and scales the font_size theme override of the input text_node using the editor scale.
 ## Adds a font size override to text_node directly.
@@ -76,3 +79,19 @@ static func generate_scaled_theme(theme_resource: Theme) -> Theme:
 				stylebox.content_margin_bottom *= editor_scale
 
 	return new_theme
+
+
+## TODO: this is scafolding, `SystemFont` needs to be set up so it works with BBCode.
+static func request_system_font(theme: Theme) -> Theme:
+	var settings := EditorInterface.get_editor_settings()
+	var language: String = settings.get("interface/editor/editor_language")
+	if not language in SYSTEM_FONT_LANGUAGES:
+		return theme
+
+	var result := theme.duplicate()
+	result.default_font = SystemFont.new()
+	for type in result.get_font_type_list():
+		for font in result.get_font_list(type):
+			if result.has_font(font, type):
+				result.clear_font(font, type)
+	return result
