@@ -67,7 +67,9 @@ func convert_to_test(md_file_path: String) -> void:
 			calls.push_back(to_call(line))
 
 		else:
-			line = regex_md_bold.sub(line, "[b]$2[/b]", true)
+			line = regex_md_bold.sub(line, "[b]$2[/b]", true).strip_edges()
+			if line.begins_with("-"):
+				line = "[ul]%s[/ul]" % line.lstrip("- ")
 			bubble_text_lines.push_back(line)
 
 		if bubble_title != new_bubble_title or i == line_count - 1:
