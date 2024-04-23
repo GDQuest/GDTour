@@ -736,24 +736,24 @@ func bubble_set_minimum_size_scaled(size := Vector2.ZERO) -> void:
 	queue_command(func() -> void: bubble.panel_container.set_custom_minimum_size(size * EditorInterface.get_editor_scale()))
 
 
-func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := true) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_name, [names, button_index, play_flash])
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, do_center := false, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_name, [names, button_index, do_center, play_flash])
 
 
-func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, play_flash := true) -> void:
-	queue_command(overlays.highlight_scene_nodes_by_path, [paths, button_index, play_flash])
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, do_center := false, play_flash := true) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_path, [paths, button_index, do_center, play_flash])
 
 
-func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:
-	queue_command(overlays.highlight_filesystem_paths, [paths, play_flash])
+func highlight_filesystem_paths(paths: Array[String], do_center := false, play_flash := true) -> void:
+	queue_command(overlays.highlight_filesystem_paths, [paths, do_center, play_flash])
 
 
 func highlight_inspector_properties(names: Array[StringName], play_flash := true) -> void:
 	queue_command(overlays.highlight_inspector_properties, [names, play_flash])
 
 
-func highlight_signals(paths: Array[String], play_flash := true) -> void:
-	queue_command(overlays.highlight_signals, [paths, play_flash])
+func highlight_signals(paths: Array[String], do_center := false, play_flash := true) -> void:
+	queue_command(overlays.highlight_signals, [paths, do_center, play_flash])
 
 
 func highlight_code(start: int, end := 0, caret := 0, do_center := true, play_flash := false) -> void:

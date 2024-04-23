@@ -23,6 +23,7 @@ func _build() -> void:
 	complete_step()
 
 	swap_bubble()
+	auto_next()
 	complete_step()
 
 	var file_path := "res://test_tour_2d.tscn"

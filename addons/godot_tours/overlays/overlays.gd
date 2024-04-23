@@ -125,7 +125,7 @@ func ensure_get_dimmer_for(control: Control) -> Dimmer:
 ## Highlight [TreeItem]s from the given [code]tree[/code] that match the [code]predicate[/code]. The highlight can
 ## also play a flash animation if [code]play_flash[/code] is [code]true[/code]. [code]button_index[/code] specifies
 ## which button to highlight from the [TreeItem] instead of the whole item.
-func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, play_flash := false) -> void:
+func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, do_center := false, play_flash := false) -> void:
 	var root := tree.get_root()
 	if root == null:
 		return
@@ -133,7 +133,7 @@ func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, p
 	var height_fix := 6 * EditorInterface.get_editor_scale()
 	for item in Utils.filter_tree_items(root, predicate):
 		interface.unfold_tree_item(item)
-		tree.scroll_to_item(item)
+		tree.scroll_to_item(item, do_center)
 
 		var item_path := Utils.get_tree_item_path(item)
 		var rect_getter := func() -> Rect2:
@@ -150,33 +150,36 @@ func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, p
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, play_flash := false) -> void:
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, do_center := false, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
 		func(item: TreeItem) -> bool: return item.get_text(0) in names,
 		button_index,
+		do_center,
 		play_flash,
 	)
 
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, play_flash := false) -> void:
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, do_center := false, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
 		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
 		button_index,
+		do_center,
 		play_flash,
 	)
 
 
 ## Highlights FileSystem dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for [code]play_flash[/code].
-func highlight_filesystem_paths(paths: Array[String], play_flash := false) -> void:
+func highlight_filesystem_paths(paths: Array[String], do_center := false, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.filesystem_tree,
 		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
 		-1,
+		do_center,
 		play_flash,
 	)
 
@@ -215,13 +218,14 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 
 ## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_signals(signal_names: Array[String], play_flash := false) -> void:
+func highlight_signals(signal_names: Array[String], do_center := false, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.node_dock_signals_tree,
 		func(item: TreeItem) -> bool:
 			var predicate := func(sn: String) -> bool: return item.get_text(0).begins_with(sn)
 			return signal_names.any(predicate),
 		-1,
+		do_center,
 		play_flash,
 	)
 
