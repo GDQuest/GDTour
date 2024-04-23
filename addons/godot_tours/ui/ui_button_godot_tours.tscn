@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://boy5tvkasxato"]
 
-[ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/bubble/assets/fonts/mukta_bold.ttf" id="1_k0khj"]
+[ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/assets/fonts/mukta_bold.ttf" id="1_k0khj"]
 [ext_resource type="Script" path="res://addons/godot_tours/ui/ui_button_godot_tours.gd" id="1_m0m61"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nq4yk"]

@@ -82,7 +82,7 @@ func _ready() -> void:
 	avatar.scale = avatar.scale_start * editor_scale
 	panel_container.custom_minimum_size *= editor_scale
 	if panel_container.theme:
-		panel_container.theme = ThemeUtils.request_system_font(panel_container.theme)
+		panel_container.theme = ThemeUtils.request_fallback_font(panel_container.theme)
 		panel_container.theme = ThemeUtils.generate_scaled_theme(panel_container.theme)
 
 

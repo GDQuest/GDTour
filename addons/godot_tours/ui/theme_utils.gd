@@ -1,8 +1,15 @@
 ## Functions to process UI Theme properties. In particular, provides functions to scale theme values with the editor scale.
 @tool
 
-# TODO: update when `request_system_font()` is ready, e.g. with `["ja"]` etc.
-const SYSTEM_FONT_LANGUAGES := []
+const FALLBACK_FONT_LANGUAGES := ["ja"]
+const FALLBACK_FONT_FMT := "res://addons/godot_tours/assets/fonts/fallback/noto_sans%s_%s.ttf"
+const FALLBACK_FONT_MAP := {
+	"bold_font": "bold",
+	"italics_font": "italic",
+	"mono_font": "mono",
+	"normal_font": "regular",
+	"font": "regular"
+}
 
 
 ## Gets and scales the font_size theme override of the input text_node using the editor scale.
@@ -81,17 +88,20 @@ static func generate_scaled_theme(theme_resource: Theme) -> Theme:
 	return new_theme
 
 
-## TODO: this is scafolding, `SystemFont` needs to be set up so it works with BBCode.
-static func request_system_font(theme: Theme) -> Theme:
+static func request_fallback_font(theme: Theme) -> Theme:
 	var settings := EditorInterface.get_editor_settings()
 	var language: String = settings.get("interface/editor/editor_language")
-	if not language in SYSTEM_FONT_LANGUAGES:
+	if not language in FALLBACK_FONT_LANGUAGES:
 		return theme
 
+	language = "_%s" % language
 	var result := theme.duplicate()
-	result.default_font = SystemFont.new()
+	result.default_font = load(FALLBACK_FONT_FMT % [language, "regular"])
 	for type in result.get_font_type_list():
-		for font in result.get_font_list(type):
+		for font: String in result.get_font_list(type):
 			if result.has_font(font, type):
-				result.clear_font(font, type)
+				var font_file_path: String = FALLBACK_FONT_FMT % [language, FALLBACK_FONT_MAP[font]]
+				prints(font, font_file_path, FileAccess.file_exists(font_file_path))
+				if FileAccess.file_exists(font_file_path):
+					result.set_font(font, type, load(font_file_path))
 	return result
