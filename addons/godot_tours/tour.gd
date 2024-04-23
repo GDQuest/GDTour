@@ -56,7 +56,6 @@ const Guide3DPackedScene := preload("assets/guide_3d.tscn")
 const FlashAreaPackedScene := preload("overlays/flash_area/flash_area.tscn")
 
 const WARNING_MESSAGE := "[color=orange][WARN][/color] %s for [b]'%s()'[/b] at [b]'step_commands(=%d)'[/b]."
-const CLASS_IMG := r"[img=%sx%s]res://addons/godot_tours/bubble/assets/icons/$1.svg[/img]$1"
 
 enum Direction {BACK = -1, NEXT = 1}
 
@@ -68,8 +67,6 @@ var index := -1: set = set_index
 var steps: Array[Array] = []
 var step_commands: Array[Command] = []
 var guides: Dictionary = {}
-var img_size := 24 * EditorInterface.get_editor_scale()
-var regex_class := RegEx.new()
 
 var log := Log.new()
 var editor_selection: EditorSelection = null
@@ -88,10 +85,6 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	self.translation_service = translation_service
 	interface.run_bar.stop_pressed.connect(_close_bottom_panel)
 	translation_service.update_tour_key(get_script().resource_path)
-
-	var classes := Array(ClassDB.get_class_list())
-	classes.sort_custom(func(a: String, b: String) -> bool: return a.length() > b.length())
-	regex_class.compile("(%s)" % "|".join(classes))
 
 	for key in EVENTS:
 		var action: StringName = "tour_%s" % key
@@ -1020,13 +1013,11 @@ func noop_error_predicate(_task: Task) -> bool:
 
 
 func gtr(src_message: StringName, context: StringName = "") -> String:
-	var translation := translation_service.get_tour_message(src_message, context)
-	return regex_class.sub(translation, CLASS_IMG % [img_size, img_size])
+	return translation_service.get_tour_message(src_message, context)
 
 
 func gtr_n(src_message: StringName, src_plural_message: StringName, n: int, context: StringName = "") -> String:
-	var translation := translation_service.get_tour_plural_message(src_message, src_plural_message, n, context)
-	return regex_class.sub(translation, CLASS_IMG % [img_size, img_size])
+	return translation_service.get_tour_plural_message(src_message, src_plural_message, n, context)
 
 
 func ptr(resource_path: String) -> String:

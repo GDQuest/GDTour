@@ -18,7 +18,7 @@ var run_bar: MarginContainer = null
 var run_bar_play_button: Button = null
 var run_bar_pause_button: Button = null
 var run_bar_stop_button: Button = null
-var run_bar_debug_button: Button = null
+var run_bar_debug_button: MenuButton = null
 var run_bar_play_current_button: Button = null
 var run_bar_play_custom_button: Button = null
 var run_bar_movie_mode_button: Button = null
@@ -43,7 +43,7 @@ var canvas_item_editor_toolbar_pan_button: Button = null
 var canvas_item_editor_toolbar_ruler_button: Button = null
 var canvas_item_editor_toolbar_smart_snap_button: Button = null
 var canvas_item_editor_toolbar_grid_button: Button = null
-var canvas_item_editor_toolbar_snap_options_button: Button = null
+var canvas_item_editor_toolbar_snap_options_button: MenuButton = null
 var canvas_item_editor_toolbar_lock_button: Button = null
 var canvas_item_editor_toolbar_unlock_button: Button = null
 var canvas_item_editor_toolbar_group_button: Button = null
@@ -230,7 +230,9 @@ func _init() -> void:
 	# Main Screen
 	main_screen = EditorInterface.get_editor_main_screen()
 	main_screen_tabs = Utils.find_child_by_type(main_screen.get_parent().get_parent(), "TabBar")
-	distraction_free_button = Utils.find_child_by_type(main_screen_tabs.get_parent(), "Button")
+	distraction_free_button = (
+		main_screen_tabs.get_parent().find_children("", "Button", true, false).back()
+	)
 	canvas_item_editor = Utils.find_child_by_type(main_screen, "CanvasItemEditor")
 	canvas_item_editor_viewport = Utils.find_child_by_type(
 		canvas_item_editor, "CanvasItemEditorViewport"

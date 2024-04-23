@@ -9,6 +9,8 @@ const TextureRectPackedScene := preload("texture_rect.tscn")
 const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
 const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
 
+const CLASS_IMG := r"[img=%sx%s]res://addons/godot_tours/bubble/assets/icons/$1.svg[/img]$1"
+
 ## Separation between paragraphs of text and elements in the main content in pixels.
 @export var paragraph_separation := 12:
 	set(new_value):
@@ -16,6 +18,9 @@ const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn"
 		if main_v_box_container == null:
 			await ready
 		main_v_box_container.add_theme_constant_override("separation", paragraph_separation)
+
+var img_size := 24 * EditorInterface.get_editor_scale()
+var regex_class := RegEx.new()
 
 @onready var background_texture_rect: TextureRect = %BackgroundTextureRect
 @onready var title_label: Label = %TitleLabel
@@ -41,6 +46,11 @@ const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn"
 
 func setup(translation_service: TranslationService, step_count: int) -> void:
 	super(translation_service, step_count)
+
+	var classes := Array(ClassDB.get_class_list())
+	classes.sort_custom(func(a: String, b: String) -> bool: return a.length() > b.length())
+	regex_class.compile(r"\[b\](%s)\[\/b\]" % "|".join(classes))
+
 	update_step_count_display(0)
 	Utils.update_locale(translation_service, {
 		back_button: {text = "BACK"},
@@ -136,6 +146,7 @@ func set_title(title_text: String) -> void:
 
 func add_text(text: Array[String]) -> void:
 	for line in text:
+		line = regex_class.sub(line, CLASS_IMG % [img_size, img_size])
 		add_element(RichTextLabelPackedScene.instantiate(), line)
 
 
