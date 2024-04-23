@@ -9,7 +9,7 @@ bg_color = Color(0.603922, 0.294118, 0.317647, 1)
 [node name="Bubble" type="CanvasLayer"]
 script = ExtResource("1_tq7q0")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(512, 0)
 anchors_preset = 8
@@ -25,7 +25,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_7d560")
 
-[node name="Avatar" parent="Panel" instance=ExtResource("7_qn2ph")]
+[node name="Avatar" parent="PanelContainer" instance=ExtResource("7_qn2ph")]
 unique_name_in_owner = true
 rotation = -0.261799
 scale = Vector2(0.35, 0.35)

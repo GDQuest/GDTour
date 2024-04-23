@@ -23,7 +23,6 @@ func _build() -> void:
 	complete_step()
 
 	swap_bubble()
-	auto_next()
 	complete_step()
 
 	var file_path := "res://test_tour_2d.tscn"
@@ -208,7 +207,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	file_path = "res://icon.svg"
+	file_path = "res://icon.png"
 	var texture := load(file_path)
 	queue_command(func() -> void: bubble.add_texture(texture))
 	queue_command(func() -> void:
@@ -324,7 +323,7 @@ func _build() -> void:
 	queue_command(func() -> void:
 		assert(
 			bubble.background_texture_rect.texture == texture,
-			"'bubble.background_texture_rect.texture' should be 'res://icon.svg'",
+			"'bubble.background_texture_rect.texture' should be 'res://icon.png'",
 		)
 	)
 	auto_next()
@@ -402,7 +401,7 @@ func _build() -> void:
 	auto_next()
 	complete_step()
 
-	var filesystem_paths: Array[String] = ["res://icon.svg"]
+	var filesystem_paths: Array[String] = ["res://icon.png"]
 	highlight_filesystem_paths(filesystem_paths)
 	queue_command(func() -> void:
 		var highlights := await get_highlights()
