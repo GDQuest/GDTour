@@ -10,7 +10,7 @@ enum Expressions {NEUTRAL, HAPPY, SURPRISED}
 @export var look_at_cursor := false: set = set_look_at_cursor
 
 ## Stores the initial scale of the avatar from the scene instance.
-@onready var scale_start := scale
+var _scale_start := scale
 
 @onready var animation_tree: AnimationTree = %AnimationTree
 # Character nodes
@@ -22,6 +22,11 @@ enum Expressions {NEUTRAL, HAPPY, SURPRISED}
 @onready var bolts: Node2D = %Bolts
 @onready var bolt_l: Sprite2D = %BoltL
 @onready var bolt_r: Sprite2D = %BoltR
+
+
+func _ready() -> void:
+	scale *= EditorInterface.get_editor_scale()
+	_scale_start = scale
 
 
 func do_wink() -> void:
@@ -41,6 +46,11 @@ func set_look_at_cursor(state: bool) -> void:
 	look_at_cursor = state
 	animation_tree.active = not state
 	animation_tree.set("parameters/AddTilt/add_amount", float(animation_tree.active))
+
+
+## Scales the avatar relative to its initial scale. A value of 1.0 is the default scale.
+func set_scale_multiplier(value: float) -> void:
+	scale = _scale_start * value
 
 
 func _set_tilt_x(value: float) -> void:
