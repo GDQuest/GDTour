@@ -1036,6 +1036,16 @@ func bbcode_generate_icon_image_string(image_filepath: String) -> String:
 	return "[img=%sx%s]" % [size, size] + image_filepath + "[/img]"
 
 
+## Generates a BBCode [code][img][/code] tag for a Godot editor icon by name,
+## scaling the image size based on the editor scale.
+## The icon name must match the name of the SVG file in the [code]res://addons/godot_tours/bubble/assets/icons[/code] directory, without the extension.
+## Example: For Node2D.svg, the icon name is "Node2D"
+func bbcode_generate_icon_image_by_name(icon_name: String) -> String:
+	var path := "res://addons/godot_tours/bubble/assets/icons/".path_join(icon_name + ".svg")
+	assert(FileAccess.file_exists(path), "Icon file not found: %s" % path)
+	return bbcode_generate_icon_image_string(path)
+
+
 ## Wraps the text in a [code][font_size][/code] BBCode tag, scaling the value of size_pixels based on the editor
 ## scale.
 func bbcode_wrap_font_size(text: String, size_pixels: int) -> String:
