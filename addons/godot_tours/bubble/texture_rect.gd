@@ -6,6 +6,10 @@ var max_height := 300.0 * EditorInterface.get_editor_scale():
 	set = set_max_height
 
 
+func _ready() -> void:
+	set_max_height(max_height)
+
+
 func set_max_height(new_max_height: float) -> void:
 	if new_max_height > 0.0:
 		max_height = new_max_height
