@@ -363,6 +363,37 @@ func spatial_editor_focus_node_by_paths(paths: Array[String]) -> void:
 	spatial_editor_focus()
 
 
+enum ViewportLayouts {
+	ONE = 0, TWO = 1, TWO_ALT = 2, THREE = 3, THREE_ALT = 4, FOUR = 5
+}
+## Changes the layout of the 3D viewport. Corresponds to clicking items in the
+## View menu in the toolbar above the 3D viewport.
+func spatial_editor_change_viewport_layout(layout: ViewportLayouts) -> void:
+	queue_command(func spatial_editor_change_viewport_layout() -> void:
+		var popup := interface.spatial_editor_toolbar_view_menu_button.get_popup()
+		var event := InputEventKey.new()
+		event.pressed = true
+		event.ctrl_pressed = true
+
+		if layout == ViewportLayouts.ONE:
+			event.keycode = KEY_1
+		elif layout == ViewportLayouts.TWO:
+			event.keycode = KEY_2
+		elif layout == ViewportLayouts.TWO_ALT:
+			event.keycode = KEY_2
+			event.alt = true
+		elif layout == ViewportLayouts.THREE:
+			event.keycode = KEY_3
+		elif layout == ViewportLayouts.THREE_ALT:
+			event.keycode = KEY_3
+			event.alt = true
+		elif layout == ViewportLayouts.FOUR:
+			event.keycode = KEY_4
+
+		popup.activate_item_by_event(event)
+	)
+
+
 func context_set(type: String) -> void:
 	queue_command(EditorInterface.set_main_screen_editor, [type])
 
