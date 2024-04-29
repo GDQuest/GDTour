@@ -26,6 +26,10 @@ func _exit_tree() -> void:
 		dimmer_mask.queue_free()
 
 
+func _process(_delta: float) -> void:
+	refresh()
+
+
 func flash() -> void:
 	flash_area.visible = true
 

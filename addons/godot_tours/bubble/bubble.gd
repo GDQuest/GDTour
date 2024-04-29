@@ -60,6 +60,9 @@ var offset_vector := Vector2.ZERO  ## Custom offset for [method move_and_anchor]
 var control: Control = null  ## Reference to the control node passed to [method move_and_anchor].
 var translation_service: TranslationService = null
 var step_count := 0  ## Tour step count.
+var drag_height := 32.0 * EditorInterface.get_editor_scale()
+var is_left_click := false
+var was_moved := false
 
 var tween: Tween = null
 var avatar_tween_position: Tween = null
@@ -78,6 +81,7 @@ func _ready() -> void:
 	if not Engine.is_editor_hint() or EditorInterface.get_edited_scene_root() == self:
 		return
 
+	panel_container.gui_input.connect(_on_panel_container_gui_input)
 	var editor_scale := EditorInterface.get_editor_scale()
 	panel_container.custom_minimum_size *= editor_scale
 	if panel_container.theme:
@@ -92,10 +96,24 @@ func _process(delta: float) -> void:
 	refresh()
 
 
+func _on_panel_container_gui_input(event: InputEvent) -> void:
+	panel_container.mouse_default_cursor_shape = (
+		Control.CURSOR_MOVE
+		if event is InputEventMouse and event.position.y <= drag_height
+		else Control.CURSOR_ARROW
+	)
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		is_left_click = event.pressed
+	elif event is InputEventMouseMotion and is_left_click:
+		panel_container.position += event.relative
+		was_moved = true
+
+
 ## [b]Virtual[/b] method for reacting to the tour step change. See ["addons/godot_tours/tour.gd"]
 ## [code]step_changed[/code] signal for details.
 func on_tour_step_changed(index: int) -> void:
-	pass
+	was_moved = false
 
 
 ## [b]Virtual[/b] method called at the beginning of every tour step for clearing anything necessary.
@@ -182,8 +200,8 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 	avatar_at = at
 	var editor_scale := EditorInterface.get_editor_scale()
 	var at_offset := {
-		AvatarAt.LEFT: Vector2(-8.0, -6.0) * editor_scale,
-		AvatarAt.CENTER: Vector2(panel_container.size.x / 2.0, -8.0 * editor_scale),
+		AvatarAt.LEFT: Vector2(-8.0, -8.0) * editor_scale,
+		AvatarAt.CENTER: Vector2(panel_container.size.x / 2.0, -12.0 * editor_scale),
 		AvatarAt.RIGHT: Vector2(panel_container.size.x + 3.0 * editor_scale, -8.0 * editor_scale),
 	}
 	var new_avatar_position: Vector2 = at_offset[at]
@@ -205,7 +223,7 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 			avatar, "position", new_avatar_position, TWEEN_DURATION_AVATAR
 		)
 
-	if not avatar.position.is_equal_approx(new_avatar_position):
+	if not is_equal_approx(avatar.rotation, new_avatar_rotation):
 		if avatar_tween_rotation != null:
 			avatar_tween_rotation.kill()
 		avatar_tween_rotation = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
@@ -217,7 +235,7 @@ func set_avatar_at(at := AvatarAt.LEFT) -> void:
 ## Refreshes the position and size of the bubble and its avatar as necessary.
 ## Called in [method Node._process].
 func refresh() -> void:
-	if control == null:
+	if was_moved or control == null:
 		return
 
 	panel_container.reset_size()

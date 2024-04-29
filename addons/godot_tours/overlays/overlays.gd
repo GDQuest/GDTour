@@ -62,7 +62,10 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 	# Calculate overlapping highlights to avoid stacking highlights and outlines.
 	var overlaps := []
 	if rect_getter.is_null():
-		rect_getter = control.get_global_rect
+		if interface.inspector_editor.is_ancestor_of(control):
+			rect_getter = func() -> Rect2: return control.get_global_rect().intersection(interface.inspector_editor.get_global_rect()) 
+		else:
+			rect_getter = control.get_global_rect
 
 	var editor_scale := EditorInterface.get_editor_scale()
 	var rect := rect_getter.call()
@@ -87,8 +90,6 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 			highlight.controls.append_array(other_highlight.controls)
 			highlight.rect_getters.append_array(other_highlight.rect_getters)
 			other_highlight.queue_free()
-	control.draw.connect(highlight.refresh)
-	control.visibility_changed.connect(highlight.refresh)
 
 
 ## Removes all dimmers and consequently highlights from the editor.
@@ -125,7 +126,7 @@ func ensure_get_dimmer_for(control: Control) -> Dimmer:
 ## Highlight [TreeItem]s from the given [code]tree[/code] that match the [code]predicate[/code]. The highlight can
 ## also play a flash animation if [code]play_flash[/code] is [code]true[/code]. [code]button_index[/code] specifies
 ## which button to highlight from the [TreeItem] instead of the whole item.
-func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, do_center := false, play_flash := false) -> void:
+func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, do_center := true, play_flash := false) -> void:
 	var root := tree.get_root()
 	if root == null:
 		return
@@ -150,7 +151,7 @@ func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, d
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, do_center := false, play_flash := false) -> void:
+func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, do_center := true, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
 		func(item: TreeItem) -> bool: return item.get_text(0) in names,
@@ -162,7 +163,7 @@ func highlight_scene_nodes_by_name(names: Array[String], button_index := -1, do_
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, do_center := false, play_flash := false) -> void:
+func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, do_center := true, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.scene_tree,
 		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
@@ -174,7 +175,7 @@ func highlight_scene_nodes_by_path(paths: Array[String], button_index := -1, do_
 
 ## Highlights FileSystem dock [TreeItem]s by [code]paths[/code]. See [method highlight_tree_items]
 ## for [code]play_flash[/code].
-func highlight_filesystem_paths(paths: Array[String], do_center := false, play_flash := false) -> void:
+func highlight_filesystem_paths(paths: Array[String], do_center := true, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.filesystem_tree,
 		func(item: TreeItem) -> bool: return Utils.get_tree_item_path(item) in paths,
@@ -186,13 +187,14 @@ func highlight_filesystem_paths(paths: Array[String], do_center := false, play_f
 
 ## Highlights Inspector dock properties by (programmatic) [code]name[/code]. See [method highlight_tree_items]
 ## for [code]play_flash[/code].
-func highlight_inspector_properties(names: Array[StringName], play_flash := false) -> void:
-	var properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
+func highlight_inspector_properties(names: Array[StringName], do_center := true, play_flash := false) -> void:
+	var scroll_offset := 200 * EditorInterface.get_editor_scale()
+	var all_properties := interface.inspector_editor.find_children("", "EditorProperty", true, false)
 	for n in names:
 		var predicate_first := func predicate_first(p: EditorProperty) -> bool:
 			return p.get_edited_property() == n
 
-		for property: EditorProperty in properties.filter(predicate_first):
+		for property: EditorProperty in all_properties.filter(predicate_first):
 			# Unfold parent sections recursively if necessary.
 			var current_parent := property.get_parent()
 			const MAX_ITERATION_COUNT := 10
@@ -202,23 +204,31 @@ func highlight_inspector_properties(names: Array[StringName], play_flash := fals
 				current_parent = current_parent.get_parent()
 				if current_parent == interface.inspector_editor:
 					break
-			interface.inspector_editor.ensure_control_visible(property)
+			if do_center:
+				interface.inspector_editor.scroll_vertical += (
+					property.global_position.y + scroll_offset
+					- interface.inspector_editor.global_position.y
+					- interface.inspector_editor.size.y / 2.0
+				)
+			else:
+				interface.inspector_editor.ensure_control_visible(property)
 
 		var dimmer := ensure_get_dimmer_for(interface.inspector_dock)
 		var rect_getter := func inspector_property_rect_getter() -> Rect2:
-			properties = interface.inspector_editor.find_children("", "EditorProperty", true, false)
-			for property: EditorProperty in properties.filter(predicate_first):
-				var rect := property.get_global_rect()
-				rect.position.x = interface.inspector_editor.global_position.x
-				rect.size.x = interface.inspector_editor.size.x
-				return rect
+			all_properties = interface.inspector_editor.find_children("", "EditorProperty", true, false)
+			for property: EditorProperty in all_properties.filter(predicate_first):
+				if property.is_visible_in_tree():
+					var rect := property.get_global_rect()
+					rect.position.x = interface.inspector_editor.global_position.x
+					rect.size.x = interface.inspector_editor.size.x
+					return rect.intersection(interface.inspector_editor.get_global_rect())
 			return Rect2()
 		add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
 
 
 ## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]
 ## for details on the other parameters.
-func highlight_signals(signal_names: Array[String], do_center := false, play_flash := false) -> void:
+func highlight_signals(signal_names: Array[String], do_center := true, play_flash := false) -> void:
 	highlight_tree_items(
 		interface.node_dock_signals_tree,
 		func(item: TreeItem) -> bool:
@@ -269,7 +279,7 @@ func highlight_controls(controls: Array[Control], play_flash := false) -> void:
 	for control in controls:
 		if control == null:
 			continue
-		add_highlight_to_control(control, control.get_global_rect, play_flash)
+		add_highlight_to_control(control, Callable(), play_flash)
 
 
 ## Highlights either the whole [code]tabs[/code] [TabBar] if [code]index == -1[/code] or the given [TabContainer] tab

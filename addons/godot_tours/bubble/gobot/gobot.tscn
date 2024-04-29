@@ -920,9 +920,6 @@ libraries = {
 [node name="AnimationTree" type="AnimationTree" parent="SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
 root_node = NodePath("%AnimationTree/..")
-libraries = {
-"": SubResource("AnimationLibrary_axgnh")
-}
 tree_root = SubResource("AnimationNodeBlendTree_n4c0l")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Add2/add_amount = 1.0
