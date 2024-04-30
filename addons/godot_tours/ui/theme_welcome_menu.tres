@@ -1,11 +1,11 @@
 [gd_resource type="Theme" load_steps=18 format=3 uid="uid://7hcgepakmhxl"]
 
-[ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/bubble/assets/fonts/mukta_bold.ttf" id="1_dub3d"]
+[ext_resource type="FontFile" uid="uid://cxeo2n3ky21xb" path="res://addons/godot_tours/assets/fonts/mukta_bold.ttf" id="1_dub3d"]
 [ext_resource type="Texture2D" uid="uid://dmv0g5yqal8s7" path="res://addons/godot_tours/assets/icons/lock.svg" id="2_h5oj8"]
-[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/bubble/assets/fonts/poppins_regular.ttf" id="2_q27tu"]
-[ext_resource type="FontFile" uid="uid://b0egmv7mkouwp" path="res://addons/godot_tours/bubble/assets/fonts/poppins_bold.ttf" id="3_0qm4b"]
-[ext_resource type="FontFile" uid="uid://cowlnwvq0rikj" path="res://addons/godot_tours/bubble/assets/fonts/poppins_italic.ttf" id="5_jtekx"]
-[ext_resource type="FontFile" uid="uid://c3xincxynype7" path="res://addons/godot_tours/bubble/assets/fonts/hasklug_nerd_mono.otf" id="6_42au4"]
+[ext_resource type="FontFile" uid="uid://b0tcgxag5h452" path="res://addons/godot_tours/assets/fonts/poppins_regular.ttf" id="2_q27tu"]
+[ext_resource type="FontFile" uid="uid://b0egmv7mkouwp" path="res://addons/godot_tours/assets/fonts/poppins_bold.ttf" id="3_0qm4b"]
+[ext_resource type="FontFile" uid="uid://cowlnwvq0rikj" path="res://addons/godot_tours/assets/fonts/poppins_italic.ttf" id="5_jtekx"]
+[ext_resource type="FontFile" uid="uid://c3xincxynype7" path="res://addons/godot_tours/assets/fonts/hasklug_nerd_mono.otf" id="6_42au4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t2qdf"]
 content_margin_left = -5.0625
