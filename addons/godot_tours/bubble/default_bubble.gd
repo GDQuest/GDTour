@@ -9,8 +9,7 @@ const TextureRectPackedScene := preload("texture_rect.tscn")
 const VideoStreamPlayerPackedScene := preload("video_stream_player.tscn")
 const RichTextLabelPackedScene := preload("rich_text_label/rich_text_label.tscn")
 
-const IMG_PATH := "res://addons/godot_tours/bubble/assets/icons/%s.svg"
-const CLASS_IMG := r"[img=%dx%d]%s[/img] [b]$1[/b]"
+const CLASS_IMG := r"[img=%dx%d]res://addons/godot_tours/bubble/assets/icons/$1.svg[/img] [b]$1[/b]"
 
 ## Separation between paragraphs of text and elements in the main content in pixels.
 @export var paragraph_separation := 12:
@@ -148,11 +147,7 @@ func set_title(title_text: String) -> void:
 
 func add_text(text: Array[String]) -> void:
 	for line in text:
-		var match := regex_class.search(line)
-		if match != null:
-			var img_path := IMG_PATH % match.strings[1]
-			if FileAccess.file_exists(img_path):
-				line = regex_class.sub(line, CLASS_IMG % [img_size, img_size, img_path])
+		line = regex_class.sub(line, CLASS_IMG % [img_size, img_size], true)
 		add_element(RichTextLabelPackedScene.instantiate(), line)
 
 

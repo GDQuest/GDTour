@@ -42,6 +42,7 @@ class Command:
 		await callable.callv(parameters)
 
 const Log := preload("log.gd")
+const Shortcuts := preload("shortcuts.gd")
 const EditorInterfaceAccess := preload("editor_interface_access.gd")
 const Utils := preload("utils.gd")
 const Overlays := preload("overlays/overlays.gd")
@@ -69,6 +70,7 @@ var step_commands: Array[Command] = []
 var guides: Dictionary = {}
 
 var log := Log.new()
+var shortcuts := Shortcuts.new()
 var editor_selection: EditorSelection = null
 ## Object that provides access to many nodes in the editor's user interface.
 var interface: EditorInterfaceAccess = null
