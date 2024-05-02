@@ -60,7 +60,7 @@ var offset_vector := Vector2.ZERO  ## Custom offset for [method move_and_anchor]
 var control: Control = null  ## Reference to the control node passed to [method move_and_anchor].
 var translation_service: TranslationService = null
 var step_count := 0  ## Tour step count.
-var drag_height := 32.0 * EditorInterface.get_editor_scale()
+var drag_margin := 32.0 * EditorInterface.get_editor_scale()
 var is_left_click := false
 var was_moved := false
 
@@ -97,10 +97,17 @@ func _process(delta: float) -> void:
 
 
 func _on_panel_container_gui_input(event: InputEvent) -> void:
+	var is_event_in_margin: bool = (
+		event is InputEventMouse
+		and (
+			event.position.y <= drag_margin
+			or event.position.y >= panel_container.size.y - drag_margin
+			or event.position.x <= drag_margin
+			or event.position.x >= panel_container.size.x - drag_margin
+		)
+	)
 	panel_container.mouse_default_cursor_shape = (
-		Control.CURSOR_MOVE
-		if event is InputEventMouse and event.position.y <= drag_height
-		else Control.CURSOR_ARROW
+		Control.CURSOR_MOVE if is_event_in_margin else Control.CURSOR_ARROW
 	)
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
