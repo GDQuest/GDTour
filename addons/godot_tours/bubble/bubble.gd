@@ -110,7 +110,11 @@ func _on_panel_container_gui_input(event: InputEvent) -> void:
 		Control.CURSOR_MOVE if is_event_in_margin else Control.CURSOR_ARROW
 	)
 
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+	if (
+		event is InputEventMouseButton
+		and event.button_index == MOUSE_BUTTON_LEFT
+		and is_event_in_margin
+	):
 		is_left_click = event.pressed
 	elif event is InputEventMouseMotion and is_left_click:
 		panel_container.position += event.relative
