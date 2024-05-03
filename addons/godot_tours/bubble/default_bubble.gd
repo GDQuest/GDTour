@@ -198,7 +198,7 @@ func set_background(texture: Texture2D) -> void:
 
 
 func check_tasks() -> bool:
-	var are_tasks_done := tasks_v_box_container.get_children().all(func(task: Task) -> bool: return task.is_done())
+	var are_tasks_done := tasks_v_box_container.get_children().all(func(task: Task) -> bool: return task.is_done() and not task.is_queued_for_deletion())
 	next_button.visible = are_tasks_done
 	if are_tasks_done:
 		avatar.do_wink()
