@@ -56,14 +56,14 @@ func _process(_delta: float) -> void:
 
 
 ## Highlights a control, allowing the end user to interact with it using the mouse, and carving into the dimmers.
-func add_highlight_to_control(control: Control, rect_getter := Callable(), play_flash := false) -> void:
+func add_highlight_to_control(control: Control, rect_getter := Callable(), play_flash := false, do_grow := false) -> void:
 	var dimmer := ensure_get_dimmer_for(control)
 
 	# Calculate overlapping highlights to avoid stacking highlights and outlines.
 	var overlaps := []
 	if rect_getter.is_null():
 		if interface.inspector_editor.is_ancestor_of(control):
-			rect_getter = func() -> Rect2: return control.get_global_rect().intersection(interface.inspector_editor.get_global_rect()) 
+			rect_getter = func() -> Rect2: return control.get_global_rect().intersection(interface.inspector_editor.get_global_rect())
 		else:
 			rect_getter = control.get_global_rect
 
@@ -73,7 +73,7 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 		if child is Highlight:
 			child.refresh()
 			var child_rect := Rect2(child.global_position, child.custom_minimum_size)
-			if rect.grow(RECT_GROW * editor_scale).intersects(child_rect):
+			if (rect.grow(RECT_GROW * editor_scale) if do_grow else rect).intersects(child_rect):
 				overlaps.push_back(child)
 
 	var highlight := HighlightPackedScene.instantiate()
@@ -109,8 +109,8 @@ func toggle_dimmers(is_on: bool) -> void:
 ## Get the dimmer associated with a [Control]. There is only one dimmer per [Viewport] so the dimmer is really
 ## associated with the Control's Viewport. If there is no such dimmer, create one on the fly and return it.
 func ensure_get_dimmer_for(control: Control) -> Dimmer:
-	var viewport := control.get_viewport()
-	var result: Dimmer = viewport.get_node_or_null("Dimmer")
+	var window := control.get_window()
+	var result: Dimmer = window.get_node_or_null("Dimmer")
 
 	# Ensure that when we create a new Dimmer, the name Dimmer won't be taken.
 	if result != null and result.is_queued_for_deletion():
@@ -118,7 +118,7 @@ func ensure_get_dimmer_for(control: Control) -> Dimmer:
 
 	if result == null or result.is_queued_for_deletion():
 		result = DimmerPackedScene.instantiate()
-		viewport.add_child(result)
+		window.add_child(result)
 		dimmers.push_back(result)
 	return result
 
@@ -130,7 +130,7 @@ func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, d
 	var root := tree.get_root()
 	if root == null:
 		return
-	
+
 	var height_fix := 6 * EditorInterface.get_editor_scale()
 	for item in Utils.filter_tree_items(root, predicate):
 		interface.unfold_tree_item(item)
@@ -146,7 +146,7 @@ func highlight_tree_items(tree: Tree, predicate: Callable, button_index := -1, d
 				rect.position.y += height_fix - tree.get_scroll().y
 				return rect.intersection(tree.get_global_rect())
 			return Rect2()
-		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash)
+		add_highlight_to_control.call_deferred(tree, rect_getter, play_flash, true)
 
 
 ## Highlights multiple Scene dock [TreeItem]s by [code]names[/code]. See [method highlight_tree_items]
@@ -223,7 +223,7 @@ func highlight_inspector_properties(names: Array[StringName], do_center := true,
 					rect.size.x = interface.inspector_editor.size.x
 					return rect.intersection(interface.inspector_editor.get_global_rect())
 			return Rect2()
-		add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash)
+		add_highlight_to_control.call_deferred(interface.inspector_editor, rect_getter, play_flash, true)
 
 
 ## Highlights Node > Signals dock [TreeItem]s by [code]signal_names[/code]. See [method highlight_tree_items]

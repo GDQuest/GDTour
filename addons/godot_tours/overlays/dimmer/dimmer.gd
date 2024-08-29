@@ -3,19 +3,17 @@ extends SubViewportContainer
 
 const DimmerMaskPackedScene := preload("dimmer_mask.tscn")
 
-var root: Window = null
-
+@onready var window := get_window()
 @onready var film_color_rect: ColorRect = %FilmColorRect
 
 
 func _ready() -> void:
-	root = get_tree().root
-	root.size_changed.connect(refresh)
+	window.size_changed.connect(refresh)
 	refresh()
 
 
 func clean_up() -> void:
-	root.size_changed.disconnect(refresh)
+	window.size_changed.disconnect(refresh)
 
 
 func add_mask() -> ColorRect:
@@ -25,7 +23,7 @@ func add_mask() -> ColorRect:
 
 
 func refresh() -> void:
-	size = root.size
+	size = window.size
 
 
 func toggle_dimmer_mask(is_on: bool) -> void:

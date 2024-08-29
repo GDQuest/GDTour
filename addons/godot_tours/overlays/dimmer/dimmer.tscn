@@ -7,11 +7,12 @@ blend_mode = 3
 
 [node name="Dimmer" type="SubViewportContainer" groups=["dimmer"]]
 self_modulate = Color(1, 1, 1, 0.6)
+top_level = true
 material = SubResource("CanvasItemMaterial_cvwys")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -69.0
+offset_bottom = -37.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -20,7 +21,7 @@ script = ExtResource("1_30fag")
 
 [node name="SubViewport" type="SubViewport" parent="."]
 handle_input_locally = false
-size = Vector2i(1920, 1011)
+size = Vector2i(1920, 1043)
 render_target_update_mode = 4
 
 [node name="FilmColorRect" type="ColorRect" parent="SubViewport"]

@@ -222,9 +222,9 @@ func _init() -> void:
 	run_bar_pause_button = run_bar_buttons[1]
 	run_bar_stop_button = run_bar_buttons[2]
 	run_bar_debug_button = run_bar_buttons[3]
-	run_bar_play_current_button = run_bar_buttons[5]
-	run_bar_play_custom_button = run_bar_buttons[6]
-	run_bar_movie_mode_button = run_bar_buttons[7]
+	run_bar_play_current_button = run_bar_buttons[7]
+	run_bar_play_custom_button = run_bar_buttons[8]
+	run_bar_movie_mode_button = run_bar_buttons[9]
 	rendering_options = Utils.find_child_by_type(editor_title_bar, "OptionButton")
 
 	# Main Screen
@@ -259,7 +259,7 @@ func _init() -> void:
 	canvas_item_editor_toolbar_skeleton_options_button = canvas_item_editor_toolbar_buttons[15]
 
 	canvas_item_editor_zoom_widget = Utils.find_child_by_type(
-		canvas_item_editor, "EditorZoomWidget"
+		canvas_item_editor_viewport, "EditorZoomWidget"
 	)
 	canvas_item_editor_zoom_button_lower = canvas_item_editor_zoom_widget.get_child(0)
 	canvas_item_editor_zoom_button_reset = canvas_item_editor_zoom_widget.get_child(1)
@@ -409,7 +409,7 @@ func _init() -> void:
 		bottom_button_output, bottom_button_debugger, bottom_button_tileset, bottom_button_tilemap
 	]
 
-	tilemap = Utils.find_child_by_type(bottom_panels_vboxcontainer, "TileMapEditor", false)
+	tilemap = Utils.find_child_by_type(bottom_panels_vboxcontainer, "TileMapLayerEditor", false)
 	var tilemap_flow_container: HFlowContainer = Utils.find_child_by_type(
 		tilemap, "HFlowContainer", false
 	)
@@ -441,7 +441,7 @@ func _init() -> void:
 	tileset_patterns_panel = tileset.get_child(0).get_child(2)
 	tileset_panels = [tileset_tiles_panel, tileset_patterns_panel]
 
-	scene_import_settings_window = Utils.find_child_by_type(base_control, "SceneImportSettings")
+	scene_import_settings_window = Utils.find_child_by_type(base_control, "SceneImportSettingsDialog")
 	scene_import_settings = scene_import_settings_window.get_child(0)
 	scene_import_settings_cancel_button = scene_import_settings_window.get_cancel_button()
 	scene_import_settings_ok_button = scene_import_settings_window.get_ok_button()
