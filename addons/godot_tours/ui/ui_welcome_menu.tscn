@@ -1,8 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://bhu2wc07q7fxk"]
+[gd_scene load_steps=6 format=3 uid="uid://bhu2wc07q7fxk"]
 
 [ext_resource type="Script" path="res://addons/godot_tours/ui/ui_welcome_menu.gd" id="1_kfmbk"]
 [ext_resource type="Theme" uid="uid://7hcgepakmhxl" path="res://addons/godot_tours/ui/theme_welcome_menu.tres" id="2_0icf0"]
 [ext_resource type="Texture2D" uid="uid://cb4s7cxc5wtdv" path="res://addons/godot_tours/assets/icons/reload.svg" id="3_rgtlm"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bgx36"]
+line_spacing = 2.0
+font_size = 18
+font_color = Color(1, 0.835294, 0, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1q4hb"]
 
@@ -64,6 +69,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "Welcome to Godot Tour!"
 
+[node name="LabelRestartWarning" type="Label" parent="Control/PanelContainer/MarginContainer/ViewMenu"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 6
+theme_override_font_sizes/font_size = 32
+text = "Warning: Please restart the editor by closing this popup and going to Project, Reload Current Project.
+On Windows, Godot 4.3 has a bug that prevents us from doing it automatically for you."
+label_settings = SubResource("LabelSettings_bgx36")
+autowrap_mode = 2
+
 [node name="ToursColumn" type="VBoxContainer" parent="Control/PanelContainer/MarginContainer/ViewMenu"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -77,11 +92,11 @@ layout_mode = 2
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2
 theme_type_variation = &"NextButton"
-theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_hover_color = Color(0.619608, 0.262745, 0.00392157, 1)
-theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.619608, 0.262745, 0.00392157, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_font_sizes/font_size = 22
 text = "START LEARNING"
 
@@ -183,12 +198,12 @@ unique_name_in_owner = true
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"NextButton"
-theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
 shortcut_in_tooltip = false
 text = "YES"
 
@@ -198,11 +213,11 @@ visible = false
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"NextButton"
-theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
-theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_pressed_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
+theme_override_colors/font_color = Color(0.415686, 0.0980392, 0, 1)
 shortcut_in_tooltip = false
 text = "OK"

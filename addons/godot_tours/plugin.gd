@@ -64,7 +64,12 @@ func _enter_tree() -> void:
 	var is_single_window_mode := editor_settings.get_setting(SINGLE_WINDOW_MODE_PROPERTY)
 	if not is_single_window_mode:
 		editor_settings.set_setting(SINGLE_WINDOW_MODE_PROPERTY, true)
-		EditorInterface.restart_editor()
+		# On Windows, with Godot 4.3 stable, trying to restart the editor crashes. So we only restart the editor if it's not Windows.
+		var version := Engine.get_version_info()
+		if OS.get_name() == "Windows" and version.major == 4 and version.minor == 3:
+			push_warning("Godot Tours: Godot 4.3 on Windows does not support restarting the editor. Please restart the editor manually.")
+		else:
+			EditorInterface.restart_editor()
 
 	translation_service = TranslationService.new(_tour_paths, editor_settings)
 	editor_interface_access = EditorInterfaceAccess.new()
@@ -74,7 +79,7 @@ func _enter_tree() -> void:
 
 	# Add button to the editor top bar, right before the run buttons
 	_add_top_bar_button()
-	_show_welcome_menu()
+	_show_welcome_menu(not is_single_window_mode)
 	ensure_pot_generation(plugin_path)
 
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
@@ -97,7 +102,7 @@ func _add_top_bar_button() -> void:
 
 
 ## Shows the welcome menu, which lists all the tours in the file res://godot_tours.tres.
-func _show_welcome_menu() -> void:
+func _show_welcome_menu(show_restart_warning := false) -> void:
 	if tour_list == null and not Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		return
 
@@ -107,6 +112,12 @@ func _show_welcome_menu() -> void:
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
+	# Work around a crash: EditorInterface.restart_editor() crashes the editor on Windows 4.3.
+	if show_restart_warning:
+		for tour in tour_list.tours:
+			tour.is_locked = true
+		welcome_menu.show_restart_warning()
+
 	welcome_menu.setup(translation_service, tour_list)
 	welcome_menu.tour_start_requested.connect(start_tour)
 	welcome_menu.tour_reset_requested.connect(func reset_tour(tour_path: String) -> void:
