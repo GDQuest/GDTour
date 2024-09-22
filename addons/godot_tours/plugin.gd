@@ -61,13 +61,13 @@ func _enter_tree() -> void:
 
 	add_translation_parser_plugin(translation_parser)
 	var editor_settings := EditorInterface.get_editor_settings()
-	var is_single_window_mode := editor_settings.get_setting(SINGLE_WINDOW_MODE_PROPERTY)
-	if not is_single_window_mode:
+	var is_single_window_mode_at_start := editor_settings.get_setting(SINGLE_WINDOW_MODE_PROPERTY)
+	if not is_single_window_mode_at_start:
 		editor_settings.set_setting(SINGLE_WINDOW_MODE_PROPERTY, true)
-		# On Windows, with Godot 4.3 stable, trying to restart the editor crashes. So we only restart the editor if it's not Windows.
+		# On Windows and some Linux distributions, with Godot 4.3 stable, trying to restart the editor crashes. So we only restart the editor if it's not Windows.
 		var version := Engine.get_version_info()
-		if OS.get_name() == "Windows" and version.major == 4 and version.minor == 3:
-			push_warning("Godot Tours: Godot 4.3 on Windows does not support restarting the editor. Please restart the editor manually.")
+		if version.major == 4 and version.minor == 3:
+			push_warning("Godot Tours: The editor needs to be restarted for the tours to work. Please restart the editor manually by going to Project -> Reload Current Project.")
 		else:
 			EditorInterface.restart_editor()
 
@@ -79,7 +79,7 @@ func _enter_tree() -> void:
 
 	# Add button to the editor top bar, right before the run buttons
 	_add_top_bar_button()
-	_show_welcome_menu(not is_single_window_mode)
+	_show_welcome_menu(not is_single_window_mode_at_start)
 	ensure_pot_generation(plugin_path)
 
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
@@ -112,7 +112,8 @@ func _show_welcome_menu(show_restart_warning := false) -> void:
 	tree_exiting.connect(welcome_menu.queue_free)
 
 	EditorInterface.get_base_control().add_child(welcome_menu)
-	# Work around a crash: EditorInterface.restart_editor() crashes the editor on Windows 4.3.
+
+	# FIXME: Work around a crash: EditorInterface.restart_editor() crashes the editor on Windows and some Linux distributions in Godot 4.3.
 	if show_restart_warning:
 		for tour in tour_list.tours:
 			tour.is_locked = true
