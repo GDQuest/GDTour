@@ -100,7 +100,6 @@ func setup(translation_service: TranslationService, tour_list: GodotTourList) ->
 		ThemeUtils.scale_margin_container_margins(margin_container)
 		for button: BaseButton in [button_reset_selected, button_reset_no, button_reset_yes, button_reset_ok, button_start_learning]:
 			button.custom_minimum_size *= editor_scale
-		label_restart_warning.label_settings.font_size *= editor_scale
 
 	if tours_column.get_child_count() > 0:
 		tours_column.get_child(0).select()
