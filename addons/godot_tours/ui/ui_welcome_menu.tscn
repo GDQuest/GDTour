@@ -76,8 +76,7 @@ layout_mode = 2
 size_flags_vertical = 6
 theme_override_font_sizes/font_size = 32
 text = "Warning: Please restart the editor by closing this popup and going to Project, Reload Current Project.
-
-Godot 4.3 has a bug that prevents us from doing it automatically for you. We're looking for a better solution and will update the tours when we find one."
+On Windows, Godot 4.3 has a bug that prevents us from doing it automatically for you."
 label_settings = SubResource("LabelSettings_bgx36")
 autowrap_mode = 2
 
