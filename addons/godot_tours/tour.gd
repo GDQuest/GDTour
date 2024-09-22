@@ -689,7 +689,7 @@ func bubble_add_task_node_to_guide(parameters: Guide3DTaskParameters) -> void:
 	)
 	bubble_add_task(parameters.description_override, 1, func node_to_guide(_task: Task) -> int:
 		var scene_root := EditorInterface.get_edited_scene_root()
-		var node: Node3D = null
+		var node: Node3D = null 
 		if parameters.node_name == scene_root.name:
 			node = scene_root
 		else:

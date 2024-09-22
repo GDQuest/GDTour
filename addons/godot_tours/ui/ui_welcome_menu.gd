@@ -36,9 +36,6 @@ const UISelectableTourPackedScene = preload("ui_selectable_tour.tscn")
 @onready var label_reset_title: Label = %LabelResetTitle
 @onready var button_reset_ok: Button = %ButtonResetOk
 
-# This label is here to work around a crash on Godot 4.3 on Windows. Calling EditorInterface.restart_editor() crashes. So, users need to do it manually. This will be shown on Windows only.
-@onready var label_restart_warning: Label = %LabelRestartWarning
-
 
 func _ready() -> void:
 	view_menu.show()
@@ -133,7 +130,3 @@ func show_reset_failure() -> void:
 	button_reset_no.hide()
 	button_reset_yes.hide()
 	button_reset_ok.show()
-
-
-func show_restart_warning() -> void:
-	label_restart_warning.show()
