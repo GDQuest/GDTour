@@ -59,13 +59,9 @@ func _enter_tree() -> void:
 	await get_tree().physics_frame
 	get_viewport().mode = Window.MODE_MAXIMIZED
 
-	add_translation_parser_plugin(translation_parser)
 	var editor_settings := EditorInterface.get_editor_settings()
-	var is_single_window_mode := editor_settings.get_setting(SINGLE_WINDOW_MODE_PROPERTY)
-	if not is_single_window_mode:
-		editor_settings.set_setting(SINGLE_WINDOW_MODE_PROPERTY, true)
-		EditorInterface.restart_editor()
 
+	add_translation_parser_plugin(translation_parser)
 	translation_service = TranslationService.new(_tour_paths, editor_settings)
 	editor_interface_access = EditorInterfaceAccess.new()
 
@@ -76,6 +72,11 @@ func _enter_tree() -> void:
 	_add_top_bar_button()
 	_show_welcome_menu()
 	ensure_pot_generation(plugin_path)
+
+	var is_single_window_mode := editor_settings.get_setting(SINGLE_WINDOW_MODE_PROPERTY)
+	if not is_single_window_mode:
+		editor_settings.set_setting(SINGLE_WINDOW_MODE_PROPERTY, true)
+		EditorInterface.restart_editor(false)
 
 	if Debugger.CLI_OPTION_DEBUG in OS.get_cmdline_user_args():
 		toggle_debugger()
